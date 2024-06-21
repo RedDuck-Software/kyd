@@ -6,13 +6,16 @@ import "./interfaces/IAuction.sol";
 import "./Auction.sol";
 
 struct AuctionCreateParams {
-    string nftBaseUri;
     address[] stables;
+    uint256[] topWinners;
+    string nftBaseUri;
     uint256 goal;
     address owner;
     address nft;
+    address nftParticipate;
     uint256 randomWinners;
     uint256 randomWinnerNftId;
+    uint256 participationNftId;
 }
 
 contract AuctionFactory {
@@ -35,11 +38,15 @@ contract AuctionFactory {
         auction.initialize(
             IAuction.AuctionParams({
                 stables: params.stables,
+                topWinners: params.topWinners,
                 goal: params.goal,
+                gelatoOperator: gelatoOperator,
                 owner: params.owner,
                 nft: params.nft,
+                nftParticipate: params.nftParticipate,
                 randomWinners: params.randomWinners,
-                randomWinnerNftId: params.randomWinnerNftId
+                randomWinnerNftId: params.randomWinnerNftId,
+                participationNftId: params.participationNftId
             })
         );
 

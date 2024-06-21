@@ -6,6 +6,7 @@ library DoubleLinkedList {
         Node[] nodes;
         uint256 head;
         uint256 tail;
+        uint256 length;
     }
 
     struct Data {
@@ -23,8 +24,6 @@ library DoubleLinkedList {
         list.nodes.push(
             Node(Data(address(0), 0), type(uint256).max, type(uint256).max)
         );
-        list.head = 0;
-        list.tail = 0;
     }
 
     function increaseAmount(
@@ -37,6 +36,20 @@ library DoubleLinkedList {
             "Invalid data"
         );
         list.nodes[id].data.amount += amount;
+    }
+
+    function getNodeData(
+        List storage list,
+        uint256 id
+    ) internal view returns (Data memory) {
+        return list.nodes[id].data;
+    }
+
+    function getNode(
+        List storage list,
+        uint256 id
+    ) internal view returns (Node memory) {
+        return list.nodes[id];
     }
 
     function insertAfter(
@@ -72,6 +85,8 @@ library DoubleLinkedList {
             list.tail = newID;
         }
 
+        list.length++;
+
         node.next = newID;
 
         return newID;
@@ -98,6 +113,8 @@ library DoubleLinkedList {
         if (id == list.tail) {
             list.tail = node.prev;
         }
+
+        list.length--;
 
         delete list.nodes[id];
     }
