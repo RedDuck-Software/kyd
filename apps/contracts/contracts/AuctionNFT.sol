@@ -33,9 +33,11 @@ contract AuctionNFT is OwnableUpgradeable, ERC721URIStorageUpgradeable {
         id++;
     }
 
-    function burn(address from, uint256 tokenId, bytes calldata data) external {
-        if (ownerOf(tokenId) != from) {
-            revert NotAnOwner(from);
+    function burn(uint256 tokenId, bytes calldata data) external {
+        address user = msg.sender;
+
+        if (ownerOf(tokenId) != user) {
+            revert NotAnOwner(user);
         }
         if (isBurnt[tokenId]) {
             revert AlreadyBurnt(tokenId);
@@ -43,7 +45,7 @@ contract AuctionNFT is OwnableUpgradeable, ERC721URIStorageUpgradeable {
 
         isBurnt[tokenId] = true;
 
-        emit Burn(from, tokenId, data);
+        emit Burn(user, tokenId, data);
     }
 
     function _update(

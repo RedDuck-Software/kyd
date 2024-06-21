@@ -20,6 +20,7 @@ module.exports = {
         'glow-xl': '0 0 25px 7px #E4FBA3',
       },
       colors: {
+        success: '#28CCAF',
         danger: '#FE4756',
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
