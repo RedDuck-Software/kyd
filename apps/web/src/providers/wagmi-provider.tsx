@@ -9,7 +9,7 @@ const projectId = env.VITE_PROJECT_ID as string;
 const metadata = {
   name: 'KYD',
   description: 'KYD',
-  url: 'kyd.com',
+  url: 'http://localhost:5173/',
   icons: [''],
 };
 

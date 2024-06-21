@@ -1,11 +1,26 @@
 import useModalsStore from '@/store/modals-store';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
+import { useToast } from '@/components/ui/use-toast';
 
 export const NftRedeemModal = () => {
   const { setNftRedeemModalOpen, setNftRedeemSuccessModalOpen } = useModalsStore();
   const [code, setCode] = useState('');
+
+  const { toast } = useToast();
+
+  const handleRedeem = useCallback(async () => {
+    try {
+      throw new Error('adsad');
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: (error as Error).message ?? 'Failed to redeem',
+      });
+    }
+  }, []);
 
   return (
     <div className="flex flex-col gap-4">

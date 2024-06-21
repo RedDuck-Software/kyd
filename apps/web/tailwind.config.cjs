@@ -16,21 +16,21 @@ module.exports = {
         quicksand: ['Quicksand', 'sans-serif'],
       },
       boxShadow: {
-        glow: '0 0 6px 1px #28CCAF',
-        'glow-xl': '0 0 25px 7px #28CCAF',
+        glow: '0 0 6px 1px #E4FBA3',
+        'glow-xl': '0 0 25px 7px #E4FBA3',
       },
       colors: {
         danger: '#FE4756',
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
-        background: '#0B1122',
+        background: '#030408',
         gray: '#9D9FC5',
         light: '#F9F9F9',
-        'gray-blue': '#252945',
+        'gray-blue': '#14141E',
         foreground: '#F9F9F9',
         primary: {
-          DEFAULT: '#28CCAF',
+          DEFAULT: '#E4FBA3',
           foreground: 'hsl(var(--primary-foreground))',
         },
         secondary: {
