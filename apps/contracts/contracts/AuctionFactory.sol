@@ -13,7 +13,7 @@ struct AuctionCreateParams {
     uint256 goal;
     address owner;
     uint256 randomWinners;
-    uint256 participationNftId;
+    uint256 randomWinnerNftId;
 }
 
 struct AuctionNftCreateParams {
@@ -72,8 +72,8 @@ contract AuctionFactory {
                 nft: address(auctionNFT),
                 nftParticipate: address(auctionNFTParticipants),
                 randomWinners: params.randomWinners,
-                randomWinnerNftId: 0,
-                participationNftId: params.participationNftId
+                randomWinnerNftId: params.randomWinnerNftId,
+                participationNftId: 0
             })
         );
 
