@@ -10,7 +10,7 @@
     "NEXT_PUBLIC_SENTRY_DSN",
     "NEXT_PUBLIC_SOLANA_RPC"
   ],
-  "pipeline": {
+  "tasks": {
     "build": {
       "dependsOn": ["^build"],
       "outputs": [".next/**", "!.next/cache/**"]
