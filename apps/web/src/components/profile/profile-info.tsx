@@ -9,7 +9,7 @@ export const ProfileInfo = () => {
 
   return (
     <div className="flex gap-4 max-lg:flex-col">
-      <div className="rounded-[16px] w-full bg-gray-blue p-6 gap-4 flex ">
+      <div className="rounded-[16px] w-full border border-primary p-6 gap-4 flex ">
         {generateBlockies(address, 30, false)}
         <div className="flex flex-col gap-2">
           <p className="text-[18px] font-medium">{shortenAddress(address ?? '', 6)}</p>
@@ -19,7 +19,7 @@ export const ProfileInfo = () => {
           </p>
         </div>
       </div>
-      <div className="rounded-[16px] w-full bg-gray-blue p-6 gap-2 flex flex-col">
+      <div className="rounded-[16px] w-full border border-primary p-6 gap-2 flex flex-col">
         <div className="flex items-center gap-3">
           <p className="text-[16px] ">Total USD donated:</p>
           <p className="text-[16px] font-medium">500$</p>

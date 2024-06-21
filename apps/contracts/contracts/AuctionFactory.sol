@@ -1,12 +1,86 @@
-// 
+//SPDX-License-Identifier: Unlicense
+pragma solidity ^0.8.23;
 
-struct AuctionCreateParams { }
+import "@openzeppelin/contracts/proxy/Clones.sol";
+import "./interfaces/IAuction.sol";
+import "./Auction.sol";
+import "./AuctionNFT.sol";
+import "./AuctionNFT1155.sol";
+
+struct AuctionCreateParams {
+    address[] stables;
+    uint256[] topWinners;
+    uint256 goal;
+    address owner;
+    uint256 randomWinners;
+    uint256 randomWinnerNftId;
+}
+
+struct AuctionNftCreateParams {
+    string name;
+    string symb;
+    string uri;
+}
 
 contract AuctionFactory {
+    address[] public auctions;
 
-    constructor( ) {}
+    event AuctionDeployed(address indexed auction);
 
-    public create(AuctionCreateParams calldata params) { 
+    address immutable gelatoOperator;
+    address immutable implementation;
+    address immutable nftImplementation;
+    address immutable nftParticipantsImplementation;
 
+    constructor(
+        address _gelatoOperator,
+        address _implementation,
+        address _nftImplementation,
+        address _nftParticipantsImplementation
+    ) {
+        gelatoOperator = _gelatoOperator;
+        implementation = _implementation;
+
+        nftImplementation = _nftImplementation;
+        nftParticipantsImplementation = _nftParticipantsImplementation;
+    }
+
+    function create(
+        AuctionCreateParams calldata params,
+        AuctionNftCreateParams calldata paramsNft,
+        AuctionNftCreateParams calldata paramsNftParticipants
+    ) external returns (address) {
+        AuctionNFT auctionNFT = AuctionNFT(
+            payable(Clones.clone(nftImplementation))
+        );
+        AuctionNFT1155 auctionNFTParticipants = AuctionNFT1155(
+            payable(Clones.clone(nftParticipantsImplementation))
+        );
+
+        auctionNFT.initialize(paramsNft.name, paramsNft.symb);
+        auctionNFTParticipants.initialize(paramsNftParticipants.uri);
+
+        Auction auction = Auction(payable(Clones.clone(implementation)));
+
+        auction.initialize(
+            IAuction.AuctionParams({
+                stables: params.stables,
+                topWinners: params.topWinners,
+                goal: params.goal,
+                gelatoOperator: gelatoOperator,
+                owner: params.owner,
+                nft: address(auctionNFT),
+                nftParticipate: address(auctionNFTParticipants),
+                randomWinners: params.randomWinners,
+                randomWinnerNftId: params.randomWinnerNftId,
+                participationNftId: 0
+            })
+        );
+
+        auctions.push(address(auction));
+
+        emit AuctionDeployed(address(auction));
+
+        return address(auction);
     }
 }
