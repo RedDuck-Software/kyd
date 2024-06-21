@@ -1,26 +1,26 @@
 module.exports = {
   bracketSpacing: true,
   printWidth: 120,
-  proseWrap: "preserve",
+  proseWrap: 'preserve',
   semi: true,
   singleQuote: true,
-  trailingComma: "es5",
+  trailingComma: 'es5',
   tabWidth: 2,
   useTabs: false,
-  arrowParens: "always",
-  endOfLine: "lf",
+  arrowParens: 'always',
+  endOfLine: 'lf',
   overrides: [
     {
-      files: "*.json",
+      files: '*.json',
       options: {
         singleQuote: false,
       },
     },
     {
-      files: ".*rc",
+      files: '.*rc',
       options: {
         singleQuote: false,
-        parser: "json",
+        parser: 'json',
       },
     },
   ],
