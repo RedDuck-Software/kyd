@@ -20,7 +20,7 @@ export const Links = () => {
   const { pathname } = useLocation();
 
   return (
-    <div className="flex items-center gap-6">
+    <div className="flex items-center justify-center gap-6">
       {config.map((link) => (
         <NavLink to={link.link} className={`${pathname === link.link ? 'underline' : ''}`} key={link.title}>
           {link.title}
