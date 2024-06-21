@@ -11,7 +11,7 @@ export const HeaderDesktop = () => {
       </NavLink>
       <Links />
       <div className="flex justify-end">
-        <ConnectWallet />
+        <ConnectWallet className="h-[46px]" />
       </div>
     </div>
   );

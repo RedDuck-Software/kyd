@@ -1,5 +1,6 @@
 import { routes } from '@/router';
 import { NavLink, useLocation } from 'react-router-dom';
+import { Button } from '../ui/button';
 
 export const config = [
   {
@@ -20,10 +21,12 @@ export const Links = () => {
   const { pathname } = useLocation();
 
   return (
-    <div className="flex items-center justify-center gap-6">
+    <div className="flex items-center gap-6">
       {config.map((link) => (
-        <NavLink to={link.link} className={`${pathname === link.link ? 'underline' : ''}`} key={link.title}>
-          {link.title}
+        <NavLink to={link.link} key={link.title}>
+          <Button variant={pathname === link.link ? 'default' : 'outline'} className="rounded-[32px] w-[120px] py-3">
+            {link.title}
+          </Button>
         </NavLink>
       ))}
     </div>
