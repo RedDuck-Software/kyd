@@ -12,5 +12,6 @@ export async function deployAuctionNft() {
 
   return {
     auctionNft,
+    owner,
   };
 }

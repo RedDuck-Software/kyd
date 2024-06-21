@@ -7,6 +7,8 @@ import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/Own
 contract AuctionNFT is OwnableUpgradeable, ERC721URIStorageUpgradeable {
     mapping(uint256 => bool) public isBurnt;
 
+    uint256 public id = 1;
+
     event Burn(address indexed from, uint256 indexed tokenId, bytes data);
 
     error NotAnOwner(address from);
@@ -28,6 +30,7 @@ contract AuctionNFT is OwnableUpgradeable, ERC721URIStorageUpgradeable {
 
     function mint(address to, uint256 tokenId) external onlyOwner {
         _safeMint(to, tokenId);
+        id++;
     }
 
     function burn(address from, uint256 tokenId, bytes calldata data) external {
