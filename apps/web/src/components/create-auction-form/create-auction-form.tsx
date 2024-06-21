@@ -51,8 +51,8 @@ export const CreateAuctionForm = () => {
   }, [enableTopDonateWinners, append, fields.length, remove]);
 
   return (
-    <div className="flex justify-center">
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <div className="flex justify-center min-w-full">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 w-[536px]">
         <div>
           <input
             type="checkbox"
