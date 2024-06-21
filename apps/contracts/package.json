@@ -71,6 +71,7 @@
     "@nomicfoundation/hardhat-verify": "^2.0.6",
     "@openzeppelin/contracts": "^5.0.2",
     "@openzeppelin/contracts-upgradeable": "^5.0.2",
+    "@openzeppelin/upgrades-core": "^1.34.1",
     "viem": "^2.10.8"
   }
 }
