@@ -1,0 +1,11 @@
+{
+  "TokenSale": {
+    "adminAddress": "0x1D19AEaF363B5f2e84639c423B6Ec0d0c7956775",
+    "ethUsdPriceFeed": "0x694AA1769357215DE4FAC081bf1f309aDC325306",
+    "usdtUsdPriceFeed": "0xA2F78ab2355fe2f984D808B5CeE7FD0A93D5270E",
+    "usdtAddress": "0xC48B32a94804668261E8085052FF02dfF1dDC679",
+    "minUsdThreshold": "50000000000000000000000000000n",
+    "maxTokensToSell": "20000000000000000000000000000000000n",
+    "usdtDecimals": "6n"
+  }
+}
