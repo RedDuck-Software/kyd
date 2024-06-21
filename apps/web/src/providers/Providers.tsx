@@ -8,7 +8,7 @@ const queryClient = new QueryClient();
 const Providers: FC<PropsWithChildren> = ({ children }) => {
   return (
     <WagmiProvider config={config}>
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </WagmiProvider>
   );
 };

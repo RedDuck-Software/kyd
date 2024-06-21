@@ -5,6 +5,7 @@ export const routes = {
   root: '/',
   profile: '/profile',
   create: '/create',
+  nft: '/nft',
   auctions: '/auctions/:id',
 } as const;
 
@@ -22,8 +23,12 @@ export const router = createBrowserRouter([
         Component: lazy(() => import('@/pages/create-auction')),
       },
       {
+        path: routes.nft,
+        Component: lazy(() => import('@/pages/nft')),
+      },
+      {
         path: routes.profile,
-        Component: lazy(() => import('@/pages/home')),
+        Component: lazy(() => import('@/pages/profile')),
       },
     ],
   },
