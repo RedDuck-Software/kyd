@@ -2,6 +2,7 @@
   "name": "subgraph",
   "license": "UNLICENSED",
   "scripts": {
+    "prepare:sepolia-eth":  "mustache config/sepoliaEth.json subgraph.template.yaml > subgraph.yaml",
     "codegen": "graph codegen",
     "build": "graph build",
     "deploy": "graph deploy --node https://api.thegraph.com/deploy/ redduck/",
@@ -12,7 +13,8 @@
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.67.4",
-    "@graphprotocol/graph-ts": "0.32.0"
+    "@graphprotocol/graph-ts": "0.32.0",
+    "mustache": "^4.2.0"
   },
   "devDependencies": {
     "ethers": "^6.12.1",

@@ -1,0 +1,94 @@
+specVersion: 1.0.0
+description: kyd-subgraph
+indexerHints:
+  prune: auto
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: AuctionFactory
+    network: { { network } }
+    source:
+      address: '{{ AuctionFactory }}'
+      abi: AuctionFactory
+      startBlock: { { startBlock } }
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - AuctionCreated
+      abis:
+        - name: AuctionFactory
+          file: ./abi/AuctionFactory.json
+      eventHandlers:
+        # - event: Donate(indexed address,indexed address,uint256)
+        - event: AuctionDeployed(indexed address)
+          handler: handleAuctionCreation
+      file: ./src/auction-factory.ts
+  - kind: ethereum
+    name: Auction
+    network: { { network } }
+    source:
+      address: '{{ Auction }}'
+      abi: Auction
+      startBlock: { { startBlock } }
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Donate
+        - AuctionEnded
+        - RewardsDistributed
+      abis:
+        - name: AuctionFactory
+          file: ./abi/AuctionFactory.json
+      eventHandlers:
+        - event: Donate(indexed address,indexed address,uint256)
+          handler: handleDonate
+        - event: AuctionEnded
+          handler: handleAuctionEnd
+        - event: RewardsDistributed
+          handler: handleRewardsDistribution
+      file: ./src/auction.ts
+  - kind: ethereum
+    name: AuctionNFT
+    network: { { network } }
+    source:
+      address: '{{ AuctionNFT }}'
+      abi: AuctionNFT
+      startBlock: { { startBlock } }
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - AuctionNFTBurn
+      abis:
+        - name: AuctionNFT
+          file: ./abi/AuctionNFT.json
+      eventHandlers:
+        - event: Burn(indexed address,indexed uint256,bytes)
+          handler: handleBurn
+      file: ./src/auction-nft.ts
+  - kind: ethereum
+    name: AuctionNFT1155
+    network: { { network } }
+    source:
+      address: '{{ AuctionNFT1155 }}'
+      abi: AuctionNFT1155
+      startBlock: { { startBlock } }
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - AuctionNFT1155Burn
+      abis:
+        - name: AuctionNFT1155
+          file: ./abi/AuctionNFT1155.json
+      eventHandlers:
+        - event: Burn(indexed address,indexed uint256,bytes)
+          handler: handleBurn1155
+      file: ./src/auction-nft.ts

@@ -16,6 +16,8 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
     DoubleLinkedList.List list;
 
     event Donate(address indexed user, address indexed stable, uint256 amount);
+    event AuctionEnded();
+    event RewardsDistributed();
 
     uint256 public constant MAX_RANDOM_WINNERS = 10;
     uint256 public constant MAX_TOP_WINNERS = 10;
@@ -59,11 +61,15 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
 
     function finish() external onlyOwner {
         _finishAuction();
+
+        emit AuctionEnded();
     }
 
     function distributeRewards() external {
         require(randomness != 0, "");
         _distibute();
+
+        emit RewardsDistributed();
     }
 
     function withdrawMult(
