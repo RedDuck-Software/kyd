@@ -95,3 +95,43 @@
     @apply bg-background text-foreground;
   }
 }
+
+.nav-mobile {
+  width: 375px;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  right: -375px;
+  background: #172448;
+  z-index: 100;
+  transition: 0.5s all;
+  display: none;
+}
+
+.nav-mobile ul {
+  margin: 82px 0 0 0;
+  padding: 0;
+  text-align: center;
+}
+.nav-mobile ul li {
+  list-style: none;
+  margin-bottom: 48px;
+}
+.nav-mobile ul li > a {
+  font-style: normal;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 24px;
+  color: #ffffff;
+  text-decoration: none;
+  transition: 0.5s all;
+}
+.nav-mobile ul li > a:hover {
+  color: #c7f2ab;
+}
+.nav-mobile.active {
+  right: 0;
+}
+.nav-mobile.show {
+  display: block;
+}
