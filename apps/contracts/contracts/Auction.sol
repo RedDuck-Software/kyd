@@ -38,7 +38,9 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
         _disableInitializers();
     }
 
-    function initialize(IAuction.AuctionParams calldata _params) external {
+    function initialize(
+        IAuction.AuctionParams calldata _params
+    ) external initializer {
         __Ownable_init(_params.owner);
 
         require(_params.randomWinners <= MAX_RANDOM_WINNERS, "");
