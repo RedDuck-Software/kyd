@@ -1,7 +1,7 @@
 /** @type {import("eslint").Linter.Config} */
 module.exports = {
   root: true,
-  extends: ['@kyd/eslint-config/next.js'],
+  extends: ['@kyd/eslint-config/react-internal.js'],
   parserOptions: {
     project: true,
   },
