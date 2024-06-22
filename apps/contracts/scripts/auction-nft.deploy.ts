@@ -1,7 +1,7 @@
 import * as hre from 'hardhat';
 import { DeployFunction } from 'hardhat-deploy/types';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
-import { verify } from '@/utils/utils';
+import { delayMinutes, verify } from '@/utils/utils';
 
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const factory = await hre.ethers.getContractFactory('AuctionNFT');
@@ -9,10 +9,19 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const contract = await factory.deploy();
   await contract.waitForDeployment();
 
+  console.log('Waited.');
+  console.log('Delaying 1 minute before verification...');
+
+  await delayMinutes(1);
+
   console.log('AuctionNFT impl address:', await contract.getAddress());
 
   if (hre.network.name !== 'localhost') {
-    await verify(hre, await contract.getAddress());
+    await verify(
+      hre,
+      await contract.getAddress(),
+      'contracts/AuctionNFT.sol:AuctionNFT',
+    );
   }
   // const [deployer] = await hre.ethers.getSigners();
 

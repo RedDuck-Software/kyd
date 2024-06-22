@@ -39,20 +39,27 @@ export const logDeploy = (
 export const etherscanVerify = async (
   hre: HardhatRuntimeEnvironment,
   contractAddress: string,
+  contract: string,
   ...constructorArguments: unknown[]
 ) => {
   const network = hre.network.name;
   if (network === 'localhost' || network === 'hardhat') return;
-  await verify(hre, contractAddress, ...constructorArguments);
+  await verify(hre, contractAddress, contract, ...constructorArguments);
 };
 
 export const etherscanVerifyImplementation = async (
   hre: HardhatRuntimeEnvironment,
   proxyAddress: string,
+  contract: string,
   ...constructorArguments: unknown[]
 ) => {
   const contractAddress = await getImplAddressFromProxy(hre, proxyAddress);
-  return etherscanVerify(hre, contractAddress, ...constructorArguments);
+  return etherscanVerify(
+    hre,
+    contractAddress,
+    contract,
+    ...constructorArguments,
+  );
 };
 
 export const logDeployProxy = async (
@@ -76,11 +83,13 @@ export const logDeployProxy = async (
 export const tryEtherscanVerifyImplementation = async (
   hre: HardhatRuntimeEnvironment,
   proxyAddress: string,
+  contract: string,
   ...constructorArguments: unknown[]
 ) => {
   return await etherscanVerifyImplementation(
     hre,
     proxyAddress,
+    contract,
     ...constructorArguments,
   )
     .catch((err) => {
@@ -95,6 +104,7 @@ export const tryEtherscanVerifyImplementation = async (
 export const verify = async (
   hre: HardhatRuntimeEnvironment,
   contractAddress: string,
+  contract: string,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ...constructorArguments: any[]
 ) => {
@@ -103,6 +113,6 @@ export const verify = async (
   await hre.run('verify:verify', {
     address: contractAddress,
     constructorArguments,
-    contract: 'contracts/TokenSale.sol:TokenSale',
+    contract,
   });
 };
