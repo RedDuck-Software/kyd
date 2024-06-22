@@ -31,10 +31,10 @@ module.exports = {
         ring: 'hsl(var(--ring))',
         dark: '#030408',
         'light-blue': '#ECF7FD',
-        blue: '#b4dcfa',
-        violent: '#e3b4fa',
+        blue: '#1e90ff',
+        violent: '#8d1eff',
         'light-violent': '#f8f3ff',
-        orange: '#FFCD9F',
+        orange: '#ff8004',
         'light-orange': '#FDF2EC',
         background: '#FDF2EC',
         gray: '#9D9FC5',
@@ -42,7 +42,7 @@ module.exports = {
         'gray-blue': '#14141E',
         foreground: '#F9F9F9',
         primary: {
-          DEFAULT: '#FF6928',
+          DEFAULT: '#ff8004',
           foreground: 'hsl(var(--primary-foreground))',
         },
         secondary: {
