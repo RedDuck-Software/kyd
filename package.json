@@ -23,6 +23,7 @@
     "apps/*",
     "apps/contracts/*",
     "apps/backend/*",
+    "apps/web/*",
     "packages/*",
     "packages/database/*"
   ],

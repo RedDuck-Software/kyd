@@ -12,7 +12,7 @@ export const NftRedeemModal = () => {
 
   const handleRedeem = useCallback(async () => {
     try {
-      throw new Error('adsad');
+      console.log('hello');
     } catch (error) {
       toast({
         variant: 'destructive',
@@ -20,7 +20,7 @@ export const NftRedeemModal = () => {
         description: (error as Error).message ?? 'Failed to redeem',
       });
     }
-  }, []);
+  }, [toast]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -32,6 +32,7 @@ export const NftRedeemModal = () => {
 
       <Button
         onClick={() => {
+          handleRedeem();
           setNftRedeemModalOpen(false);
           setNftRedeemSuccessModalOpen(true);
         }}

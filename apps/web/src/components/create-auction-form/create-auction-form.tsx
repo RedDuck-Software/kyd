@@ -8,7 +8,7 @@ import { Switch } from '../ui/switch';
 import { useAccount, useChainId, useWriteContract } from 'wagmi';
 import { getAddress, parseUnits, zeroAddress, zeroHash } from 'viem';
 import { useEffect, useState } from 'react';
-import { AUctionFactoryAbi } from '@/abi/AuctionFactory';
+import { AuctionFactoryAbi } from '@/abi/AuctionFactory';
 import { addresses, AllowedChainIds, allowedTokens } from '@/constants/addresses';
 import { Dropzone } from './dropzone';
 import { emptyFile } from '@/constants/empty-file';
@@ -110,7 +110,7 @@ export const CreateAuctionForm = () => {
     if (!address) return;
 
     let topWinnerNftId: string | undefined = undefined;
-    let randomWinnerNftId: string | undefined = undefined;
+    // let randomWinnerNftId: string | undefined = undefined;
     let participantNftId: string | undefined = undefined;
 
     // Top winners
@@ -156,7 +156,7 @@ export const CreateAuctionForm = () => {
         tokenId: String(topWinnersArr.length),
       });
 
-      randomWinnerNftId = data?.nftId;
+      // randomWinnerNftId = data?.nftId;
 
       await Promise.all(
         Array.from({ length: Number(randomWinner.amount) }).map((_, i) => {
@@ -187,6 +187,8 @@ export const CreateAuctionForm = () => {
 
     const auctionId = createAuctionResponse?.data?.auctionId;
 
+    console.log('data.topDonateWinners ==>', data.topDonateWinners);
+
     const auctionCreateData = {
       stables: data.stables.map((token) => getAddress(token)),
       ethToStablePath:
@@ -197,14 +199,20 @@ export const CreateAuctionForm = () => {
       uniswapV3Router: addresses[chainId].uniswapV3Router,
       topWinners:
         enableTopDonateWinners && data.topDonateWinners
-          ? data.topDonateWinners.map((_, i) => parseUnits(String(i), 18))
+          ? Array.from({
+              length: data.topDonateWinners.reduce((acc, val) => {
+                return (acc += Number(val.amount));
+              }, 0),
+            }).map((_, i) => BigInt(i))
           : [],
       goal: parseUnits(data.goal, 18),
       owner: address,
-      randomWinners: enableRandomWinners ? parseUnits(data.randomWinner?.amount as string, 18) : 0n,
-      randomWinnerNftId: enableRandomWinners ? parseUnits(randomWinnerNftId ?? '0', 18) : 0n,
+      randomWinners: enableRandomWinners ? BigInt(data.randomWinner?.amount ?? 0) : 0n,
+      randomWinnerNftId: enableRandomWinners ? BigInt(topWinnersArr.length) : 0n,
       baseUri: `${env.VITE_BACKEND_URL}/api/auction-metadata/${auctionId}/`,
     };
+
+    console.log('auctionCreateData ==>', auctionCreateData);
 
     const winnerNft = {
       name: (data.topDonateWinners?.[0]?.winnerNFT?.name || data.randomWinner?.name) as string,
@@ -218,14 +226,22 @@ export const CreateAuctionForm = () => {
       uri: `${env.VITE_BACKEND_URL}/api/nft-metadata/${participantNftId}/`,
     };
 
-    const hash = await writeContractAsync({
-      abi: AUctionFactoryAbi,
-      address: addresses[chainId].auctionFactory,
-      functionName: 'create',
-      args: [auctionCreateData, winnerNft, participantNft],
-    });
+    console.log('winnerNft ==>', winnerNft);
+    console.log('participantNft ==>', participantNft);
+    console.log('addresses[chainId].auctionFactory ==>', addresses[chainId].auctionFactory);
 
-    toast({ title: 'Auction created successfully', description: `Transaction hash: ${hash}` });
+    try {
+      const hash = await writeContractAsync({
+        abi: AuctionFactoryAbi,
+        address: addresses[chainId].auctionFactory,
+        functionName: 'create',
+        args: [auctionCreateData, winnerNft, participantNft],
+      });
+
+      toast({ title: 'Auction created successfully', description: `Transaction hash: ${hash}` });
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const handleNumberInputChange = (

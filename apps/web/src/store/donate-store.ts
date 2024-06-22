@@ -1,7 +1,8 @@
-import { AllowedChainIds, allowedTokens } from '@/constants/constants';
+import { AllowedChainIds } from '@/constants/addresses';
 import { TokenBalance } from '@/hooks/useTokenBalances';
 import { maxInt256 } from 'viem';
 import { create } from 'zustand';
+import { allowedTokens } from '../constants/addresses';
 
 export interface AllowedDonateChain {
   id: AllowedChainIds;
@@ -32,7 +33,7 @@ interface DonateStore {
   setAmount: (amount: number | null) => void;
 }
 
-const useDonateStore = create<DonateStore>((set, get) => ({
+const useDonateStore = create<DonateStore>((set) => ({
   chain: allowedChains[0],
   setDonateChain: (chain) => set({ chain }),
   token: { ...allowedTokens[allowedChains[0].id][0], balance: BigInt(0), allowance: maxInt256 },

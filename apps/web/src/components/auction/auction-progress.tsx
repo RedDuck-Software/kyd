@@ -7,7 +7,7 @@ import { auctionAbi } from '@/abi/auctionABI';
 import { formatUnits } from 'viem';
 
 export const AuctionProgress = () => {
-  const auctionChainId = 534351;
+  const auctionChainId = 11155111;
 
   const queryClient = useQueryClient();
 
