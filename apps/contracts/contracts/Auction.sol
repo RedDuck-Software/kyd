@@ -11,6 +11,7 @@ import "./gelato/GelatoVRFConsumerBase.sol";
 import "./interfaces/IAuction.sol";
 import "./AuctionNFT.sol";
 import "./AuctionFactory.sol";
+import "hardhat/console.sol";
 
 contract Auction is IAuction, OwnableUpgradeable {
     using DoubleLinkedList for DoubleLinkedList.List;
@@ -254,11 +255,12 @@ contract Auction is IAuction, OwnableUpgradeable {
         uint256 _randomWinners = randomWinners;
 
         for (uint i; i <= topWinnersNfts.length; i++) {
-            if (list.tail == type(uint256).max) break;
+            if (list.length == 0) break;
 
             DoubleLinkedList.Node memory node = list.getNode(list.tail);
 
             _mint(nft, node.data.user, i);
+            console.log(list.tail, node.data.user, i);
             list.remove(node.data.user, list.tail);
         }
 
@@ -274,6 +276,7 @@ contract Auction is IAuction, OwnableUpgradeable {
             // if random value repeated
             if (data.user == address(0)) continue;
 
+            console.log("randomWinnerLastNftId", randomWinnerLastNftId);
             _mint(nft, data.user, randomWinnerLastNftId++);
 
             list.remove(data.user, randomValue);
