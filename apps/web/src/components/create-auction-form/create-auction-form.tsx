@@ -6,7 +6,7 @@ import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
 import { Switch } from '../ui/switch';
 import { useAccount, useChainId, useWriteContract } from 'wagmi';
-import { Address, getAddress, parseUnits, zeroAddress } from 'viem';
+import { getAddress, parseUnits, zeroAddress, zeroHash } from 'viem';
 import { useEffect, useState } from 'react';
 import { AUctionFactoryAbi } from '@/abi/AuctionFactory';
 import { addresses, AllowedChainIds, allowedTokens } from '@/constants/addresses';
@@ -23,6 +23,8 @@ import {
   MultiSelectorTrigger,
 } from '../ui/multiple-select';
 import { env } from '@/env';
+import { postCreateAuctionMetadata } from '@/api/create-auction';
+import { toast } from '../ui/use-toast';
 
 const schema = z
   .object({
@@ -176,11 +178,17 @@ export const CreateAuctionForm = () => {
 
     participantNftId = participantData?.nftId;
 
+    await postCreateAuctionMetadata({
+      name: data.title,
+      description: data.description,
+      files: [data.auctionImage],
+      tokenId: '0',
+    });
+
     const auctionCreateData = {
-      stables: data.stables.map(getAddress),
-      ethToStablePath: getAddress(
-        allowedTokens[chainId as AllowedChainIds].find((x) => x.symbol === 'USDT')?.ethToStablePath ?? zeroAddress
-      ), //TODO: change later
+      stables: data.stables.map((token) => getAddress(token)),
+      ethToStablePath:
+        allowedTokens[chainId as AllowedChainIds].find((x) => x.symbol === 'USDT')?.ethToStablePath ?? zeroHash,
       swapStable: getAddress(
         allowedTokens[chainId as AllowedChainIds].find((x) => x.symbol === 'USDT')?.address ?? zeroAddress
       ), //TODO: change later
@@ -207,12 +215,14 @@ export const CreateAuctionForm = () => {
       uri: `${env.VITE_BACKEND_URL}/api/nft-metadata/${participantNftId}/`,
     };
 
-    await writeContractAsync({
+    const hash = await writeContractAsync({
       abi: AUctionFactoryAbi,
       address: addresses[chainId].auctionFactory,
       functionName: 'create',
       args: [auctionCreateData, winnerNft, participantNft],
     });
+
+    toast({ title: 'Auction created successfully', description: `Transaction hash: ${hash}` });
   };
 
   const handleNumberInputChange = (

@@ -23,6 +23,9 @@ export const postCreateNFTMetadata = async (dto: CreateNFTMetadataDTO) => {
   });
 
   formData.append('description', dto.description);
+  formData.append('tokenId', dto.tokenId);
+
+  if (dto.nftId) formData.append('nftId', dto.nftId);
 
   try {
     return httpClient.post<CreateNFTMetadataResponse>('api/nft-metadata', formData);

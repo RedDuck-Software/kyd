@@ -26,9 +26,12 @@ export const postCreateAuctionMetadata = async (dto: CreateAuctionMetadataDTO) =
 
   formData.append('name', dto.name);
   formData.append('description', dto.description);
+  formData.append('tokenId', dto.tokenId);
+
+  if (dto.auctionId) formData.append('auctionId', dto.auctionId);
 
   try {
-    return httpClient.post<CreateAuctionMetadataResponse>('api//auction-metadata', formData);
+    return httpClient.post<CreateAuctionMetadataResponse>('api/auction-metadata', formData);
   } catch (e) {
     if (e instanceof Error) toast({ title: 'Api error', description: e.message, variant: 'destructive' });
   }

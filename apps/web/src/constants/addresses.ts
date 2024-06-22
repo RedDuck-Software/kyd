@@ -8,10 +8,10 @@ type Addresses = {
 
 export type Token = {
   symbol: string;
-  address: string | null;
+  address: `0x${string}` | null;
   image: string;
   decimals: number;
-  ethToStablePath?: string;
+  ethToStablePath?: `0x${string}`;
 };
 
 export const addresses: Record<string, Addresses> = {
