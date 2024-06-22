@@ -1,8 +1,9 @@
 {
   "name": "subgraph",
   "license": "UNLICENSED",
+  "version": "0.0.1",
   "scripts": {
-    "prepare:sepolia-eth":  "mustache config/sepoliaEth.json subgraph.template.yaml > subgraph.yaml",
+    "prepare:sepolia-eth": "mustache config/sepoliaEth.json subgraph.template.yaml > subgraph.yaml",
     "codegen": "graph codegen",
     "build": "graph build",
     "deploy": "graph deploy --node https://api.thegraph.com/deploy/ redduck/",
