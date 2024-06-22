@@ -44,6 +44,32 @@
     "type": "event"
   },
   {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "nft1155",
+        "type": "address"
+      }
+    ],
+    "name": "NFT1155Deployed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "nft",
+        "type": "address"
+      }
+    ],
+    "name": "NFTDeployed",
+    "type": "event"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256",
@@ -72,6 +98,21 @@
             "type": "address[]"
           },
           {
+            "internalType": "bytes",
+            "name": "ethToStablePath",
+            "type": "bytes"
+          },
+          {
+            "internalType": "address",
+            "name": "swapStable",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "uniswapV3Router",
+            "type": "address"
+          },
+          {
             "internalType": "uint256[]",
             "name": "topWinners",
             "type": "uint256[]"
@@ -93,7 +134,7 @@
           },
           {
             "internalType": "uint256",
-            "name": "participationNftId",
+            "name": "randomWinnerNftId",
             "type": "uint256"
           }
         ],
