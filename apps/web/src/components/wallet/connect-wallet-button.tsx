@@ -16,17 +16,17 @@ export const ConnectWallet = ({ className }: { className?: string }) => {
     return (
       <Button
         variant="default"
-        className={cn(btbClassName, className, 'gap-2 text-[16px] ')}
+        className={cn(btbClassName, className, 'gap-2 rounded-[8px] h-[46px] text-[16px] ')}
         onClick={() => open({ view: 'Connect' })}
       >
-        <span>Connect Wallet</span>
+        <span className="!text-white">Connect Wallet</span>
       </Button>
     );
   }
 
   return (
     <Button
-      className={cn(btbClassName, className, 'flex gap-2 items-center')}
+      className={cn(btbClassName, className, 'flex gap-2 rounded-[8px] !text-white items-center')}
       onClick={() => open({ view: 'Account' })}
     >
       {generateBlockies(address, 8)}

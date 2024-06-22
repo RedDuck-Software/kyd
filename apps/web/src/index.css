@@ -89,7 +89,7 @@
 
 @layer base {
   * {
-    @apply border-border text-light antialiased;
+    @apply border-border text-dark antialiased;
   }
   body {
     @apply bg-background text-foreground;

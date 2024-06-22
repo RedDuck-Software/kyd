@@ -20,7 +20,7 @@ library DoubleLinkedList {
         uint256 next;
     }
 
-    function createList(List storage list) internal {
+    function initalize(List storage list) internal {
         list.nodes.push(
             Node(Data(address(0), 0), type(uint256).max, type(uint256).max)
         );
