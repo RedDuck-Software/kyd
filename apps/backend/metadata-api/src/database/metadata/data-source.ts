@@ -20,7 +20,7 @@ export const defaultDataSource = getDataSourceOptions(readEnv, (readEnv) => ({
       migrationsDir: 'apps/backend/metadata-api/src/database/metadata/migrations',
     },
   },
-  ...(readEnv('IS_DEV') === 'false' && {
+  ...(readEnv('DB_SSL') === 'true' && {
     ssl: {
       rejectUnauthorized: false,
     },
