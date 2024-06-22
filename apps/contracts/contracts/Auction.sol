@@ -23,6 +23,8 @@ contract Auction is IAuction, OwnableUpgradeable {
     event RewardsDistributed();
 
     error InvalidEthDonate();
+    error AuctionIsEnded();
+    error AlreadyDistributed();
     error RandomnessIsNotSet();
     error NotDistributed();
     error MismatchLenghts();
@@ -84,10 +86,6 @@ contract Auction is IAuction, OwnableUpgradeable {
             supportedStables[_params.stables[i]] = true;
         }
 
-        if (!supportedStables[swapStable]) {
-            revert StableNotSupported();
-        }
-
         topWinnersNfts = _params.topWinners;
         nftParticipate = _params.nftParticipate;
     }
@@ -100,6 +98,7 @@ contract Auction is IAuction, OwnableUpgradeable {
 
     function distributeRewards() external {
         if (randomness == 0) revert RandomnessIsNotSet();
+        if (nftsDistributed) revert AlreadyDistributed();
 
         _distibute();
 
@@ -172,6 +171,10 @@ contract Auction is IAuction, OwnableUpgradeable {
         bool before,
         address stable
     ) internal {
+        if (randomness != 0) {
+            revert AuctionIsEnded();
+        }
+
         totalDonated += amount;
 
         if (userDonated[msg.sender]) {
