@@ -41,7 +41,9 @@ describe('Auction', function () {
       });
 
       await auction.write.finish();
-      await auction.write.fulfillRandomnessTest();
+      await auctionFactory.write.fulfillRandomnessTest([
+        auction.address
+      ]);
 
       await auction.write.distributeRewards();
     });

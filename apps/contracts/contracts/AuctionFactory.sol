@@ -6,6 +6,7 @@ import "./interfaces/IAuction.sol";
 import "./Auction.sol";
 import "./AuctionNFT.sol";
 import "./AuctionNFT1155.sol";
+import "./gelato/GelatoVRFConsumerBase.sol";
 
 struct AuctionCreateParams {
     address[] stables;
@@ -17,6 +18,7 @@ struct AuctionCreateParams {
     address owner;
     uint256 randomWinners;
     uint256 randomWinnerNftId;
+    string baseUri;
 }
 
 struct AuctionNftCreateParams {
@@ -25,12 +27,17 @@ struct AuctionNftCreateParams {
     string uri;
 }
 
-contract AuctionFactory {
+contract AuctionFactory is GelatoVRFConsumerBase {
     address[] public auctions;
+    mapping(address => bool) public auctionsMap;
 
-    event AuctionDeployed(address indexed auction);
-    event NFTDeployed(address indexed nft);
-    event NFT1155Deployed(address indexed nft1155);
+    event AuctionDeployed(
+        address indexed auction,
+        address indexed owner,
+        string baseUri
+    );
+    event NFTDeployed(address indexed nft, string baseUri);
+    event NFT1155Deployed(address indexed nft1155, string baseUri);
 
     address immutable gelatoOperator;
     address immutable implementation;
@@ -77,7 +84,6 @@ contract AuctionFactory {
                 uniswapV3Router: params.uniswapV3Router,
                 topWinners: params.topWinners,
                 goal: params.goal,
-                gelatoOperator: gelatoOperator,
                 owner: params.owner,
                 nft: address(auctionNFT),
                 nftParticipate: address(auctionNFTParticipants),
@@ -88,11 +94,33 @@ contract AuctionFactory {
         );
 
         auctions.push(address(auction));
-
-        emit AuctionDeployed(address(auction));
-        emit NFTDeployed(address(auctionNFT));
-        emit NFT1155Deployed(address(auctionNFTParticipants));
+        auctionsMap[address(auction)] = true;
+        emit AuctionDeployed(address(auction), params.owner, params.baseUri);
+        emit NFTDeployed(address(auctionNFT), paramsNft.uri);
+        emit NFT1155Deployed(
+            address(auctionNFTParticipants),
+            paramsNftParticipants.uri
+        );
 
         return address(auction);
+    }
+
+    function _fulfillRandomness(
+        uint256 randomness,
+        uint256,
+        bytes memory extraData
+    ) internal override {
+        address auction = abi.decode(extraData, (address));
+        require(auctionsMap[auction], "Not an auction");
+        Auction(auction).fulfillRandomness(randomness);
+    }
+
+    function requestRandomness() external {
+        require(auctionsMap[msg.sender], "Not an auction");
+        _requestRandomness(abi.encode(msg.sender));
+    }
+
+    function _operator() internal view override returns (address) {
+        return gelatoOperator;
     }
 }

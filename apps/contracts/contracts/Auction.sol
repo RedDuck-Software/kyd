@@ -9,10 +9,9 @@ import "./libraries/UniswapV3Actions.sol";
 import "./gelato/GelatoVRFConsumerBase.sol";
 import "./interfaces/IAuction.sol";
 import "./AuctionNFT.sol";
+import "./AuctionFactory.sol";
 
-import "hardhat/console.sol";
-
-contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
+contract Auction is IAuction, OwnableUpgradeable {
     using DoubleLinkedList for DoubleLinkedList.List;
     using DecimalsCorrectionLibrary for uint256;
 
@@ -48,7 +47,7 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
     uint256 public randomWinners;
     uint256 public randomWinnerLastNftId;
     uint256 public participationNftId;
-    address public gelatoOperator;
+    address public factory;
 
     uint256 public randomness;
     bool public nftsDistributed;
@@ -78,6 +77,8 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
         swapStable = _params.swapStable;
         uniswapV3Router = _params.uniswapV3Router;
 
+        factory = msg.sender;
+
         for (uint i; i < _params.stables.length; i++) {
             supportedStables[_params.stables[i]] = true;
         }
@@ -87,7 +88,6 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
         }
 
         topWinnersNfts = _params.topWinners;
-        gelatoOperator = _params.gelatoOperator;
         nftParticipate = _params.nftParticipate;
     }
 
@@ -214,9 +214,11 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
                     DoubleLinkedList.Data({user: msg.sender, amount: amount})
                 );
             }
-        }
 
-        userDonated[msg.sender] = true;
+            _mint(nftParticipate, msg.sender, 0);
+
+            userDonated[msg.sender] = true;
+        }
 
         emit Donate(stable, msg.sender, amount);
 
@@ -235,16 +237,13 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
         return list.getNodes();
     }
 
-    function _fulfillRandomness(
-        uint256 _randomness,
-        uint256,
-        bytes memory
-    ) internal override {
+    function fulfillRandomness(uint256 _randomness) external {
+        require(msg.sender == factory, "Not a factory");
         randomness = _randomness;
     }
 
     function _finishAuction() internal virtual {
-        _requestRandomness("");
+        AuctionFactory(factory).requestRandomness();
     }
 
     function _distibute() private {
@@ -283,9 +282,5 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
 
     function _mint(address _nft, address to, uint256 id) private {
         AuctionNFT(_nft).mint(to, id);
-    }
-
-    function _operator() internal view override returns (address) {
-        return gelatoOperator;
     }
 }

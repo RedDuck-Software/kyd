@@ -36,7 +36,6 @@ export const sepoliaScrollDeployConstants: DeploymentConstans = {
   gelatoOperator: zeroAddress,
 };
 
-
 export function deploymentConstants(
   network: NETWORK,
 ): DeploymentConstans | undefined {
