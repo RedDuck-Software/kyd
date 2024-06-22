@@ -48,10 +48,10 @@ contract AuctionNFT1155 is OwnableUpgradeable, ERC1155Upgradeable {
     }
 
     function _update(
-        address from,
-        address to,
-        uint256[] memory ids,
-        uint256[] memory values
+        address,
+        address,
+        uint256[] memory,
+        uint256[] memory
     ) internal virtual override {
         revert CannotTransfer();
     }
