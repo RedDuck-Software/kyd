@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { httpClient } from '@/api/client';
 import { ShadowCard } from '@/components/common/shadow-card';
 import { TrandingAuctions } from '@/components/home/tranding-auctions';
