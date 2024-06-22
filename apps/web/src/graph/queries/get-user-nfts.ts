@@ -35,21 +35,7 @@ export const getUserNfts = async (address: Address) => {
     })
   );
 
-  const userNfts: NFT[] = [];
-
   const results = await Promise.all(queries);
 
-  results.forEach((result) => {
-    (result.data.donates as Donate[]).map((donate) => {
-      if (!userInfo[donate.from]) {
-        userInfo[donate.from] = { totalParticipated: 1, usdDonated: donate.amount, won: 1 };
-      } else {
-        userInfo[donate.from].totalParticipated += 1;
-        userInfo[donate.from].usdDonated += donate.amount;
-        userInfo[donate.from].won += 1;
-      }
-    });
-  });
-
-  return Object.entries(results);
+  console.log(results);
 };

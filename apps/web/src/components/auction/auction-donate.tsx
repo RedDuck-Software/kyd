@@ -36,7 +36,7 @@ export const AuctionDonate = () => {
 
   const { data: blockNumber } = useBlockNumber({ watch: true, chainId: auctionChainId });
 
-  const { amount, chain: selectedChain, setAmount, setDonateChain, setToken, token: selectedToken } = useDonateStore();
+  const { amount, chain: selectedChain, setAmount, setToken, token: selectedToken } = useDonateStore();
   const queryClient = useQueryClient();
 
   const isAllowanceEnough = useMemo(() => {
@@ -90,7 +90,7 @@ export const AuctionDonate = () => {
       address: contractAddresses[selectedChain.id],
       functionName: 'donateEth',
       value: parseUnits(amount!.toString(), 18),
-      args: [...getIndexesForInsert(nodesRes ?? [], address!, parseUnits(amount!.toString(), 18))],
+      args: [...getIndexesForInsert(nodesRes!.slice() as Nodes, address!, parseUnits(amount!.toString(), 18))],
     });
 
     return hash;

@@ -32,7 +32,7 @@ interface DonateStore {
   setAmount: (amount: number | null) => void;
 }
 
-const useDonateStore = create<DonateStore>((set, get) => ({
+const useDonateStore = create<DonateStore>((set) => ({
   chain: allowedChains[0],
   setDonateChain: (chain) => set({ chain }),
   token: { ...allowedTokens[allowedChains[0].id][0], balance: BigInt(0), allowance: maxInt256 },
