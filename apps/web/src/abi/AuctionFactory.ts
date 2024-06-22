@@ -1,4 +1,4 @@
-export const AUctionFactoryAbi = [
+export const AuctionFactoryAbi = [
   {
     inputs: [
       {
@@ -39,6 +39,18 @@ export const AUctionFactoryAbi = [
         name: 'auction',
         type: 'address',
       },
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'owner',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'string',
+        name: 'baseUri',
+        type: 'string',
+      },
     ],
     name: 'AuctionDeployed',
     type: 'event',
@@ -50,6 +62,18 @@ export const AUctionFactoryAbi = [
         indexed: true,
         internalType: 'address',
         name: 'nft1155',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'string',
+        name: 'baseUri',
+        type: 'string',
+      },
+      {
+        indexed: false,
+        internalType: 'address',
+        name: 'auctionAddress',
         type: 'address',
       },
     ],
@@ -65,8 +89,39 @@ export const AUctionFactoryAbi = [
         name: 'nft',
         type: 'address',
       },
+      {
+        indexed: false,
+        internalType: 'string',
+        name: 'baseUri',
+        type: 'string',
+      },
+      {
+        indexed: false,
+        internalType: 'address',
+        name: 'auctionAddress',
+        type: 'address',
+      },
     ],
     name: 'NFTDeployed',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'round',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'bytes',
+        name: 'data',
+        type: 'bytes',
+      },
+    ],
+    name: 'RequestedRandomness',
     type: 'event',
   },
   {
@@ -83,6 +138,25 @@ export const AUctionFactoryAbi = [
         internalType: 'address',
         name: '',
         type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
+    name: 'auctionsMap',
+    outputs: [
+      {
+        internalType: 'bool',
+        name: '',
+        type: 'bool',
       },
     ],
     stateMutability: 'view',
@@ -136,6 +210,11 @@ export const AUctionFactoryAbi = [
             internalType: 'uint256',
             name: 'randomWinnerNftId',
             type: 'uint256',
+          },
+          {
+            internalType: 'string',
+            name: 'baseUri',
+            type: 'string',
           },
         ],
         internalType: 'struct AuctionCreateParams',
@@ -196,6 +275,69 @@ export const AUctionFactoryAbi = [
       },
     ],
     stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: 'randomness',
+        type: 'uint256',
+      },
+      {
+        internalType: 'bytes',
+        name: 'dataWithRound',
+        type: 'bytes',
+      },
+    ],
+    name: 'fulfillRandomness',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    name: 'requestPending',
+    outputs: [
+      {
+        internalType: 'bool',
+        name: '',
+        type: 'bool',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'requestRandomness',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    name: 'requestedHash',
+    outputs: [
+      {
+        internalType: 'bytes32',
+        name: '',
+        type: 'bytes32',
+      },
+    ],
+    stateMutability: 'view',
     type: 'function',
   },
 ] as const;

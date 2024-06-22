@@ -1,7 +1,7 @@
 import { ApolloClient, ApolloLink, HttpLink, InMemoryCache, concat } from '@apollo/client';
-import { polygonMumbai, scrollSepolia } from 'viem/chains';
+import { polygonMumbai, scrollSepolia, sepolia } from 'viem/chains';
 
-type Chains = typeof polygonMumbai | typeof scrollSepolia;
+type Chains = typeof polygonMumbai | typeof scrollSepolia | typeof sepolia;
 
 export function getChainName(chain: Chains): string {
   return chain.name;
@@ -16,6 +16,9 @@ const getHttpLink = (chain: Chains) => {
       break;
     case 'Scroll Sepolia':
       uri = 'https://api.thegraph.com/subgraphs/name/mrjeleika/kyd-optimism';
+      break;
+    case 'Sepolia':
+      uri = 'https://api.studio.thegraph.com/query/49166/kyd-sepolia/v1.0.6';
       break;
 
     default:
