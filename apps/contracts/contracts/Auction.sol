@@ -174,7 +174,7 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
         randomness = _randomness;
     }
 
-    function _finishAuction() private {
+    function _finishAuction() internal virtual {
         _requestRandomness("");
     }
 
