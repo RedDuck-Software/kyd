@@ -19,32 +19,15 @@ contract AuctionNFT1155 is OwnableUpgradeable, ERC1155Upgradeable {
     }
 
     function initialize(
-        string memory uri,
+        string memory _uri,
         address _owner
     ) external initializer {
         __Ownable_init(_owner);
-        __ERC1155_init(uri);
+        __ERC1155_init(_uri);
     }
 
     function mint(address to, uint256 tokenId) external onlyOwner {
         _mint(to, tokenId, 1, bytes(""));
-    }
-
-    function burn(
-        uint256 tokenId,
-        uint256 amount,
-        bytes calldata data
-    ) external {
-        if (balanceOf(msg.sender, tokenId) == 0) {
-            revert NotAnOwner(msg.sender);
-        }
-        if (balanceOf(msg.sender, tokenId) - burntTokens[tokenId] > amount) {
-            revert CannotBurn(tokenId, amount);
-        }
-
-        burntTokens[tokenId] += amount;
-
-        emit Burn(msg.sender, tokenId, data);
     }
 
     function _update(

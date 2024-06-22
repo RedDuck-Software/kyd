@@ -46,7 +46,7 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
     address public nft;
     address public nftParticipate;
     uint256 public randomWinners;
-    uint256 public randomWinnerNftId;
+    uint256 public randomWinnerLastNftId;
     uint256 public participationNftId;
     address public gelatoOperator;
 
@@ -71,7 +71,7 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
         goal = _params.goal;
         nft = _params.nft;
         randomWinners = _params.randomWinners;
-        randomWinnerNftId = _params.randomWinnerNftId;
+        randomWinnerLastNftId = _params.randomWinnerNftId;
         participationNftId = _params.participationNftId;
         stables = _params.stables;
         ethToStablePath = _params.ethToStablePath;
@@ -243,7 +243,6 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
 
     function _distibute() private {
         uint256 _randomWinners = randomWinners;
-        console.log(topWinnersNfts.length, _randomWinners);
 
         for (uint i; i <= topWinnersNfts.length; i++) {
             if (list.tail == type(uint256).max) break;
@@ -266,7 +265,7 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
             // if random value repeated
             if (data.user == address(0)) continue;
 
-            _mint(nft, data.user, randomWinnerNftId);
+            _mint(nft, data.user, randomWinnerLastNftId++);
 
             list.remove(data.user, randomValue);
 
