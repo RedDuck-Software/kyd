@@ -1,8 +1,8 @@
 import { polygonMumbai, scrollSepolia } from 'viem/chains';
 
 export const contractAddresses = {
-  [polygonMumbai.id]: '0xa1d8fd53987d6803d7Ca9DEa9BDf1E990F06cf1e', // Polygon
-  [scrollSepolia.id]: '0xa1d8fd53987d6803d7Ca9DEa9BDf1E990F06cf1e', // Scroll
+  [polygonMumbai.id]: '0xC3C93ED719FCD94840ca2316b33B3862b8E514e7', // Polygon
+  [scrollSepolia.id]: '0xC3C93ED719FCD94840ca2316b33B3862b8E514e7', // Scroll
 } as Record<AllowedChainIds, `0x${string}`>;
 
 export interface Token {
