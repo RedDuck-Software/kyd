@@ -80,4 +80,4 @@ export const allowedTokens = {
   ],
 } as Record<AllowedChainIds, Token[]>;
 
-export type AllowedChainIds = (typeof polygonMumbai)['id'] | (typeof scrollSepolia)['id'];
+export type AllowedChainIds = (typeof polygonMumbai)['id'] | (typeof scrollSepolia)['id'] | (typeof sepolia)['id'];

@@ -11,7 +11,7 @@ import { useEffect } from 'react';
 import { formatUnits } from 'viem';
 
 export const AuctionParticipants = () => {
-  const auctionChainId = 534351;
+  const auctionChainId = 11155111;
 
   const queryClient = useQueryClient();
 
