@@ -10,6 +10,8 @@ import "./gelato/GelatoVRFConsumerBase.sol";
 import "./interfaces/IAuction.sol";
 import "./AuctionNFT.sol";
 
+import "hardhat/console.sol";
+
 contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
     using DoubleLinkedList for DoubleLinkedList.List;
     using DecimalsCorrectionLibrary for uint256;
@@ -24,6 +26,9 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
 
     uint256 public constant MAX_RANDOM_WINNERS = 10;
     uint256 public constant MAX_TOP_WINNERS = 10;
+
+    mapping(address => bool) public userDonated;
+    mapping(address => bool) public supportedStables;
 
     uint256 public totalDonated;
 
@@ -41,6 +46,7 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
     address public gelatoOperator;
 
     uint256 public randomness;
+    bool public nftsDistributed;
 
     constructor() {
         _disableInitializers();
@@ -63,11 +69,14 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
         ethToStablePath = _params.ethToStablePath;
         swapStable = _params.swapStable;
         uniswapV3Router = _params.uniswapV3Router;
+
+        for (uint i; i < _params.stables.length; i++) {
+            supportedStables[_params.stables[i]] = true;
+        }
+
         topWinnersNfts = _params.topWinners;
         gelatoOperator = _params.gelatoOperator;
         nftParticipate = _params.nftParticipate;
-
-        list.initalize();
     }
 
     function finish() external onlyOwner {
@@ -77,7 +86,7 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
     }
 
     function distributeRewards() external {
-        require(randomness != 0, "");
+        require(randomness != 0, "Randomness is not set");
         _distibute();
 
         emit RewardsDistributed();
@@ -86,8 +95,9 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
     function withdrawMult(
         address[] calldata _stables,
         uint256[] calldata amounts
-    ) external {
+    ) external onlyOwner {
         require(_stables.length == amounts.length, "Mismatched length");
+        require(nftsDistributed, "Not distributed");
 
         for (uint i = 0; i < _stables.length; i++) {
             ERC20Upgradeable(_stables[i]).transfer(owner(), amounts[i]);
@@ -128,8 +138,11 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
         uint256 amount,
         uint256 indexToInsert,
         uint256 indexOfExisting,
-        bool existingNode
+        bool before
     ) external {
+        require(supportedStables[stable], "not supported");
+
+        // FIXME: safe transfer from
         ERC20Upgradeable(stable).transferFrom(
             msg.sender,
             address(this),
@@ -150,22 +163,45 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
     ) internal {
         totalDonated += amount;
 
-        if (existingNode) {
+        if (userDonated[msg.sender]) {
             if (indexToInsert == indexOfExisting) {
-                list.increaseAmount(indexOfExisting, amount);
+                list.increaseAmount(msg.sender, indexOfExisting, amount);
             } else {
-                list.remove(indexOfExisting);
+                uint256 prevAmount = list.remove(msg.sender, indexOfExisting);
+
+                if (before) {
+                    list.insertBefore(
+                        indexToInsert,
+                        DoubleLinkedList.Data({
+                            user: msg.sender,
+                            amount: amount + prevAmount
+                        })
+                    );
+                } else {
+                    list.insertAfter(
+                        indexToInsert,
+                        DoubleLinkedList.Data({
+                            user: msg.sender,
+                            amount: amount + prevAmount
+                        })
+                    );
+                }
+            }
+        } else {
+            if (before) {
+                list.insertBefore(
+                    indexToInsert,
+                    DoubleLinkedList.Data({user: msg.sender, amount: amount})
+                );
+            } else {
                 list.insertAfter(
                     indexToInsert,
                     DoubleLinkedList.Data({user: msg.sender, amount: amount})
                 );
             }
-        } else {
-            list.insertAfter(
-                indexToInsert,
-                DoubleLinkedList.Data({user: msg.sender, amount: amount})
-            );
         }
+
+        userDonated[msg.sender] = true;
 
         emit Donate(stable, msg.sender, amount);
 
@@ -180,6 +216,10 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
         return list.getNodeData(id);
     }
 
+    function getNodes() external view returns (DoubleLinkedList.Node[] memory) {
+        return list.getNodes();
+    }
+
     function _fulfillRandomness(
         uint256 _randomness,
         uint256,
@@ -188,7 +228,7 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
         randomness = _randomness;
     }
 
-    function _finishAuction() private {
+    function _finishAuction() internal virtual {
         _requestRandomness("");
     }
 
@@ -196,12 +236,12 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
         uint256 _randomWinners = randomWinners;
 
         for (uint i; i < topWinnersNfts.length; i++) {
-            DoubleLinkedList.Node memory node = list.getNode(list.head);
+            if (list.tail == type(uint256).max) return;
 
-            if (node.data.user == address(0)) return;
+            DoubleLinkedList.Node memory node = list.getNode(list.tail);
 
-            _mint(nft, node.data.user, randomWinnerNftId);
-            list.remove(list.head);
+            _mint(nft, node.data.user, i);
+            list.remove(node.data.user, list.tail);
         }
 
         for (uint256 i; _randomWinners == 0; i++) {
@@ -216,10 +256,14 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
 
             _mint(nft, data.user, randomWinnerNftId);
 
-            list.remove(randomValue);
+            console.log("nft distributed");
+
+            list.remove(data.user, randomValue);
 
             _randomWinners--;
         }
+
+        nftsDistributed = true;
     }
 
     function _mint(address _nft, address to, uint256 id) private {

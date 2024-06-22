@@ -21,21 +21,83 @@ describe('Auction', function () {
   });
 
   describe('Auction', () => {
-    it.only('donate', async () => {
-      const { auctionFactory, donator, stables, createAuction,  } = await loadFixture(deployAuctionNft);
+
+    it.only('distribute', async () => { 
+      const { auctionFactory, donator, donator1, donator2, stables, createAuction,  } = await loadFixture(deployAuctionNft);
+      const auction = await createAuction(1n, 0n);
+
+      await stables[0].write.approve([
+        auction.address,
+        200n
+      ],{account : donator.account})
+
+       await auction.write.donate([
+        stables[0].address,
+        100n, 0n, 0n, false
+      ],{account : donator.account})
+
+      await auction.write.finish();
+      await auction.write.fulfillRandomnessTest();
+
+      await auction.write.distributeRewards()
+    })
+
+    it('donate', async () => {
+      const { auctionFactory, donator, donator1, donator2, stables, createAuction,  } = await loadFixture(deployAuctionNft);
       const auction = await createAuction();
 
 
       await stables[0].write.approve([
         auction.address,
-        100n
+        200n
       ],{account : donator.account})
+
+      await stables[0].write.approve([
+        auction.address,
+        300n
+      ],{account : donator1.account})
+
+      await stables[0].write.approve([
+        auction.address,
+        200n
+      ],{account : donator2.account})
 
       await auction.write.donate([
         stables[0].address,
-        100n, 0n, 1n, false
+        100n, 0n, 0n, false
       ],{account : donator.account})
-    });
+    
+      console.log(await auction.read.getUser([0n]));
+
+      await auction.write.donate([
+        stables[0].address,
+        100n, 0n, 0n, false
+      ],{account : donator.account})
+
+      console.log('TEST2', await auction.read.getNodes());
       
+      await auction.write.donate([
+        stables[0].address,
+        50n, 0n, 0n, true
+      ],{account : donator1.account})
+
+      console.log('TEST2', await auction.read.getNodes());
+
+      await auction.write.donate([
+        stables[0].address,
+        151n, 1n, 1n, false
+      ],{account : donator1.account})
+
+      console.log('TEST2', await auction.read.getNodes());
+
+      // await auction.write.donate([
+      //   stables[0].address,
+      //   200n, 0n, 1n, true
+      // ],{account : donator2.account})
+
+      // console.log(await auction.read.getUser([0n]));
+      // console.log(await auction.read.getUser([1n]));
+      // console.log(await auction.read.getUser([3n]));
+    });
   });
 });

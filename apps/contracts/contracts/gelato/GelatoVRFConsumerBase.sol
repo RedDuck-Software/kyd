@@ -97,7 +97,7 @@ abstract contract GelatoVRFConsumerBase is IGelatoVRFConsumer {
     }
 
     /// @notice Computes and returns the round number of drand to request randomness from.
-    function _round() private view returns (uint256 round) {
+    function _round() internal view virtual returns (uint256 round) {
         // solhint-disable-next-line not-rely-on-time
         uint256 elapsedFromGenesis = block.timestamp - _GENESIS;
         uint256 currentRound = (elapsedFromGenesis / _PERIOD) + 1;

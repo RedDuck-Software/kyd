@@ -26,7 +26,7 @@ export const CopyButton = ({ data, className, children }: Props) => {
         <div
           className={`${
             isClicked ? 'scale-100' : 'scale-0'
-          } transition-all -top-10 text-base absolute left-1/2 -translate-x-1/2 bg-gray-blue rounded-[6px] px-2 py-1`}
+          } transition-all -top-10 text-base absolute left-1/2 -translate-x-1/2 bg-violent rounded-[6px] px-2 py-1`}
         >
           Copied
         </div>
