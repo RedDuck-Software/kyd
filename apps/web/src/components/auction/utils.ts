@@ -19,14 +19,16 @@ export const getIndexesForInsert = (nodes: Nodes, address: Address, amount: bigi
   let currentNode = firstNode;
 
   const newAmount = user ? user.data.amount + amount : amount;
+
+  // STOPS ON NODE THAT GREATER THAT OURS
   while (currentNode && newAmount > currentNode.data.amount) {
     if (currentNode.next === maxUint256) break;
-    currentNode = nodes.find((node) => node.prev === currentNode.next)!;
+    currentNode = nodes[+currentNode.next.toString()];
   }
 
   return [
     BigInt(nodes.indexOf(currentNode)),
     user ? BigInt(nodes.indexOf(user)) : BigInt(0),
-    currentNode.prev === maxUint256 ? false : true,
+    currentNode.prev !== maxUint256 && currentNode.data.amount < newAmount ? false : true,
   ];
 };

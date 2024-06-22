@@ -4,6 +4,8 @@ import { polygonMumbai, scrollSepolia, sepolia } from 'viem/chains';
 type Addresses = {
   auctionFactory: `0x${string}`;
   uniswapV3Router: `0x${string}`;
+  swapPath: `0x${string}`;
+  uniQuoter: `0x${string}`;
 };
 
 export type Token = {
@@ -18,14 +20,20 @@ export const addresses: Record<string, Addresses> = {
   [scrollSepolia.id]: {
     auctionFactory: zeroAddress,
     uniswapV3Router: zeroAddress,
+    swapPath: zeroAddress,
+    uniQuoter: zeroAddress,
   },
   [polygonMumbai.id]: {
     auctionFactory: zeroAddress,
     uniswapV3Router: '0xE592427A0AEce92De3Edee1F18E0157C05861564',
+    swapPath: '0xfff9976782d46cc05630d1f6ebab18b2324d6b140001f43637925ee8b837f85c7309e4b291ca56a40457a4',
+    uniQuoter: zeroAddress,
   },
   [sepolia.id]: {
     auctionFactory: '0x10943a50318e30371eFb6D51A1E30dBfF2E13af6',
     uniswapV3Router: '0xE592427A0AEce92De3Edee1F18E0157C05861564',
+    swapPath: '0xfff9976782d46cc05630d1f6ebab18b2324d6b140001f43637925ee8b837f85c7309e4b291ca56a40457a4',
+    uniQuoter: '0xEd1f6473345F45b75F8179591dd5bA1888cf2FB3',
   },
 };
 

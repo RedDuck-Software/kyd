@@ -15,6 +15,7 @@ import {
   useChainId,
   usePublicClient,
   useReadContract,
+  useSimulateContract,
   useSwitchChain,
   useWriteContract,
 } from 'wagmi';
@@ -23,6 +24,8 @@ import { useWeb3Modal } from '@web3modal/wagmi/react';
 import { auctionAbi } from '@/abi/auctionABI';
 import { useQueryClient } from '@tanstack/react-query';
 import { Nodes, getIndexesForInsert } from './utils';
+import { quoterAbi } from '@/abi/quoterABI';
+import { addresses } from '@/constants/addresses';
 
 export const AuctionDonate = () => {
   const auctionChainId = 11155111;
@@ -73,6 +76,18 @@ export const AuctionDonate = () => {
   const { writeContractAsync: donateNativeAsync } = useWriteContract();
   const { writeContractAsync: donateTokenAsync } = useWriteContract();
 
+  const { data: simulateRes } = useSimulateContract({
+    abi: quoterAbi,
+    functionName: 'quoteExactInput',
+    chainId: auctionChainId,
+    address: addresses[auctionChainId].uniQuoter, // TODO:CHANGE
+    args: [addresses[auctionChainId].swapPath, parseUnits(amount ? amount.toString() : '0', selectedToken.decimals)],
+  });
+
+  const simulatedAmount = useMemo(() => {
+    return simulateRes ? simulateRes.result[0] : null;
+  }, [simulateRes]);
+
   const approve = useCallback(async () => {
     const hash = await approveAsync({
       abi: erc20Abi,
@@ -90,11 +105,14 @@ export const AuctionDonate = () => {
       address: contractAddresses[auctionChainId],
       functionName: 'donateEth',
       value: parseUnits(amount!.toString(), 18),
-      args: [...getIndexesForInsert(nodesRes!.slice() as Nodes, address!, parseUnits(amount!.toString(), 18))],
+      args: [
+        ...getIndexesForInsert(nodesRes!.slice() as Nodes, address!, simulatedAmount ?? 0n),
+        simulatedAmount ?? 0n,
+      ],
     });
 
     return hash;
-  }, [address, amount, donateNativeAsync, nodesRes]);
+  }, [address, amount, donateNativeAsync, nodesRes, simulatedAmount]);
 
   const donateToken = useCallback(async () => {
     const hash = await donateTokenAsync({
@@ -212,7 +230,9 @@ export const AuctionDonate = () => {
           <Button
             ref={parent}
             onClick={handleButtonClick}
-            disabled={isLoading || !amount || !isBalanceEnough || amount === 0}
+            disabled={
+              isLoading || !amount || !isBalanceEnough || amount === 0 || (!selectedToken.address && !simulateRes)
+            }
             className="py-3 w-full text-lg flex gap-3"
           >
             {isLoading && <Loader2 className="transition-all animate-spin  [&_path]:stroke-white w-5 h-5" />}

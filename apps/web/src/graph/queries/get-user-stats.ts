@@ -22,7 +22,7 @@ export const getUserStats = async (address: Address) => {
     client.query({
       query: gql`
         {
-          Donates(where: { from: "${address}" }){
+          donates(where: { from: "${address}" }){
             from
             stable
             amount
