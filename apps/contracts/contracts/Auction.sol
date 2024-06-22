@@ -38,7 +38,9 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
         _disableInitializers();
     }
 
-    function initialize(IAuction.AuctionParams calldata _params) external {
+    function initialize(
+        IAuction.AuctionParams calldata _params
+    ) external initializer {
         __Ownable_init(_params.owner);
 
         require(_params.randomWinners <= MAX_RANDOM_WINNERS, "");
@@ -53,6 +55,8 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
         topWinnersNfts = _params.topWinners;
         gelatoOperator = _params.gelatoOperator;
         nftParticipate = _params.nftParticipate;
+
+        list.initalize();
     }
 
     function finish() external onlyOwner {
@@ -114,6 +118,12 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
         if (totalDonated >= goal) {
             _finishAuction();
         }
+    }
+
+    function getUser(
+        uint256 id
+    ) external view returns (DoubleLinkedList.Data memory) {
+        return list.getNodeData(id);
     }
 
     function _fulfillRandomness(

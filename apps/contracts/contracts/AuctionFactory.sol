@@ -4,18 +4,22 @@ pragma solidity ^0.8.23;
 import "@openzeppelin/contracts/proxy/Clones.sol";
 import "./interfaces/IAuction.sol";
 import "./Auction.sol";
+import "./AuctionNFT.sol";
+import "./AuctionNFT1155.sol";
 
 struct AuctionCreateParams {
     address[] stables;
     uint256[] topWinners;
-    string nftBaseUri;
     uint256 goal;
     address owner;
-    address nft;
-    address nftParticipate;
     uint256 randomWinners;
     uint256 randomWinnerNftId;
-    uint256 participationNftId;
+}
+
+struct AuctionNftCreateParams {
+    string name;
+    string symb;
+    string uri;
 }
 
 contract AuctionFactory {
@@ -25,14 +29,37 @@ contract AuctionFactory {
 
     address immutable gelatoOperator;
     address immutable implementation;
+    address immutable nftImplementation;
+    address immutable nftParticipantsImplementation;
 
-    constructor(address _gelatoOperator) {
+    constructor(
+        address _gelatoOperator,
+        address _implementation,
+        address _nftImplementation,
+        address _nftParticipantsImplementation
+    ) {
         gelatoOperator = _gelatoOperator;
+        implementation = _implementation;
+
+        nftImplementation = _nftImplementation;
+        nftParticipantsImplementation = _nftParticipantsImplementation;
     }
 
     function create(
-        AuctionCreateParams calldata params
+        AuctionCreateParams calldata params,
+        AuctionNftCreateParams calldata paramsNft,
+        AuctionNftCreateParams calldata paramsNftParticipants
     ) external returns (address) {
+        AuctionNFT auctionNFT = AuctionNFT(
+            payable(Clones.clone(nftImplementation))
+        );
+        AuctionNFT1155 auctionNFTParticipants = AuctionNFT1155(
+            payable(Clones.clone(nftParticipantsImplementation))
+        );
+
+        auctionNFT.initialize(paramsNft.name, paramsNft.symb);
+        auctionNFTParticipants.initialize(paramsNftParticipants.uri);
+
         Auction auction = Auction(payable(Clones.clone(implementation)));
 
         auction.initialize(
@@ -42,11 +69,11 @@ contract AuctionFactory {
                 goal: params.goal,
                 gelatoOperator: gelatoOperator,
                 owner: params.owner,
-                nft: params.nft,
-                nftParticipate: params.nftParticipate,
+                nft: address(auctionNFT),
+                nftParticipate: address(auctionNFTParticipants),
                 randomWinners: params.randomWinners,
                 randomWinnerNftId: params.randomWinnerNftId,
-                participationNftId: params.participationNftId
+                participationNftId: 0
             })
         );
 
