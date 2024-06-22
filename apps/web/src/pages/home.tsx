@@ -1,7 +1,18 @@
+import { AUctionFactoryAbi } from '@/abi/AuctionFactory';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { addresses } from '@/constants/addresses';
+import { useChainId, useReadContract } from 'wagmi';
 
 export default function Home() {
+  const chainId = useChainId();
+
+  const { data } = useReadContract({
+    abi: AUctionFactoryAbi,
+    functionName: 'auctions',
+    address: addresses[chainId].auctionFactory,
+  });
+
   return (
     <div className="flex flex-col gap-10">
       <div className="flex flex-col gap-2 lg:gap-4 text-center">
