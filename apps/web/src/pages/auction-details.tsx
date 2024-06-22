@@ -5,6 +5,7 @@ import { AuctionParticipants } from '@/components/auction/auction-participants';
 import { AuctionDonate } from '@/components/auction/auction-donate';
 import { ShadowCard } from '@/components/common/shadow-card';
 import { getShadowCardVariant } from '@/lib/shadow-card-variant';
+import { AuctionProgress } from '@/components/auction/auction-progress';
 
 export default function AuctionDetails() {
   let { id } = useParams();
@@ -40,7 +41,7 @@ export default function AuctionDetails() {
           </Swiper>
         </div>
       </div>
-
+      <AuctionProgress />
       <AuctionDonate />
       <AuctionParticipants />
     </div>
