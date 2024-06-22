@@ -4,7 +4,7 @@ import { ProfilePastAuctions } from '@/components/profile/profile-past-auctions'
 
 export default function Profile() {
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-8">
       <h1 className="text-center font-bold text-[32px]">Profile</h1>
       <div className="flex flex-col gap-20">
         <ProfileInfo />

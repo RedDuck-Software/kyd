@@ -2,39 +2,40 @@ import { Address } from 'viem';
 import { getGraphClients } from '../client';
 import { gql } from '@apollo/client';
 
-export interface UserInfo {
-  usdDonated: number;
-  totalParticipated: number;
-  won: number;
-}
-
-export interface Donate {
+export interface NFTBurn {
   from: string;
-  stable: string;
-  amount: number;
-  auction: string;
-  blockTimestamp: number;
+  tokenId: number;
+  id: string;
 }
 
-export const getUserStats = async (address: Address) => {
+export interface NFT {
+  name: string;
+  img: string;
+  description: string;
+}
+
+export const getUserNfts = async (address: Address) => {
   const clients = getGraphClients();
   const queries = clients.map((client) =>
     client.query({
       query: gql`
         {
-          Donates(where: { from: "${address}" }){
+          AuctionNFTBurn(where: { from: "${address}" }){
             from
-            stable
-            amount
-            auction
-            blockTimestamp
+            tokenId
+            id
+          },
+          AuctionNFT1155Burn(where: { from: "${address}" }){
+            from
+            tokenId
+            id
           }
         }
       `,
     })
   );
 
-  const userInfo: Record<string, UserInfo> = {};
+  const userNfts: NFT[] = [];
 
   const results = await Promise.all(queries);
 

@@ -1,15 +1,15 @@
 import * as hre from 'hardhat';
 import { DeployFunction } from 'hardhat-deploy/types';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
-import { verify } from '@/utils/utils';
+import { delayMinutes, verify } from '@/utils/utils';
 import { deploymentConstants } from '@/test/common/constants';
 import { NETWORK } from '@/types/constant.types';
 import { artifacts } from 'hardhat';
 
 // TODO: change on every deploy
-const auctionImpl = '0xc16D0AaAFd0e97FD54A1a587bbd01f17BBfc968d';
-const auctionNFTImpl = '0x6b56AA0431dbE3a0cfFa657f9bFEA2A6050B9fcD';
-const auctionNFT1155Impl = '0xC9819616BaEEB3bC62cd80a41284033c9799F5Bb';
+const auctionImpl = '0xa1d8fd53987d6803d7Ca9DEa9BDf1E990F06cf1e';
+const auctionNFTImpl = '0xc16D0AaAFd0e97FD54A1a587bbd01f17BBfc968d';
+const auctionNFT1155Impl = '0xBf655EbCd2a4EF2F2F12a9D164f35CC0c97ADce9';
 
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const factory = await hre.ethers.getContractFactoryFromArtifact(
@@ -37,10 +37,23 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   );
   await contract.waitForDeployment();
 
+  console.log('Waited.');
+  console.log('Delaying 1 minute before verification...');
+
+  await delayMinutes(1);
+
   console.log('AuctionFactory address:', await contract.getAddress());
 
   if (hre.network.name !== 'localhost') {
-    await verify(hre, await contract.getAddress());
+    await verify(
+      hre,
+      await contract.getAddress(),
+      'contracts/AuctionFactory.sol:AuctionFactory',
+      constants.gelatoOperator,
+      auctionImpl,
+      auctionNFTImpl,
+      auctionNFT1155Impl,
+    );
   }
 };
 
