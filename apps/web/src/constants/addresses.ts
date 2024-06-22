@@ -1,5 +1,5 @@
 import { zeroAddress } from 'viem';
-import { mainnet, sepolia } from 'viem/chains';
+import { polygonMumbai, scrollSepolia } from 'viem/chains';
 
 type Addresses = {
   auction: `0x${string}`;
@@ -9,13 +9,13 @@ type Addresses = {
 };
 
 export const addresses: Record<string, Addresses> = {
-  [sepolia.id]: {
+  [scrollSepolia.id]: {
     auction: zeroAddress,
     auctionFactory: zeroAddress,
     auctionNft: zeroAddress,
     auctionNft1155: zeroAddress,
   },
-  [mainnet.id]: {
+  [polygonMumbai.id]: {
     auction: zeroAddress,
     auctionFactory: zeroAddress,
     auctionNft: zeroAddress,

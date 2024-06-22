@@ -29,33 +29,41 @@ const options: { label: string; value: string }[] = [
   { label: 'DAI', value: 'DAI' },
 ];
 
-const schema = z.object({
-  title: z.string().min(1, 'Title is required'),
-  description: z.string().min(15, 'Description must be at least 15 characters'),
-  auctionImage: z.any().refine((file) => file instanceof File, 'Image is required'),
-  topDonateWinners: z
-    .array(
-      z.object({
-        amount: z.string().min(1, 'Amount is required'),
-        winnerNFT: z.object({
-          name: z.string().min(1, 'Name is required'),
-          image: z.any().refine((file) => file instanceof File, 'Image is required'),
-        }),
-      })
-    )
-    .optional(),
-  participantNFT: z.object({
-    name: z.string().min(1, 'Name is required'),
-    image: z.any().refine((file) => file instanceof File, 'Image is required'),
-  }),
-  randomWinner: z
-    .object({
-      amount: z.string().min(1, 'Random winners amount is required'),
+const schema = z
+  .object({
+    title: z.string().min(1, 'Title is required'),
+    description: z.string().min(15, 'Description must be at least 15 characters'),
+    auctionImage: z.any().refine((file) => file instanceof File, 'Image is required'),
+    topDonateWinners: z
+      .array(
+        z.object({
+          amount: z.string().min(1, 'Amount is required'),
+          winnerNFT: z.object({
+            name: z.string().min(1, 'Name is required'),
+            image: z.any().refine((file) => file instanceof File, 'Image is required'),
+          }),
+        })
+      )
+      .optional(),
+    participantNFT: z.object({
       name: z.string().min(1, 'Name is required'),
       image: z.any().refine((file) => file instanceof File, 'Image is required'),
-    })
-    .optional(),
-});
+    }),
+    randomWinner: z
+      .object({
+        amount: z.string().min(1, 'Random winners amount is required'),
+        name: z.string().min(1, 'Name is required'),
+        image: z.any().refine((file) => file instanceof File, 'Image is required'),
+      })
+      .optional(),
+    stables: z.array(z.string()).nonempty('At least one stable must be selected'),
+    enableTopDonateWinners: z.boolean(),
+    enableRandomWinners: z.boolean(),
+  })
+  .refine((data) => data.enableTopDonateWinners || data.enableRandomWinners, {
+    message: 'At least one of Set Top-Donate Prizes or Set Random Winners must be selected',
+    path: ['enableTopDonateWinners', 'enableRandomWinners'],
+  });
 
 type FormData = z.infer<typeof schema>;
 
@@ -301,22 +309,29 @@ export const CreateAuctionForm = () => {
           {errors.participantNFT?.image && <p className="text-danger">{errors.participantNFT.image.message}</p>}
         </div>
 
-        <div>
-          <p>Allowed Tokens</p>
-          <MultiSelector values={stables} onValuesChange={setStables} loop={false}>
-            <MultiSelectorTrigger>
-              <MultiSelectorInput placeholder="Select allowed tokens" />
-            </MultiSelectorTrigger>
-            <MultiSelectorContent>
-              <MultiSelectorList>
-                {options.map((option, i) => (
-                  <MultiSelectorItem key={i} value={option.value}>
-                    {option.label}
-                  </MultiSelectorItem>
-                ))}
-              </MultiSelectorList>
-            </MultiSelectorContent>
-          </MultiSelector>
+        <div className="flex flex-col gap-2">
+          <p>Select allowed tokens</p>
+          <Controller
+            name="stables"
+            control={control}
+            render={({ field }) => (
+              <MultiSelector values={field.value ?? []} onValuesChange={field.onChange} loop={false}>
+                <MultiSelectorTrigger>
+                  <MultiSelectorInput placeholder="Select allowed tokens" />
+                </MultiSelectorTrigger>
+                <MultiSelectorContent>
+                  <MultiSelectorList>
+                    {options?.map((option, i) => (
+                      <MultiSelectorItem key={i} value={option.value}>
+                        {option.label}
+                      </MultiSelectorItem>
+                    ))}
+                  </MultiSelectorList>
+                </MultiSelectorContent>
+              </MultiSelector>
+            )}
+          />
+          {errors.stables && <p className="text-danger">{errors.stables.message}</p>}
         </div>
 
         <Button type="submit">Submit</Button>
