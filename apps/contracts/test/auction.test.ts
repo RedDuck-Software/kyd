@@ -30,7 +30,7 @@ describe.only('Auction', function () {
         stables,
         createAuction,
       } = await loadFixture(deployAuctionNft);
-      const auction = await createAuction(1n, 0n);
+      const auction = await createAuction(1n, 1n);
 
       await stables[0].write.approve([auction.address, 200n], {
         account: donator.account,
@@ -46,7 +46,7 @@ describe.only('Auction', function () {
       await auction.write.distributeRewards();
     });
 
-    it('donate', async () => {
+    it.only('donate', async () => {
       const {
         auctionFactory,
         donator,
@@ -81,14 +81,12 @@ describe.only('Auction', function () {
 
       console.log('TEST2', await auction.read.getNodes());
 
-      await auction.write.donate([stables[0].address, 50n, 0n, 0n, true], {
+      await auction.write.donate([stables[0].address, 151n, 0n, 1n, false], {
         account: donator1.account,
       });
 
-      console.log('TEST2', await auction.read.getNodes());
-
-      await auction.write.donate([stables[0].address, 151n, 1n, 1n, false], {
-        account: donator1.account,
+      await auction.write.donate([stables[0].address, 151n, 0n, 1n, false], {
+        account: donator2.account,
       });
 
       console.log('TEST2', await auction.read.getNodes());

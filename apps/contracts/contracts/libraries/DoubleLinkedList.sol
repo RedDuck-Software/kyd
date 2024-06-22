@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.23;
+import "hardhat/console.sol";
 
 library DoubleLinkedList {
     struct List {
@@ -69,8 +70,10 @@ library DoubleLinkedList {
     ) internal isValidNode(list, id) returns (uint256 newID) {
         if (list.length == 0) {
             list.nodes.push(Node(data, type(uint256).max, type(uint256).max));
+            list.head = list.nodes.length - 1;
+            list.tail = list.nodes.length - 1;
             list.length++;
-            return 0;
+            return list.nodes.length - 1;
         }
 
         Node storage node = list.nodes[id];
@@ -162,6 +165,7 @@ library DoubleLinkedList {
         Node storage node = list.nodes[id];
 
         removedAmount = node.data.amount;
+
         require(node.data.user == expectedUser, "Invalid user");
 
         if (node.next != type(uint256).max && node.prev != type(uint256).max) {
@@ -169,15 +173,18 @@ library DoubleLinkedList {
             list.nodes[node.prev].next = node.next;
         }
 
-        if (node.prev == type(uint256).max) {
+        if (node.prev == type(uint256).max && node.next != type(uint256).max) {
             list.nodes[node.next].prev = type(uint256).max;
         }
-        if (node.next == type(uint256).max) {
+        if (node.next == type(uint256).max && node.prev != type(uint256).max) {
             list.nodes[node.prev].next = type(uint256).max;
         }
-
         if (id == list.tail) {
-            list.tail = node.prev;
+            list.tail = node.prev != type(uint256).max ? node.prev : 0;
+        }
+
+        if (id == list.head) {
+            list.head = node.next != type(uint256).max ? node.next : 0;
         }
 
         list.length--;
