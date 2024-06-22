@@ -16,12 +16,18 @@ dataSources:
       language: wasm/assemblyscript
       entities:
         - AuctionCreated
+        - AuctionNFTCreated
+        - AuctionNFT1155Created
       abis:
         - name: AuctionFactory
           file: ./src/abi/AuctionFactory.json
       eventHandlers:
         - event: AuctionDeployed(indexed address)
           handler: handleAuctionCreation
+        - event: NFTDeployed(indexed address)
+          handler: handleNftCreation
+        - event: NFT1155Deployed(indexed address)
+          handler: handleNft1155Creation
       file: ./src/handlers/auction-factory.ts
   - kind: ethereum
     name: Auction
@@ -62,12 +68,15 @@ dataSources:
       language: wasm/assemblyscript
       entities:
         - AuctionNFTBurn
+        - AuctionNFT
       abis:
         - name: AuctionNFT
           file: ./src/abi/AuctionNFT.json
       eventHandlers:
         - event: Burn(indexed address,indexed uint256,bytes)
           handler: handleBurn
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
       file: ./src/handlers/auction-nft.ts
   - kind: ethereum
     name: AuctionNFT1155
@@ -82,12 +91,17 @@ dataSources:
       language: wasm/assemblyscript
       entities:
         - AuctionNFT1155Burn
+        - AuctionNFT1155Mint
       abis:
         - name: AuctionNFT1155
           file: ./src/abi/AuctionNFT1155.json
       eventHandlers:
         - event: Burn(indexed address,indexed uint256,bytes)
           handler: handleBurn1155
+        - event: TransferSingle(indexed address,indexed address,indexed address,uint256,uint256)
+          handler: handleMint1155Single
+        - event: TransferBatch(indexed address,indexed address,indexed address,uint256[],uint256[])
+          handler: handleMint1155Batch
       file: ./src/handlers/auction-nft-1155.ts
 templates:
   - kind: ethereum
@@ -114,3 +128,47 @@ templates:
         - event: RewardsDistributed()
           handler: handleRewardsDistribution
       file: ./src/handlers/auction.ts
+  - kind: ethereum
+    name: AuctionNFT
+    network: {{ network }}
+    source:
+      abi: AuctionNFT
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - AuctionNFTBurn
+        - AuctionNFT
+      abis:
+        - name: AuctionNFT
+          file: ./src/abi/AuctionNFT.json
+      eventHandlers:
+        - event: Burn(indexed address,indexed uint256,bytes)
+          handler: handleBurn
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleMint
+      file: ./src/handlers/auction-nft.ts
+  - kind: ethereum
+    name: AuctionNFT1155
+    network: {{ network }}
+    source:
+      abi: AuctionNFT1155
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - AuctionNFT1155Burn
+        - AuctionNFT1155Mint
+      abis:
+        - name: AuctionNFT1155
+          file: ./src/abi/AuctionNFT1155.json
+      eventHandlers:
+        - event: Burn(indexed address,indexed uint256,bytes)
+          handler: handleBurn1155
+        - event: TransferSingle(indexed address,indexed address,indexed address,uint256,uint256)
+          handler: handleMint1155Single
+        - event: TransferBatch(indexed address,indexed address,indexed address,uint256[],uint256[])
+          handler: handleMint1155Batch
+      file: ./src/handlers/auction-nft-1155.ts

@@ -12,7 +12,7 @@ contract AuctionNFT1155 is OwnableUpgradeable, ERC1155Upgradeable {
     error NotAnOwner(address from);
     error AlreadyBurnt(uint256 tokenId);
     error CannotBurn(uint256 tokenId, uint256 amount);
-    error CannotTransfer(uint256 tokenId);
+    error CannotTransfer();
 
     constructor() {
         _disableInitializers();
@@ -53,12 +53,6 @@ contract AuctionNFT1155 is OwnableUpgradeable, ERC1155Upgradeable {
         uint256[] memory ids,
         uint256[] memory values
     ) internal virtual override {
-        for (uint256 i = 0; i < ids.length; ++i) {
-            if (burntTokens[ids[i]] > values[i]) {
-                revert CannotTransfer(i);
-            }
-        }
-
-        super._update(from, to, ids, values);
+        revert CannotTransfer();
     }
 }
