@@ -1,9 +1,25 @@
-import { Column, Entity } from 'typeorm';
-import { UuidEntity } from '../../common';
+import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { TimeKnownEntity } from '../../common';
 import { ApiProperty } from '@nestjs/swagger';
 
 @Entity({ name: 'auction_metadata' })
-export class AuctionMetadataEntity extends UuidEntity {
+export class AuctionMetadataEntity extends TimeKnownEntity {
+  @PrimaryColumn({ type: 'varchar' })
+  @ApiProperty({
+    type: String,
+    description: 'Id of entity',
+    example: '356xSKGa5hRhIDY',
+  })
+  auctionId: string;
+
+  @PrimaryColumn({ type: 'varchar' })
+  @ApiProperty({
+    type: String,
+    description: 'Token ID of the auction',
+    example: '1',
+  })
+  tokenId: string;
+
   @Column({ type: 'varchar' })
   @ApiProperty({
     type: String,
