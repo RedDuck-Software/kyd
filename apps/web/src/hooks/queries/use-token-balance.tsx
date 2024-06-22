@@ -1,10 +1,11 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { useAccount, useBalance, useBlockNumber, useReadContracts } from 'wagmi';
-import { AllowedChainIds, allowedTokens, contractAddresses } from '@/constants/constants';
+import { contractAddresses } from '@/constants/constants';
 import { useEffect, useMemo } from 'react';
 import { erc20Abi, maxUint256 } from 'viem';
 import { TokenBalance } from '../useTokenBalances';
+import { AllowedChainIds, allowedTokens } from '@/constants/addresses';
 
 export const useTokenBalance = (chainId: AllowedChainIds) => {
   const { address } = useAccount();

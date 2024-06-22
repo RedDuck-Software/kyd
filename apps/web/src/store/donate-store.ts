@@ -1,7 +1,8 @@
-import { AllowedChainIds, allowedTokens } from '@/constants/constants';
+import { AllowedChainIds } from '@/constants/addresses';
 import { TokenBalance } from '@/hooks/useTokenBalances';
 import { maxInt256 } from 'viem';
 import { create } from 'zustand';
+import { allowedTokens } from '../constants/addresses';
 
 export interface AllowedDonateChain {
   id: AllowedChainIds;
