@@ -189,7 +189,9 @@ library DoubleLinkedList {
 
         list.length--;
 
-        delete list.nodes[id];
+        list.nodes[id].data = list.nodes[list.nodes.length - 1].data;
+
+        list.nodes.pop();
     }
 
     function getNodes(List storage list) internal view returns (Node[] memory) {

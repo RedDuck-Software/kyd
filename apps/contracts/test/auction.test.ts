@@ -74,7 +74,7 @@ describe('Auction', function () {
         100n, 0n, 0n, false
       ],{account : donator.account})
 
-      console.log('TEST2', await auction.read.getNodes());
+      console.log('TEST1', await auction.read.getNodes());
       
       await auction.write.donate([
         stables[0].address,
@@ -88,13 +88,15 @@ describe('Auction', function () {
         151n, 0n, 1n, false
       ],{account : donator1.account})
 
+      console.log('TEST3', await auction.read.getNodes());
 
       await auction.write.donate([
         stables[0].address,
-        151n, 0n, 1n, false
+        151n, 0n, 0n, false
       ],{account : donator2.account})
 
-      console.log('TEST2', await auction.read.getNodes());
+      console.log('TEST4', await auction.read.getNodes());
+
 
       // await auction.write.donate([
       //   stables[0].address,
