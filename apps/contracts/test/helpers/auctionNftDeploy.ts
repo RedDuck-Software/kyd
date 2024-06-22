@@ -7,7 +7,7 @@ import { ignition, viem } from 'hardhat';
 import { parseUnits } from 'viem';
 
 export async function deployAuctionNft() {
-  const [owner, mockedGelatoOperator, donator] = await viem.getWalletClients();
+  const [owner, mockedGelatoOperator, donator, donator1, donator2] = await viem.getWalletClients();
 
   const { auctionNft } = await ignition.deploy(AuctionNFTModule, {
     defaultSender: owner.account.address,
@@ -25,6 +25,17 @@ export async function deployAuctionNft() {
   const { erc20Test } = await ignition.deploy(ERC20TestModule, {
     defaultSender: donator.account.address,
   });
+
+
+  await erc20Test.write.mint(
+    [donator1.account.address,
+    parseUnits('1000000', 18)]
+  );
+
+  await erc20Test.write.mint(
+    [donator2.account.address,
+    parseUnits('1000000', 18)]
+  );
 
   const { auctionFactory } = await ignition.deploy(AuctionFactoryModule, {
     defaultSender: owner.account.address,
@@ -45,16 +56,18 @@ export async function deployAuctionNft() {
     auction,
     auctionFactory,
     donator,
+    donator1,
+    donator2,
     stables: [erc20Test],
     createAuction: async () =>  {
       const address =  await auctionFactory.simulate.create( [
         {
           goal: parseUnits('100', 18),
           owner: owner.account.address,
-          participationNftId: 0n,
           randomWinners: 5n,
           topWinners:  [],
-          stables: [erc20Test.address]
+          stables: [erc20Test.address],
+          randomWinnerNftId: 0n,
         },
         {
           name: '',
@@ -72,10 +85,10 @@ export async function deployAuctionNft() {
         {
           goal: parseUnits('100', 18),
           owner: owner.account.address,
-          participationNftId: 0n,
           randomWinners: 5n,
           topWinners:  [],
-          stables: [erc20Test.address]
+          stables: [erc20Test.address],
+          randomWinnerNftId: 0n,
         },
         {
           name: '',

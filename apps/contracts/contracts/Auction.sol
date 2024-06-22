@@ -20,9 +20,11 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
     uint256 public constant MAX_RANDOM_WINNERS = 10;
     uint256 public constant MAX_TOP_WINNERS = 10;
 
+    mapping(address => bool) public userDonated;
+    mapping(address => bool) public supportedStables;
+
     uint256 public totalDonated;
 
-    address[] stables;
     uint256[] topWinnersNfts;
     uint256 public goal;
     address public nft;
@@ -51,12 +53,14 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
         randomWinners = _params.randomWinners;
         randomWinnerNftId = _params.randomWinnerNftId;
         participationNftId = _params.participationNftId;
-        stables = _params.stables;
+
+        for (uint i; i < _params.stables.length; i++) {
+            supportedStables[_params.stables[i]] = true;
+        }
+
         topWinnersNfts = _params.topWinners;
         gelatoOperator = _params.gelatoOperator;
         nftParticipate = _params.nftParticipate;
-
-        list.initalize();
     }
 
     function finish() external onlyOwner {
@@ -84,8 +88,11 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
         uint256 amount,
         uint256 indexToInsert,
         uint256 indexOfExisting,
-        bool existingNode
+        bool before
     ) external {
+        require(supportedStables[stable], "not supported");
+
+        // FIXME: safe transfer from
         ERC20Upgradeable(stable).transferFrom(
             msg.sender,
             address(this),
@@ -96,22 +103,45 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
 
         totalDonated += amount;
 
-        if (existingNode) {
+        if (userDonated[msg.sender]) {
             if (indexToInsert == indexOfExisting) {
-                list.increaseAmount(indexOfExisting, amount);
+                list.increaseAmount(msg.sender, indexOfExisting, amount);
             } else {
-                list.remove(indexOfExisting);
+                uint256 prevAmount = list.remove(msg.sender, indexOfExisting);
+
+                if (before) {
+                    list.insertBefore(
+                        indexToInsert,
+                        DoubleLinkedList.Data({
+                            user: msg.sender,
+                            amount: amount + prevAmount
+                        })
+                    );
+                } else {
+                    list.insertAfter(
+                        indexToInsert,
+                        DoubleLinkedList.Data({
+                            user: msg.sender,
+                            amount: amount + prevAmount
+                        })
+                    );
+                }
+            }
+        } else {
+            if (before) {
+                list.insertBefore(
+                    indexToInsert,
+                    DoubleLinkedList.Data({user: msg.sender, amount: amount})
+                );
+            } else {
                 list.insertAfter(
                     indexToInsert,
                     DoubleLinkedList.Data({user: msg.sender, amount: amount})
                 );
             }
-        } else {
-            list.insertAfter(
-                indexToInsert,
-                DoubleLinkedList.Data({user: msg.sender, amount: amount})
-            );
         }
+
+        userDonated[msg.sender] = true;
 
         emit Donate(stable, msg.sender, amount);
 
@@ -124,6 +154,10 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
         uint256 id
     ) external view returns (DoubleLinkedList.Data memory) {
         return list.getNodeData(id);
+    }
+
+    function getNodes() external view returns (DoubleLinkedList.Node[] memory) {
+        return list.getNodes();
     }
 
     function _fulfillRandomness(
@@ -147,7 +181,7 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
             if (node.data.user == address(0)) return;
 
             _mint(nft, node.data.user, randomWinnerNftId);
-            list.remove(list.head);
+            list.remove(node.data.user, list.head);
         }
 
         for (uint256 i; _randomWinners == 0; i++) {
@@ -162,7 +196,7 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
 
             _mint(nft, data.user, randomWinnerNftId);
 
-            list.remove(randomValue);
+            list.remove(data.user, randomValue);
 
             _randomWinners--;
         }
