@@ -12,7 +12,6 @@ interface IAuction {
         address owner;
         address nft;
         address nftParticipate;
-        address gelatoOperator;
         uint256 randomWinners;
         uint256 randomWinnerNftId;
         uint256 participationNftId;

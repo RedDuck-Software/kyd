@@ -39,7 +39,7 @@ export async function deployAuctionNft() {
   const { auctionFactory } = await ignition.deploy(AuctionFactoryModule, {
     defaultSender: owner.account.address,
     parameters: {
-      AuctionFactory: {
+      AuctionFactoryTester: {
         gelatoOperator: mockedGelatoOperator.account.address,
       },
     },
@@ -72,7 +72,7 @@ export async function deployAuctionNft() {
           // FIXME
           ethToStablePath: '0x',
           // FIXME
-          swapStable: zeroAddress,
+          swapStable: erc20Test.address,
           // FIXME
           uniswapV3Router: zeroAddress,
         },
@@ -99,7 +99,7 @@ export async function deployAuctionNft() {
           // FIXME
           ethToStablePath: '0x',
           // FIXME
-          swapStable: zeroAddress,
+          swapStable: erc20Test.address,
           // FIXME
           uniswapV3Router: zeroAddress,
         },
@@ -116,7 +116,7 @@ export async function deployAuctionNft() {
       ]);
 
       return viem.getContractAt(
-        'contracts/test/AuctionTester.sol:AuctionTester',
+        'contracts/Auction.sol:Auction',
         address.result,
       );
     },
