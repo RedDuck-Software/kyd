@@ -1,0 +1,8 @@
+{
+  "network": "sepolia",
+  "startBlock": "6160369",
+  "AuctionFactory": "0xd1ccB15E30a9Fd5d96a731064205BC12D3183869",
+  "Auction": "0xd1ccB15E30a9Fd5d96a731064205BC12D3183869",
+  "AuctionNFT": "0xd1ccB15E30a9Fd5d96a731064205BC12D3183869",
+  "AuctionNFT1155": "0xd1ccB15E30a9Fd5d96a731064205BC12D3183869"
+}

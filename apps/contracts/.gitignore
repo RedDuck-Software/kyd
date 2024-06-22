@@ -25,3 +25,6 @@ abis
 docgen
 
 .vscode/settings.json
+
+# graph 
+generated

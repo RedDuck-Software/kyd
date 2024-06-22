@@ -1,3 +1,60 @@
-type BuyOperation @entity {
+type AuctionCreated @entity(immutable: true) {
+  id: Bytes!
+  address: Bytes!
+  timestamp: BigInt! # uint256
+  blockNumber: BigInt! # uint256
+  blockTimestamp: BigInt! # uint256
+  transactionHash: Bytes! # hex
+}
 
+type Donate @entity(immutable: true) {
+  id: Bytes!
+  from: Bytes! # address
+  auction: Bytes! # address
+  stable: Bytes! # address
+  amount: BigInt! # uint256
+  timestamp: BigInt! # uint256
+  blockNumber: BigInt! # uint256
+  blockTimestamp: BigInt! # uint256
+  transactionHash: Bytes! # hex
+}
+
+type AuctionEnded @entity(immutable: true) {
+  id: Bytes! # address
+  address: Bytes! # address
+  timestamp: BigInt! # uint256
+  blockNumber: BigInt! # uint256
+  blockTimestamp: BigInt! # uint256
+  transactionHash: Bytes! # hex
+}
+
+type RewardsDistributed @entity(immutable: true) {
+  id: Bytes! # address
+  address: Bytes! # address
+  timestamp: BigInt! # uint256
+  blockNumber: BigInt! # uint256
+  blockTimestamp: BigInt! # uint256
+  transactionHash: Bytes! # hex
+}
+
+type AuctionNFTBurn @entity(immutable: true) {
+  id: Bytes! # address
+  from: Bytes! # address
+  tokenId: BigInt! # uint256
+  data: Bytes! # hex
+  timestamp: BigInt! # uint256
+  blockNumber: BigInt! # uint256
+  blockTimestamp: BigInt! # uint256
+  transactionHash: Bytes! # hex
+}
+
+type AuctionNFT1155Burn @entity(immutable: true) {
+  id: Bytes! # address
+  from: Bytes! # address
+  tokenId: BigInt! # uint256
+  data: Bytes! # hex
+  timestamp: BigInt! # uint256
+  blockNumber: BigInt! # uint256
+  blockTimestamp: BigInt! # uint256
+  transactionHash: Bytes! # hex
 }

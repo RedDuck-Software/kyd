@@ -5,11 +5,11 @@ schema:
 dataSources:
   - kind: ethereum
     name: AuctionFactory
-    network: sepolia
+    network: {{ network }}
     source:
-      address: '0xd1ccB15E30a9Fd5d96a731064205BC12D3183869'
+      address: '{{ AuctionFactory }}'
       abi: AuctionFactory
-      startBlock: 6160369
+      startBlock: {{ startBlock }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -25,11 +25,11 @@ dataSources:
       file: ./src/handlers/auction-factory.ts
   - kind: ethereum
     name: Auction
-    network: sepolia
+    network: {{ network }}
     source:
-      address: '0xd1ccB15E30a9Fd5d96a731064205BC12D3183869'
+      address: '{{ Auction }}'
       abi: Auction
-      startBlock: 6160369
+      startBlock: {{ startBlock }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -51,11 +51,11 @@ dataSources:
       file: ./src/handlers/auction.ts
   - kind: ethereum
     name: AuctionNFT
-    network: sepolia
+    network: {{ network }}
     source:
-      address: '0xd1ccB15E30a9Fd5d96a731064205BC12D3183869'
+      address: '{{ AuctionNFT }}'
       abi: AuctionNFT
-      startBlock: 6160369
+      startBlock: {{ startBlock }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -71,11 +71,11 @@ dataSources:
       file: ./src/handlers/auction-nft.ts
   - kind: ethereum
     name: AuctionNFT1155
-    network: sepolia
+    network: {{ network }}
     source:
-      address: '0xd1ccB15E30a9Fd5d96a731064205BC12D3183869'
+      address: '{{ AuctionNFT1155 }}'
       abi: AuctionNFT1155
-      startBlock: 6160369
+      startBlock: {{ startBlock }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -92,7 +92,7 @@ dataSources:
 templates:
   - kind: ethereum
     name: Auction
-    network: sepolia
+    network: {{ network }}
     source:
       abi: Auction
     mapping:
