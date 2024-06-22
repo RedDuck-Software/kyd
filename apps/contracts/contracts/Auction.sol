@@ -26,6 +26,7 @@ contract Auction is IAuction, OwnableUpgradeable {
     error AuctionIsEnded();
     error AlreadyDistributed();
     error RandomnessIsNotSet();
+    error AlreadyFinished();
     error NotDistributed();
     error MismatchLenghts();
     error StableNotSupported();
@@ -54,6 +55,7 @@ contract Auction is IAuction, OwnableUpgradeable {
 
     uint256 public randomness;
     bool public nftsDistributed;
+    bool public randomnessRequested;
 
     constructor() {
         _disableInitializers();
@@ -91,6 +93,8 @@ contract Auction is IAuction, OwnableUpgradeable {
     }
 
     function finish() external onlyOwner {
+        if (randomnessRequested) revert AlreadyFinished();
+
         _finishAuction();
 
         emit AuctionEnded();
@@ -243,6 +247,7 @@ contract Auction is IAuction, OwnableUpgradeable {
 
     function _finishAuction() internal virtual {
         AuctionFactory(factory).requestRandomness();
+        randomnessRequested = true;
     }
 
     function _distibute() private {
