@@ -1,6 +1,6 @@
 import { createWeb3Modal } from '@web3modal/wagmi/react';
 import { defaultWagmiConfig } from '@web3modal/wagmi/react/config';
-import { polygonMumbai, scrollSepolia } from 'viem/chains';
+import { polygonMumbai, scrollSepolia, sepolia } from 'viem/chains';
 import { cookieStorage, createStorage } from 'wagmi';
 import { env } from '@/env';
 
@@ -14,7 +14,7 @@ const metadata = {
 };
 
 export const config = defaultWagmiConfig({
-  chains: [scrollSepolia, polygonMumbai], // required
+  chains: [scrollSepolia, polygonMumbai, sepolia], // required
   projectId, // required
   metadata, // required
   storage: createStorage({
