@@ -1,4 +1,4 @@
-import { getShadowCardBg, getShadowCardFilledVariant, getShadowCardText } from '@/lib/shadow-card-variant';
+import { getShadowCardFilledVariant, getShadowCardText } from '@/lib/shadow-card-variant';
 import { ShadowCard } from '../common/shadow-card';
 import { generateBlockies } from '@/lib/blockies';
 import { shortenAddress } from '@/lib/utils';

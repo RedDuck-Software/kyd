@@ -178,12 +178,14 @@ export const CreateAuctionForm = () => {
 
     participantNftId = participantData?.nftId;
 
-    await postCreateAuctionMetadata({
+    const createAuctionResponse = await postCreateAuctionMetadata({
       name: data.title,
       description: data.description,
       files: [data.auctionImage],
       tokenId: '0',
     });
+
+    const auctionId = createAuctionResponse?.data?.auctionId;
 
     const auctionCreateData = {
       stables: data.stables.map((token) => getAddress(token)),
@@ -201,6 +203,7 @@ export const CreateAuctionForm = () => {
       owner: address,
       randomWinners: enableRandomWinners ? parseUnits(data.randomWinner?.amount as string, 18) : 0n,
       randomWinnerNftId: enableRandomWinners ? parseUnits(randomWinnerNftId ?? '0', 18) : 0n,
+      baseUri: `${env.VITE_BACKEND_URL}/api/auction-metadata/${auctionId}/`,
     };
 
     const winnerNft = {

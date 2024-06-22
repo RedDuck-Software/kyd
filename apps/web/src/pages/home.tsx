@@ -17,6 +17,8 @@ export default function Home() {
     address: addresses[chainId].auctionFactory,
   });
 
+  console.log('data ==>', data);
+
   return (
     <div className="flex flex-col gap-32">
       <div className="flex flex-col gap-2 lg:gap-4 text-center">
