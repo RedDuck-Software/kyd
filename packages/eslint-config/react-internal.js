@@ -15,7 +15,7 @@ const project = resolve(process.cwd(), "tsconfig.json");
 /** @type {import("eslint").Linter.Config} */
 module.exports = {
   extends: ["eslint:recommended", "prettier", "plugin:@typescript-eslint/recommended", 'plugin:react-hooks/recommended'],
-  plugins: ["only-warn", 'react-refresh',"prettier", "@typescript-eslint", "react-hooks"],
+  plugins: ["only-warn", 'react-refresh', "@typescript-eslint"],
   env: {
     browser: true,
     es2020: true,
@@ -35,42 +35,7 @@ module.exports = {
     "dist/*",
   ],
   overrides: [
-    {
-      files: ["*.js?(x)", "*.ts?(x)"],
-      rules: {
-        "import/order": [
-          "error",
-          {
-            alphabetize: {
-              order: "asc",
-              caseInsensitive: true,
-            },
-            groups: [
-              "external",
-              "builtin",
-              "index",
-              "sibling",
-              "parent",
-              "internal",
-              "object",
-            ],
-            "newlines-between": "always",
-          },
-        ],
-        "prettier/prettier": [
-          "error",
-          {
-            endOfLine: "auto",
-            semi: true,
-            singleQuote: true,
-            trailingComma: "all",
-          },
-        ],
-        "@typescript-eslint/consistent-type-imports": "error",
-        "@typescript-eslint/no-misused-promises": "off",
-        "@typescript-eslint/no-unsafe-call": "off",
-        "@typescript-eslint/no-unsafe-assignment": "off",
-      },
-    },
+    // Force ESLint to detect .tsx files
+    { files: ["*.js?(x)", "*.ts?(x)"] },
   ],
 };
