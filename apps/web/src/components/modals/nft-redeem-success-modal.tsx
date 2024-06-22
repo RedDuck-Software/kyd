@@ -11,12 +11,12 @@ export const NftRedeemSuccessModal = () => {
       <div className="relative">
         <CopyButton
           data="https://etherscan.io/address/0x271682DEB8C4E0901D1a1550aD2e64D568E69909"
-          className="rounded-[16px] py-2 px-4 w-full overflow-hidden bg-gray-blue relative"
+          className="rounded-[16px] py-2 px-4 w-full overflow-hidden bg-violent relative"
         >
           <p className="truncate max-w-full pr-3 w-full">
             https://etherscan.io/address/0x271682DEB8C4E0901D1a1550aD2e64D568E69909
           </p>
-          <div className="absolute right-0 flex items-center top-0 h-full bg-gray-blue p-2 ">
+          <div className="absolute right-0 flex items-center top-0 h-full bg-violent p-2 ">
             <Copy className="w-4 h-4" />
           </div>
         </CopyButton>

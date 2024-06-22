@@ -17,10 +17,10 @@ const DefaultLayout = memo(() => {
             <Outlet />
           </Suspense>
         </main>
-        <Footer />
         <Toaster />
         <Modals />
       </div>
+      <Footer />
     </Providers>
   );
 });
