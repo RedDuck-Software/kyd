@@ -9,7 +9,7 @@ import { artifacts } from 'hardhat';
 // TODO: change on every deploy
 const auctionImpl = '0x776d111247024dB7F4e1dE8aA6FFC6e8a545142d';
 const auctionNFTImpl = '0xAC2053365d271B9A1D13d7B3feE5b92AB03F16f3';
-const auctionNFT1155Impl = '0xb57B3abd5CB76f0A571E8d6348d9f524136b8Ad1';
+const auctionNFT1155Impl = '0x642b70EFF0b0419EBA5A10e026E9297Bc234638e';
 const factory = '0x851c8DdD6223A7C61fFcAC19D312e4988F482B51'
 
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
