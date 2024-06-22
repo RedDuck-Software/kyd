@@ -7,7 +7,7 @@ import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/Own
 contract AuctionNFT is OwnableUpgradeable, ERC721URIStorageUpgradeable {
     mapping(uint256 => bool) public isBurnt;
 
-    uint256 public id = 1;
+    uint256 public id;
 
     event Burn(address indexed from, uint256 indexed tokenId, bytes data);
 
@@ -24,6 +24,7 @@ contract AuctionNFT is OwnableUpgradeable, ERC721URIStorageUpgradeable {
         string memory symbol,
         address _owner
     ) external initializer {
+        id = 1;
         __ERC721_init(name, symbol);
         __Ownable_init(_owner);
         __ERC721URIStorage_init();
