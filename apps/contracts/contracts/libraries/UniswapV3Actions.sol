@@ -7,14 +7,15 @@ library UniswapV3Actions {
         address _router,
         bytes memory _path,
         address _recipient,
-        uint256 _amount
+        uint256 _amount,
+        uint256 _minAmountOut
     ) internal returns (uint256 amountOut) {
         IUniswapRouterV3.ExactInputParams memory swapParams = IUniswapRouterV3
             .ExactInputParams({
                 path: _path,
                 recipient: _recipient,
                 amountIn: _amount,
-                amountOutMinimum: 0
+                amountOutMinimum: _minAmountOut
             });
         return IUniswapRouterV3(_router).exactInput{value: _amount}(swapParams);
     }
