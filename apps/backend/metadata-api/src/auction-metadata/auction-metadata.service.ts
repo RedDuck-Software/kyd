@@ -54,25 +54,26 @@ export class AuctionMetadataService {
       const fileRepository = getFileRepository(manager);
 
       let savedFile = await fileRepository.findOneBy({ contentHash });
-      if (savedFile) throw new BadRequestException('File already exists');
 
-      savedFile = await fileRepository.save(
-        fileRepository.create({
-          contentHash,
-          fileExtension: getFileExtensionFromFile(file.originalname),
-        })
-      );
+      if (!savedFile) {
+        savedFile = await fileRepository.save(
+          fileRepository.create({
+            contentHash,
+            fileExtension: getFileExtensionFromFile(file.originalname),
+          })
+        );
 
-      savedFile = {
-        ...savedFile,
-        ...(await this.storageService.writeFile({
-          content: file.buffer,
-          extension: savedFile.fileExtension,
-          id: savedFile.id,
-        })),
-      };
+        savedFile = {
+          ...savedFile,
+          ...(await this.storageService.writeFile({
+            content: file.buffer,
+            extension: savedFile.fileExtension,
+            id: savedFile.id,
+          })),
+        };
 
-      await fileRepository.save(savedFile);
+        await fileRepository.save(savedFile);
+      }
 
       const auctionMetadata = await auctionMetadataRepository.save(
         auctionMetadataRepository.create({

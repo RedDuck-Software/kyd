@@ -8,7 +8,7 @@ import { getShadowCardVariant } from '@/lib/shadow-card-variant';
 import { AuctionProgress } from '@/components/auction/auction-progress';
 
 export default function AuctionDetails() {
-  let { id } = useParams();
+  const { id } = useParams();
 
   return (
     <div className="flex flex-col gap-16">
