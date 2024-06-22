@@ -16,7 +16,7 @@ export interface Donate {
   blockTimestamp: number;
 }
 
-export const getUserStats = async (address: Address) => {
+export const getUserPastAuctions = async (address: Address) => {
   const clients = getGraphClients();
   const queries = clients.map((client) =>
     client.query({

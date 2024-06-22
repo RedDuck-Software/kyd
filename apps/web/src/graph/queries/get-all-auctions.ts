@@ -8,15 +8,7 @@ export interface UserInfo {
   won: number;
 }
 
-export interface Donate {
-  from: string;
-  stable: string;
-  amount: number;
-  auction: string;
-  blockTimestamp: number;
-}
-
-export const getUserStats = async (address: Address) => {
+export const getAllAuctions = async (address: Address) => {
   const clients = getGraphClients();
   const queries = clients.map((client) =>
     client.query({

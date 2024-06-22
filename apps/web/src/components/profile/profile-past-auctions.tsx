@@ -35,7 +35,7 @@ export const ProfilePastAuctions = () => {
                 <img src={auction.image} alt="" className="rounded-[16px] h-[70px]" />
                 <h6 className="text-[18px] font-medium">{auction.name}</h6>
               </div>
-              <Badge variant={auction.isWon ? 'success' : 'default'} className="py-2 text-dark text-[14px]">
+              <Badge variant={auction.isWon ? 'success' : 'default'} className="py-2 text-white text-[14px]">
                 {auction.isWon ? "You've got something!" : 'Thanks for participating!'}
               </Badge>
             </ShadowCard>

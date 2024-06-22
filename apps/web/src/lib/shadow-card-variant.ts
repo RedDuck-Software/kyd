@@ -12,6 +12,12 @@ export const getShadowCardBg = (number: number): string => {
   return 'bg-violent';
 };
 
+export const getShadowCardText = (number: number): string => {
+  if (number % 3 === 0) return 'text-orange';
+  if (number % 3 === 1) return 'text-blue';
+  return 'text-violent';
+};
+
 export const getShadowCardFilledVariant = (number: number): VariantKeys => {
   if (number % 3 === 0) return 'orange-fill';
   if (number % 3 === 1) return 'blue-fill';
