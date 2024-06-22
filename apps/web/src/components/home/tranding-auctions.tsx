@@ -1,4 +1,3 @@
-import { getShadowCardFilledVariant } from '@/lib/shadow-card-variant';
 import { ShadowCard } from '../common/shadow-card';
 
 export const TrandingAuctions = () => {
