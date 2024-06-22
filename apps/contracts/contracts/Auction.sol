@@ -9,6 +9,8 @@ import "./gelato/GelatoVRFConsumerBase.sol";
 import "./interfaces/IAuction.sol";
 import "./AuctionNFT.sol";
 
+import "hardhat/console.sol";
+
 contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
     using DoubleLinkedList for DoubleLinkedList.List;
     using DecimalsCorrectionLibrary for uint256;
@@ -37,6 +39,7 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
     address public gelatoOperator;
 
     uint256 public randomness;
+    bool public nftsDistributed;
 
     constructor() {
         _disableInitializers();
@@ -72,7 +75,7 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
     }
 
     function distributeRewards() external {
-        require(randomness != 0, "");
+        require(randomness != 0, "Randomness is not set");
         _distibute();
 
         emit RewardsDistributed();
@@ -81,8 +84,9 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
     function withdrawMult(
         address[] calldata _stables,
         uint256[] calldata amounts
-    ) external {
+    ) external onlyOwner {
         require(_stables.length == amounts.length, "Mismatched length");
+        require(nftsDistributed, "Not distributed");
 
         for (uint i = 0; i < _stables.length; i++) {
             ERC20Upgradeable(_stables[i]).transfer(owner(), amounts[i]);
@@ -182,12 +186,12 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
         uint256 _randomWinners = randomWinners;
 
         for (uint i; i < topWinnersNfts.length; i++) {
-            DoubleLinkedList.Node memory node = list.getNode(list.head);
+            if (list.tail == type(uint256).max) return;
 
-            if (node.data.user == address(0)) return;
+            DoubleLinkedList.Node memory node = list.getNode(list.tail);
 
-            _mint(nft, node.data.user, randomWinnerNftId);
-            list.remove(node.data.user, list.head);
+            _mint(nft, node.data.user, i);
+            list.remove(node.data.user, list.tail);
         }
 
         for (uint256 i; _randomWinners == 0; i++) {
@@ -202,10 +206,14 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
 
             _mint(nft, data.user, randomWinnerNftId);
 
+            console.log("nft distributed");
+
             list.remove(data.user, randomValue);
 
             _randomWinners--;
         }
+
+        nftsDistributed = true;
     }
 
     function _mint(address _nft, address to, uint256 id) private {

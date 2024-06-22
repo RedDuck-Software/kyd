@@ -21,10 +21,11 @@ contract AuctionNFT is OwnableUpgradeable, ERC721URIStorageUpgradeable {
 
     function initialize(
         string memory name,
-        string memory symbol
+        string memory symbol,
+        address _owner
     ) external initializer {
         __ERC721_init(name, symbol);
-        __Ownable_init(msg.sender);
+        __Ownable_init(_owner);
         __ERC721URIStorage_init();
     }
 

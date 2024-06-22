@@ -7,8 +7,6 @@ import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/Own
 contract AuctionNFT1155 is OwnableUpgradeable, ERC1155Upgradeable {
     mapping(uint256 => uint256) public burntTokens;
 
-    uint256 public id = 1;
-
     event Burn(address indexed from, uint256 indexed tokenId, bytes data);
 
     error NotAnOwner(address from);
@@ -20,18 +18,16 @@ contract AuctionNFT1155 is OwnableUpgradeable, ERC1155Upgradeable {
         _disableInitializers();
     }
 
-    function initialize(string memory uri) external initializer {
-        __Ownable_init(msg.sender);
+    function initialize(
+        string memory uri,
+        address _owner
+    ) external initializer {
+        __Ownable_init(_owner);
         __ERC1155_init(uri);
     }
 
-    function mint(
-        address to,
-        uint256 tokenId,
-        uint256 amount
-    ) external onlyOwner {
-        _mint(to, tokenId, amount, bytes(""));
-        id++;
+    function mint(address to, uint256 tokenId) external onlyOwner {
+        _mint(to, tokenId, 1, bytes(""));
     }
 
     function burn(

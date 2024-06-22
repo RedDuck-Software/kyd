@@ -46,7 +46,7 @@ export async function deployAuctionNft() {
     }
   });
 
-  await auctionNft.write.initialize(['TEST', 'T']);
+  // await auctionNft.write.initialize(['TEST', 'T', owner.]);
 
   return {
     gelatoOperator: mockedGelatoOperator,
@@ -59,13 +59,13 @@ export async function deployAuctionNft() {
     donator1,
     donator2,
     stables: [erc20Test],
-    createAuction: async () =>  {
+    createAuction: async (randomWinners = 5n, topWinners = 5n,) =>  {
       const address =  await auctionFactory.simulate.create( [
         {
           goal: parseUnits('100', 18),
           owner: owner.account.address,
-          randomWinners: 5n,
-          topWinners:  [],
+          randomWinners: randomWinners,
+          topWinners: Array.from(Array(topWinners).keys()).map(v=>BigInt(v)),
           stables: [erc20Test.address],
           randomWinnerNftId: 0n,
         },
@@ -102,7 +102,7 @@ export async function deployAuctionNft() {
         },
       ]);
 
-      return viem.getContractAt('contracts/Auction.sol:Auction', address.result);
+      return viem.getContractAt('contracts/test/AuctionTester.sol:AuctionTester', address.result);
     }
   };
 }

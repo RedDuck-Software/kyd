@@ -56,11 +56,13 @@ contract AuctionFactory {
         AuctionNFT1155 auctionNFTParticipants = AuctionNFT1155(
             payable(Clones.clone(nftParticipantsImplementation))
         );
-
-        auctionNFT.initialize(paramsNft.name, paramsNft.symb);
-        auctionNFTParticipants.initialize(paramsNftParticipants.uri);
-
         Auction auction = Auction(payable(Clones.clone(implementation)));
+
+        auctionNFT.initialize(paramsNft.name, paramsNft.symb, address(auction));
+        auctionNFTParticipants.initialize(
+            paramsNftParticipants.uri,
+            address(auction)
+        );
 
         auction.initialize(
             IAuction.AuctionParams({
