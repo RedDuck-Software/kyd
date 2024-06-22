@@ -1,10 +1,10 @@
 import { Body, Controller, Get, Param, Post, UploadedFiles, UseInterceptors } from '@nestjs/common';
-import { AuctionMetadataService } from './auction-metadata.service';
+import { AuctionMetadataService, GetAuctionMetadataParams } from './auction-metadata.service';
 import 'multer';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
 import { ApiBody, ApiConsumes, ApiOperation, ApiParam, ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { IsString, MaxLength } from 'class-validator';
+import { IsOptional, IsString, MaxLength } from 'class-validator';
 import { AuctionMetadataEntity } from '../database/metadata';
 
 const mediaOptions: MulterOptions = {
@@ -12,15 +12,25 @@ const mediaOptions: MulterOptions = {
 };
 
 export class CreateAuctionMetadataRequestDto {
-  @ApiProperty({ type: String, nullable: false, maxLength: 255 })
+  @ApiProperty({ type: String, nullable: false, maxLength: 255, required: true })
   @IsString()
   @MaxLength(255)
   description: string;
 
-  @ApiProperty({ type: String, nullable: false, maxLength: 255 })
+  @ApiProperty({ type: String, nullable: false, maxLength: 255, required: true })
   @IsString()
   @MaxLength(255)
   name: string;
+
+  @ApiProperty({ type: String, nullable: true, maxLength: 255, required: false })
+  @IsOptional()
+  @IsString()
+  auctionId?: string;
+
+  @ApiProperty({ type: String, nullable: false, maxLength: 255, required: true })
+  @IsString()
+  @MaxLength(255)
+  tokenId: string;
 }
 
 @Controller('auction-metadata')
@@ -28,7 +38,7 @@ export class CreateAuctionMetadataRequestDto {
 export class AuctionMetadataController {
   constructor(private readonly auctionMetadataService: AuctionMetadataService) {}
 
-  @Get('/:id')
+  @Get('/:auctionId/:tokenId')
   @ApiOperation({
     summary: 'Get auction metadata by ID',
     description: 'Get auction metadata by ID',
@@ -39,18 +49,24 @@ export class AuctionMetadataController {
     description: 'Auction metadata',
   })
   @ApiParam({
-    name: 'id',
+    name: 'auctionId',
     type: String,
-    example: '123e4567-e89b-12d3-a456-426614174000',
-    description: 'Auction metadata UUID',
+    example: '356xSKGa5hRhIDY',
+    description: 'Auction metadata id',
+  })
+  @ApiParam({
+    name: 'tokenId',
+    type: String,
+    example: '1',
+    description: 'Auction token metadata id',
   })
   @ApiResponse({
     status: 404,
     type: Error,
     description: 'Auction metadata not found',
   })
-  public async getAuctionMetadata(@Param() { id }: { id: string }) {
-    return await this.auctionMetadataService.getAuctionMetadata({ id });
+  public async getAuctionMetadata(@Param() { auctionId, tokenId }: GetAuctionMetadataParams) {
+    return await this.auctionMetadataService.getAuctionMetadata({ auctionId, tokenId });
   }
 
   @Get()
@@ -74,7 +90,7 @@ export class AuctionMetadataController {
     description: 'Create auction metadata',
   })
   @ApiResponse({
-    status: 200,
+    status: 201,
     type: AuctionMetadataEntity,
     description: 'Auction metadata',
   })
@@ -82,10 +98,20 @@ export class AuctionMetadataController {
   @ApiBody({
     schema: {
       type: 'object',
-      required: ['description', 'name', 'files'],
+      required: ['description', 'name', 'files', 'tokenId'],
       properties: {
         description: { type: 'string', nullable: false, maxLength: 255 },
         name: {
+          type: 'string',
+          nullable: false,
+          maxLength: 255,
+        },
+        auctionId: {
+          type: 'string',
+          nullable: true,
+          maxLength: 255,
+        },
+        tokenId: {
           type: 'string',
           nullable: false,
           maxLength: 255,
@@ -98,13 +124,15 @@ export class AuctionMetadataController {
     },
   })
   public async createAuctionMetadata(
-    @Body() { description, name }: CreateAuctionMetadataRequestDto,
+    @Body() { description, name, auctionId, tokenId }: CreateAuctionMetadataRequestDto,
     @UploadedFiles() { files }: { files?: Express.Multer.File[] }
   ) {
     return await this.auctionMetadataService.createAuctionMetadata({
       description,
       name,
       files,
+      auctionId,
+      tokenId,
     });
   }
 }
