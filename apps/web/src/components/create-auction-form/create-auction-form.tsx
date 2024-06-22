@@ -110,7 +110,7 @@ export const CreateAuctionForm = () => {
     if (!address) return;
 
     let topWinnerNftId: string | undefined = undefined;
-    let randomWinnerNftId: string | undefined = undefined;
+    // let randomWinnerNftId: string | undefined = undefined;
     let participantNftId: string | undefined = undefined;
 
     // Top winners
@@ -156,7 +156,7 @@ export const CreateAuctionForm = () => {
         tokenId: String(topWinnersArr.length),
       });
 
-      randomWinnerNftId = data?.nftId;
+      // randomWinnerNftId = data?.nftId;
 
       await Promise.all(
         Array.from({ length: Number(randomWinner.amount) }).map((_, i) => {

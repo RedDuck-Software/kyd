@@ -155,7 +155,8 @@ export const AuctionDonate = () => {
           <div className=" flex flex-col gap-4">
             <h6 className="font-medium text-[20px]">Chain:</h6>
             <ShadowCard
-              variant={auctionChainId === 80001 ? 'violent' : 'orange'}
+              // variant={auctionChainId === 80001 ? 'violent' : 'orange'}
+              variant={'orange'}
               className="flex items-center gap-2  transition-colors w-[200px] rounded-[4px]"
             >
               <img src={selectedChain.image} alt={selectedChain.name} className="w-10" />
