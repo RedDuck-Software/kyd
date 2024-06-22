@@ -1,3 +1,4 @@
+import { ShadowCard } from '@/components/common/shadow-card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import useModalsStore from '@/store/modals-store';
@@ -13,14 +14,17 @@ export default function Nft() {
           <div className="flex items-center justify-center"></div>
         </DialogContent>
       </Dialog>
-      <h1 className="text-4xl text-center font-semibold">BAYC #2255</h1>
       <div className="flex justify-center">
-        <img
-          src="https://forklog.com.ua/wp-content/uploads/2023/08/Snimok-ekrana-2023-08-23-v-12.14.48.webp"
-          alt=""
-          className="rounded-[16px] w-full max-w-[600px] "
-        />
+        <ShadowCard variant={'blue'} className="overflow-hidden">
+          <img
+            src="https://forklog.com.ua/wp-content/uploads/2023/08/Snimok-ekrana-2023-08-23-v-12.14.48.webp"
+            alt=""
+            className="rounded-[16px] w-full max-w-[600px] "
+          />
+        </ShadowCard>
       </div>
+      <h1 className="text-4xl text-center font-semibold">BAYC #2255</h1>
+
       <p className="text-base font-medium">SOme info about company</p>
       <p className="text-base">
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo nulla maiores accusantium harum quae, vitae,
