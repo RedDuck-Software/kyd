@@ -6,6 +6,7 @@
     "dev": "turbo dev",
     "lint": "turbo lint",
     "format": "turbo format",
+    "build:api": "turbo build --filter=metadata-api --",
     "dev:web": "yarn dev --filter=web --"
   },
   "devDependencies": {
