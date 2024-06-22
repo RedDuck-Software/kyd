@@ -1,23 +1,27 @@
-import { AUctionFactoryAbi } from '@/abi/AuctionFactory';
 import { ShadowCard } from '@/components/common/shadow-card';
 import { TrandingAuctions } from '@/components/home/tranding-auctions';
 import { Button } from '@/components/ui/button';
 import { CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { addresses } from '@/constants/addresses';
+import { GET_ALL_AUCTIONS, GetAllAuctionsResponse } from '@/graph/queries/get-all-auctions';
+import { useDefaultSubgraphQuery } from '@/hooks/useDefaultSubgraphQuery';
 import { getShadowCardBg, getShadowCardVariant } from '@/lib/shadow-card-variant';
 import { cn } from '@/lib/utils';
-import { useChainId, useReadContract } from 'wagmi';
 
 export default function Home() {
-  const chainId = useChainId();
+  const { data } = useDefaultSubgraphQuery<GetAllAuctionsResponse>(GET_ALL_AUCTIONS);
 
-  const { data } = useReadContract({
-    abi: AUctionFactoryAbi,
-    functionName: 'auctions',
-    address: addresses[chainId].auctionFactory,
-  });
+  const endedAuctionIds = new Set(data?.auctionEndeds.map((auction) => auction.id));
 
-  console.log('data ==>', data);
+  const activeAuctions = data?.auctionCreateds.filter((auction) => !endedAuctionIds.has(auction.id));
+
+  // const { data } = useReadContract({
+  //   abi: AUctionFactoryAbi,
+  //   functionName: 'auctions',
+  //   address: addresses[chainId].auctionFactory,
+  // });
+
+  console.log('data ==>', JSON.stringify(data, null, 2));
+  console.log('activeAuctions ==>', activeAuctions);
 
   return (
     <div className="flex flex-col gap-32">
