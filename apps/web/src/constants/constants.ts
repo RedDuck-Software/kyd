@@ -1,8 +1,8 @@
 import { polygonMumbai, scrollSepolia } from 'viem/chains';
 
 export const contractAddresses = {
-  80001: '0x551197e6350936976DfFB66B2c3bb15DDB723250', // Polygon
-  534351: '0x551197e6350936976DfFB66B2c3bb15DDB723250', // Scroll
+  [polygonMumbai.id]: '0xa1d8fd53987d6803d7Ca9DEa9BDf1E990F06cf1e', // Polygon
+  [scrollSepolia.id]: '0xa1d8fd53987d6803d7Ca9DEa9BDf1E990F06cf1e', // Scroll
 } as Record<AllowedChainIds, `0x${string}`>;
 
 export interface Token {
@@ -13,7 +13,7 @@ export interface Token {
 }
 
 export const allowedTokens = {
-  80001: [
+  [scrollSepolia.id]: [
     {
       symbol: 'ETH',
       address: null,
@@ -28,7 +28,7 @@ export const allowedTokens = {
     },
   ],
   // SCROLL IS CORRECT, NATIVE FIRST PLEASE
-  534351: [
+  [polygonMumbai.id]: [
     {
       symbol: 'ETH',
       address: null,
