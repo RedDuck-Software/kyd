@@ -11,37 +11,31 @@ describe('Auction', function () {
     });
   });
 
-
+  
   describe('Factory', () => {
-    it.only('Should deploy Auction', async () => {
-      const { auctionFactory, owner, erc20Test } = await loadFixture(deployAuctionNft);
-
-
-      const tx = await auctionFactory.write.create([
-        {
-          goal: parseUnits('100', 18),
-          owner: owner.account.address,
-          participationNftId: 0n,
-          randomWinners: 5n,
-          topWinners:  [],
-          stables: [erc20Test.address]
-        },
-        {
-          name: '',
-          symb: '',
-          uri: ''
-        },
-        {
-          name: '',
-          symb: '',
-          uri: ''
-        },
-      ]);
-
-
-
+    it('Should deploy Auction', async () => {
+      const { auctionFactory, owner, stables, createAuction } = await loadFixture(deployAuctionNft);
+      await createAuction();
     });
+      
   });
 
+  describe('Auction', () => {
+    it.only('donate', async () => {
+      const { auctionFactory, donator, stables, createAuction,  } = await loadFixture(deployAuctionNft);
+      const auction = await createAuction();
 
+
+      await stables[0].write.approve([
+        auction.address,
+        100n
+      ],{account : donator.account})
+
+      await auction.write.donate([
+        stables[0].address,
+        100n, 0n, 1n, false
+      ],{account : donator.account})
+    });
+      
+  });
 });

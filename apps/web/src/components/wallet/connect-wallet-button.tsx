@@ -16,7 +16,7 @@ export const ConnectWallet = ({ className }: { className?: string }) => {
     return (
       <Button
         variant="default"
-        className={cn(btbClassName, className, 'gap-2 rounded-[8px]  text-[16px] ')}
+        className={cn(btbClassName, className, 'gap-2 rounded-[8px] h-[46px] text-[16px] ')}
         onClick={() => open({ view: 'Connect' })}
       >
         <span className="!text-white">Connect Wallet</span>

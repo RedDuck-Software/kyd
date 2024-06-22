@@ -13,7 +13,7 @@ module.exports = {
     },
     extend: {
       fontFamily: {
-        quicksand: ['Quicksand', 'sans-serif'],
+        sans: ['Rubik', 'sans-serif'],
       },
       boxShadow: {
         glow: '0 0 6px 1px #FF6928',
