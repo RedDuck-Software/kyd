@@ -18,10 +18,11 @@ module.exports = {
       boxShadow: {
         glow: '0 0 6px 1px #FF6928',
         'glow-xl': '0 0 25px 7px #FF6928',
-        violent: '4px 4px 0 0 #e3b4fa',
-        orange: '4px 4px 0 0 #ff6928',
-        blue: '4px 4px 0 0 #b4dcfa',
+        violent: '4px 4px 0 0 #8d1eff',
+        orange: '4px 4px 0 0 #ff8004',
+        blue: '4px 4px 0 0 #1e90ff',
         dark: '4px 4px 0 0 #030408',
+        danger: '4px 4px 0 0 #FE4756',
       },
       colors: {
         success: '#28CCAF',
