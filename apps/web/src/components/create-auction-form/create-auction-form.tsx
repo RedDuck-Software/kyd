@@ -6,7 +6,7 @@ import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
 import { Switch } from '../ui/switch';
 import { useAccount, useChainId, useWriteContract } from 'wagmi';
-import { Address, parseUnits } from 'viem';
+import { Address, parseUnits, zeroAddress } from 'viem';
 import { useEffect, useState } from 'react';
 import { AUctionFactoryAbi } from '@/abi/AuctionFactory';
 import { addresses } from '@/constants/addresses';
@@ -14,6 +14,20 @@ import { Dropzone } from './dropzone';
 import { emptyFile } from '@/constants/empty-file';
 import { postCreateNFTMetadata } from '@/api/create-nft';
 import { generateWinnerImagesArray } from '@/lib/generateWinnersArray';
+import {
+  MultiSelector,
+  MultiSelectorContent,
+  MultiSelectorInput,
+  MultiSelectorItem,
+  MultiSelectorList,
+  MultiSelectorTrigger,
+} from '../ui/multiple-select';
+
+const options: { label: string; value: string }[] = [
+  { label: 'USDT', value: 'USDT' },
+  { label: 'USDC', value: 'USDC' },
+  { label: 'DAI', value: 'DAI' },
+];
 
 const schema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -70,6 +84,7 @@ export const CreateAuctionForm = () => {
 
   const [enableTopDonateWinners, setEnableTopDonateWinners] = useState(false);
   const [enableRandomWinners, setEnableRandomWinners] = useState(false);
+  const [stables, setStables] = useState<string[]>([]);
 
   const { writeContractAsync } = useWriteContract();
 
@@ -284,6 +299,24 @@ export const CreateAuctionForm = () => {
             )}
           />
           {errors.participantNFT?.image && <p className="text-danger">{errors.participantNFT.image.message}</p>}
+        </div>
+
+        <div>
+          <p>Allowed Tokens</p>
+          <MultiSelector values={stables} onValuesChange={setStables} loop={false}>
+            <MultiSelectorTrigger>
+              <MultiSelectorInput placeholder="Select allowed tokens" />
+            </MultiSelectorTrigger>
+            <MultiSelectorContent>
+              <MultiSelectorList>
+                {options.map((option, i) => (
+                  <MultiSelectorItem key={i} value={option.value}>
+                    {option.label}
+                  </MultiSelectorItem>
+                ))}
+              </MultiSelectorList>
+            </MultiSelectorContent>
+          </MultiSelector>
         </div>
 
         <Button type="submit">Submit</Button>
