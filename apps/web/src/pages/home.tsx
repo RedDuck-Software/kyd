@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+import { httpClient } from '@/api/client';
 import { ShadowCard } from '@/components/common/shadow-card';
 import { TrandingAuctions } from '@/components/home/tranding-auctions';
 import { Button } from '@/components/ui/button';
@@ -6,22 +8,58 @@ import { GET_ALL_AUCTIONS, GetAllAuctionsResponse } from '@/graph/queries/get-al
 import { useDefaultSubgraphQuery } from '@/hooks/useDefaultSubgraphQuery';
 import { getShadowCardBg, getShadowCardVariant } from '@/lib/shadow-card-variant';
 import { cn } from '@/lib/utils';
+import { useNavigate } from 'react-router-dom';
+
+type AuctionMetadata = {
+  name: string;
+  description: string;
+  uri: string;
+};
 
 export default function Home() {
+  const navigate = useNavigate();
+
   const { data } = useDefaultSubgraphQuery<GetAllAuctionsResponse>(GET_ALL_AUCTIONS);
 
   const endedAuctionIds = new Set(data?.auctionEndeds.map((auction) => auction.id));
-
   const activeAuctions = data?.auctionCreateds.filter((auction) => !endedAuctionIds.has(auction.id));
 
-  // const { data } = useReadContract({
-  //   abi: AUctionFactoryAbi,
-  //   functionName: 'auctions',
-  //   address: addresses[chainId].auctionFactory,
-  // });
+  const [auctionData, setAuctionData] = useState<{
+    [key: string]: AuctionMetadata;
+  }>({});
 
-  console.log('data ==>', JSON.stringify(data, null, 2));
-  console.log('activeAuctions ==>', activeAuctions);
+  useEffect(() => {
+    const fetchImages = async () => {
+      const auctionData: { [key: string]: AuctionMetadata } = {};
+
+      if (!activeAuctions) return;
+
+      console.log(1);
+
+      await Promise.all(
+        activeAuctions.map(async (auction) => {
+          try {
+            const response = await httpClient.get<AuctionMetadata>(`${auction.uri}0`);
+            if (response.data) {
+              auctionData[auction.id] = response.data;
+            } else {
+              console.error(`Failed to fetch image for auction ${auction.id}: ${response.statusText}`);
+            }
+          } catch (error) {
+            console.error(`Error fetching image for auction ${auction.id}:`, error);
+          }
+        })
+      );
+
+      setAuctionData(auctionData);
+    };
+
+    fetchImages();
+  }, [activeAuctions]);
+
+  const handleParticipate = (address: string) => {
+    navigate(`auctions/${address}`);
+  };
 
   return (
     <div className="flex flex-col gap-32">
@@ -36,22 +74,21 @@ export default function Home() {
       <div className="flex flex-col gap-4">
         <h2 className="text-[32px] font-semibold">Top active auctions</h2>
         <div className="w-full grid grid-cols-3 gap-8">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <ShadowCard variant={getShadowCardVariant(i)}>
+          {activeAuctions?.map(({ id, address }, i) => (
+            <ShadowCard key={id} variant={getShadowCardVariant(i)}>
               <CardHeader>
                 <CardTitle className={cn(getShadowCardBg(i), 'rounded-[16px] py-2 text-center')}>
-                  #NAME# Auction
+                  {auctionData[id]?.name}
                 </CardTitle>
-                <CardDescription className="text-slate-800">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Aut tempora consectetur distinctio hic totam
-                  ex tempore?
-                </CardDescription>
+                <CardDescription className="text-slate-800">{auctionData[id]?.description}</CardDescription>
               </CardHeader>
               <CardContent className="p-0">
-                <img src="https://placehold.co/600x400" alt="" />
+                <img src={auctionData[id]?.uri} alt={`Can't get ${auctionData[id]?.uri}`} />
               </CardContent>
               <CardFooter className="flex justify-end my-4 py-0">
-                <Button className="w-full">Participate</Button>
+                <Button onClick={() => handleParticipate(address)} className="w-full">
+                  Participate
+                </Button>
               </CardFooter>
             </ShadowCard>
           ))}
