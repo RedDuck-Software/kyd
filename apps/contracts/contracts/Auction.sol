@@ -184,17 +184,25 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
 
     function _distibute() private {
         uint256 _randomWinners = randomWinners;
+        console.log(topWinnersNfts.length, _randomWinners);
 
-        for (uint i; i < topWinnersNfts.length; i++) {
-            if (list.tail == type(uint256).max) return;
+        for (uint i; i <= topWinnersNfts.length; i++) {
+            console.log("i");
+
+            if (list.tail == type(uint256).max) break;
 
             DoubleLinkedList.Node memory node = list.getNode(list.tail);
 
             _mint(nft, node.data.user, i);
             list.remove(node.data.user, list.tail);
+
+            console.log("nft top distributed");
         }
 
-        for (uint256 i; _randomWinners == 0; i++) {
+        console.log("1", list.length);
+        for (uint256 i; _randomWinners != 0; i++) {
+            if (list.length == 0) break;
+
             uint256 randomValue = uint256(
                 keccak256(abi.encodePacked(randomness, i))
             ) % list.length;
@@ -209,6 +217,7 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
             console.log("nft distributed");
 
             list.remove(data.user, randomValue);
+            console.log("removed");
 
             _randomWinners--;
         }

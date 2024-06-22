@@ -22,9 +22,9 @@ describe('Auction', function () {
 
   describe('Auction', () => {
 
-    it.only('distribute', async () => { 
+    it('distribute', async () => { 
       const { auctionFactory, donator, donator1, donator2, stables, createAuction,  } = await loadFixture(deployAuctionNft);
-      const auction = await createAuction(1n, 0n);
+      const auction = await createAuction(1n, 1n);
 
       await stables[0].write.approve([
         auction.address,
@@ -42,7 +42,7 @@ describe('Auction', function () {
       await auction.write.distributeRewards()
     })
 
-    it('donate', async () => {
+    it.only('donate', async () => {
       const { auctionFactory, donator, donator1, donator2, stables, createAuction,  } = await loadFixture(deployAuctionNft);
       const auction = await createAuction();
 
@@ -85,8 +85,14 @@ describe('Auction', function () {
 
       await auction.write.donate([
         stables[0].address,
-        151n, 1n, 1n, false
+        151n, 0n, 1n, false
       ],{account : donator1.account})
+
+
+      await auction.write.donate([
+        stables[0].address,
+        151n, 0n, 1n, false
+      ],{account : donator2.account})
 
       console.log('TEST2', await auction.read.getNodes());
 
