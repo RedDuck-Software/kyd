@@ -22,11 +22,19 @@ export default function Home() {
   const { data } = useDefaultSubgraphQuery<GetAllAuctionsResponse>(GET_ALL_AUCTIONS);
 
   const endedAuctionIds = new Set(data?.auctionEndeds.map((auction) => auction.id));
-  const activeAuctions = data?.auctionCreateds.filter((auction) => !endedAuctionIds.has(auction.id));
+  const initialActiveAuctions = data?.auctionCreateds.filter((auction) => !endedAuctionIds.has(auction.id));
 
+  const [activeAuctions, setActiveAuctions] = useState(initialActiveAuctions);
   const [auctionData, setAuctionData] = useState<{
     [key: string]: AuctionMetadata;
   }>({});
+
+  useEffect(() => {
+    if (initialActiveAuctions) {
+      setActiveAuctions(initialActiveAuctions);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
 
   useEffect(() => {
     const fetchImages = async () => {
