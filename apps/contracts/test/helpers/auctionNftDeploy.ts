@@ -68,7 +68,7 @@ export async function deployAuctionNft() {
             BigInt(v),
           ),
           stables: [erc20Test.address],
-          randomWinnerNftId: 0n,
+          randomWinnerNftId: topWinners,
           // FIXME
           ethToStablePath: '0x',
           // FIXME
@@ -93,10 +93,12 @@ export async function deployAuctionNft() {
         {
           goal: parseUnits('100', 18),
           owner: owner.account.address,
-          randomWinners: 5n,
-          topWinners: [],
+          randomWinners: randomWinners,
+          topWinners: Array.from(Array(topWinners).keys()).map((v) =>
+            BigInt(v),
+          ),
           stables: [erc20Test.address],
-          randomWinnerNftId: 0n,
+          randomWinnerNftId: topWinners,
           // FIXME
           ethToStablePath: '0x',
           // FIXME

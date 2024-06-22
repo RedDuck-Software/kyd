@@ -1,7 +1,6 @@
 import { Link, NavLink } from 'react-router-dom';
 import { routes } from '@/router';
 import { useState } from 'react';
-import { useAccount } from 'wagmi';
 import { Menu } from '../ui/svg/Menu';
 import { ConnectWallet } from '../wallet/connect-wallet-button';
 import { Logo } from '../ui/svg/logo';
@@ -9,7 +8,6 @@ import { Logo } from '../ui/svg/logo';
 export const HeaderMobile = () => {
   const [active, setActive] = useState(false);
   const [show, setShow] = useState(false);
-  const { isConnected } = useAccount();
 
   const init = (value: boolean) => {
     if (value) {

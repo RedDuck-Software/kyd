@@ -1,4 +1,5 @@
-import { AllowedChainIds, Token, allowedTokens, contractAddresses } from '@/constants/constants';
+import { AllowedChainIds, Token, allowedTokens } from '@/constants/addresses';
+import { contractAddresses } from '@/constants/constants';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
 import { erc20Abi, maxUint256 } from 'viem';

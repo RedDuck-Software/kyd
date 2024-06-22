@@ -11,6 +11,7 @@ import "./gelato/GelatoVRFConsumerBase.sol";
 import "./interfaces/IAuction.sol";
 import "./AuctionNFT.sol";
 import "./AuctionFactory.sol";
+import "hardhat/console.sol";
 
 contract Auction is IAuction, OwnableUpgradeable {
     using DoubleLinkedList for DoubleLinkedList.List;
@@ -26,6 +27,7 @@ contract Auction is IAuction, OwnableUpgradeable {
     error AuctionIsEnded();
     error AlreadyDistributed();
     error RandomnessIsNotSet();
+    error AlreadyFinished();
     error NotDistributed();
     error MismatchLenghts();
     error StableNotSupported();
@@ -54,6 +56,7 @@ contract Auction is IAuction, OwnableUpgradeable {
 
     uint256 public randomness;
     bool public nftsDistributed;
+    bool public randomnessRequested;
 
     constructor() {
         _disableInitializers();
@@ -91,6 +94,8 @@ contract Auction is IAuction, OwnableUpgradeable {
     }
 
     function finish() external onlyOwner {
+        if (randomnessRequested) revert AlreadyFinished();
+
         _finishAuction();
 
         emit AuctionEnded();
@@ -243,17 +248,19 @@ contract Auction is IAuction, OwnableUpgradeable {
 
     function _finishAuction() internal virtual {
         AuctionFactory(factory).requestRandomness();
+        randomnessRequested = true;
     }
 
     function _distibute() private {
         uint256 _randomWinners = randomWinners;
 
         for (uint i; i <= topWinnersNfts.length; i++) {
-            if (list.tail == type(uint256).max) break;
+            if (list.length == 0) break;
 
             DoubleLinkedList.Node memory node = list.getNode(list.tail);
 
             _mint(nft, node.data.user, i);
+            console.log(list.tail, node.data.user, i);
             list.remove(node.data.user, list.tail);
         }
 
@@ -269,6 +276,7 @@ contract Auction is IAuction, OwnableUpgradeable {
             // if random value repeated
             if (data.user == address(0)) continue;
 
+            console.log("randomWinnerLastNftId", randomWinnerLastNftId);
             _mint(nft, data.user, randomWinnerLastNftId++);
 
             list.remove(data.user, randomValue);
