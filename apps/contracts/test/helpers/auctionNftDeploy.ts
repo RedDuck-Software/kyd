@@ -75,6 +75,7 @@ export async function deployAuctionNft() {
           swapStable: erc20Test.address,
           // FIXME
           uniswapV3Router: zeroAddress,
+          baseUri: '0x'
         },
         {
           name: '',
@@ -102,6 +103,7 @@ export async function deployAuctionNft() {
           swapStable: erc20Test.address,
           // FIXME
           uniswapV3Router: zeroAddress,
+          baseUri: '0x'
         },
         {
           name: '',

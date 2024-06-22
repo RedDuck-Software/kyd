@@ -1,7 +1,8 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.23;
 
-import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "./libraries/DoubleLinkedList.sol";
 import "./libraries/DecimalsCorrectionLibrary.sol";
@@ -14,7 +15,7 @@ import "./AuctionFactory.sol";
 contract Auction is IAuction, OwnableUpgradeable {
     using DoubleLinkedList for DoubleLinkedList.List;
     using DecimalsCorrectionLibrary for uint256;
-
+    using SafeERC20 for IERC20;
     DoubleLinkedList.List list;
 
     event Donate(address indexed user, address indexed stable, uint256 amount);
@@ -22,6 +23,8 @@ contract Auction is IAuction, OwnableUpgradeable {
     event RewardsDistributed();
 
     error InvalidEthDonate();
+    error AuctionIsEnded();
+    error AlreadyDistributed();
     error RandomnessIsNotSet();
     error NotDistributed();
     error MismatchLenghts();
@@ -83,10 +86,6 @@ contract Auction is IAuction, OwnableUpgradeable {
             supportedStables[_params.stables[i]] = true;
         }
 
-        if (!supportedStables[swapStable]) {
-            revert StableNotSupported();
-        }
-
         topWinnersNfts = _params.topWinners;
         nftParticipate = _params.nftParticipate;
     }
@@ -99,6 +98,7 @@ contract Auction is IAuction, OwnableUpgradeable {
 
     function distributeRewards() external {
         if (randomness == 0) revert RandomnessIsNotSet();
+        if (nftsDistributed) revert AlreadyDistributed();
 
         _distibute();
 
@@ -113,7 +113,7 @@ contract Auction is IAuction, OwnableUpgradeable {
         if (!nftsDistributed) revert NotDistributed();
 
         for (uint i = 0; i < _stables.length; i++) {
-            ERC20Upgradeable(_stables[i]).transfer(owner(), amounts[i]);
+            IERC20(_stables[i]).safeTransfer(owner(), amounts[i]);
         }
     }
 
@@ -136,7 +136,7 @@ contract Auction is IAuction, OwnableUpgradeable {
         );
 
         stableAmount = stableAmount.convertToBase18(
-            ERC20Upgradeable(swapStable).decimals()
+            ERC20(swapStable).decimals()
         );
 
         _donate(
@@ -157,14 +157,9 @@ contract Auction is IAuction, OwnableUpgradeable {
     ) external {
         if (!supportedStables[stable]) revert StableNotSupported();
 
-        // FIXME: safe transfer from
-        ERC20Upgradeable(stable).transferFrom(
-            msg.sender,
-            address(this),
-            amount
-        );
+        IERC20(stable).safeTransferFrom(msg.sender, address(this), amount);
 
-        amount = amount.convertToBase18(ERC20Upgradeable(stable).decimals());
+        amount = amount.convertToBase18(ERC20(stable).decimals());
 
         _donate(amount, indexToInsert, indexOfExisting, before, stable);
     }
@@ -176,6 +171,10 @@ contract Auction is IAuction, OwnableUpgradeable {
         bool before,
         address stable
     ) internal {
+        if (randomness != 0) {
+            revert AuctionIsEnded();
+        }
+
         totalDonated += amount;
 
         if (userDonated[msg.sender]) {

@@ -1,6 +1,8 @@
 type AuctionCreated @entity(immutable: true) {
   id: Bytes!
-  address: Bytes!
+  address: Bytes! # address
+  uri: String!
+  owner: Bytes! # address
   blockNumber: BigInt! # uint256
   blockTimestamp: BigInt! # uint256
   transactionHash: Bytes! # hex
@@ -8,7 +10,9 @@ type AuctionCreated @entity(immutable: true) {
 
 type AuctionNFTCreated @entity(immutable: true) {
   id: Bytes!
-  address: Bytes!
+  address: Bytes! # address
+  uri: String!
+  auctionAddress: Bytes! # address
   blockNumber: BigInt! # uint256
   blockTimestamp: BigInt! # uint256
   transactionHash: Bytes! # hex
@@ -17,6 +21,8 @@ type AuctionNFTCreated @entity(immutable: true) {
 type AuctionNFT1155Created @entity(immutable: true) {
   id: Bytes!
   address: Bytes!
+  uri: String!
+  auctionAddress: Bytes! # address
   blockNumber: BigInt! # uint256
   blockTimestamp: BigInt! # uint256
   transactionHash: Bytes! # hex
@@ -50,8 +56,9 @@ type RewardsDistributed @entity(immutable: true) {
 }
 
 type AuctionNFTBurn @entity(immutable: true) {
-  id: Bytes! # address
+  id: Bytes!
   from: Bytes! # address
+  address: Bytes! # address
   tokenId: BigInt! # uint256
   data: Bytes! # hex
   blockNumber: BigInt! # uint256
@@ -62,6 +69,7 @@ type AuctionNFTBurn @entity(immutable: true) {
 type AuctionNFT @entity(immutable: true) {
   id: Bytes! # address
   tokenId: BigInt! # uint256
+  address: Bytes! # address
   owner: Bytes! # address
   blockNumber: BigInt! # uint256
   blockTimestamp: BigInt! # uint256
@@ -71,6 +79,7 @@ type AuctionNFT @entity(immutable: true) {
 type AuctionNFT1155Mint @entity(immutable: true) {
   id: Bytes! # address
   tokenId: BigInt! # uint256
+  address: Bytes! # address
   user: Bytes! # address
   blockNumber: BigInt! # uint256
   blockTimestamp: BigInt! # uint256
@@ -80,6 +89,7 @@ type AuctionNFT1155Mint @entity(immutable: true) {
 type AuctionNFT1155Burn @entity(immutable: true) {
   id: Bytes! # address
   from: Bytes! # address
+  address: Bytes! # address
   tokenId: BigInt! # uint256
   data: Bytes! # hex
   blockNumber: BigInt! # uint256

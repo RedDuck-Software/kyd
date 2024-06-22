@@ -9,7 +9,7 @@ describe('Auction NFT', function () {
   describe('Deployment', () => {
     it('Should deploy Auction NFT', async () => {
       const { auctionNft, owner } = await loadFixture(deployAuctionNft);
-
+      await auctionNft.write.initialize(['TEST','T',owner.account.address]);
       expect(auctionNft.address).to.not.equal(zeroAddress);
       expect(await auctionNft.read.name()).to.equal('TEST');
       expect(await auctionNft.read.symbol()).to.equal('T');
@@ -22,82 +22,77 @@ describe('Auction NFT', function () {
   describe('Mint', async () => {
     it('Should fail: not an owner', async () => {
       const { auctionNft, owner } = await loadFixture(deployAuctionNft);
+      await auctionNft.write.initialize(['','',owner.account.address]);
 
       const [, user] = await viem.getWalletClients();
 
-      const id = await auctionNft.read.id();
-
-      await mint(auctionNft, user, user.account.address, id, {
+      await mint(auctionNft, user, user.account.address, 0n, {
         reverted: true,
       });
     });
 
     it('Should not fail', async () => {
       const { auctionNft, owner } = await loadFixture(deployAuctionNft);
+      await auctionNft.write.initialize(['','',owner.account.address]);
 
-      const id = await auctionNft.read.id();
 
       const [, user] = await viem.getWalletClients();
 
-      await mint(auctionNft, owner, user.account.address, id);
+      await mint(auctionNft, owner, user.account.address, 0n);
     });
   });
 
   describe('Burn', async () => {
     it('Should not burn: not an owner', async () => {
       const { auctionNft, owner } = await loadFixture(deployAuctionNft);
-
-      const id = await auctionNft.read.id();
+      await auctionNft.write.initialize(['','',owner.account.address]);
 
       const [, user] = await viem.getWalletClients();
 
-      await burn(auctionNft, user, id, {
+      await burn(auctionNft, user, 0n, {
         reverted: true,
       });
     });
 
     it('Should not fail', async () => {
       const { auctionNft, owner } = await loadFixture(deployAuctionNft);
-
-      const id = await auctionNft.read.id();
+      await auctionNft.write.initialize(['','',owner.account.address]);
 
       const [, user] = await viem.getWalletClients();
 
-      await mint(auctionNft, owner, user.account.address, id);
+      await mint(auctionNft, owner, user.account.address, 0n);
 
-      await burn(auctionNft, user, id);
+      await burn(auctionNft, user, 0n);
     });
 
     it('Should fail: already burnt', async () => {
       const { auctionNft, owner } = await loadFixture(deployAuctionNft);
-
-      const id = await auctionNft.read.id();
+      await auctionNft.write.initialize(['','',owner.account.address]);
 
       const [, user] = await viem.getWalletClients();
 
-      await mint(auctionNft, owner, user.account.address, id);
+      await mint(auctionNft, owner, user.account.address, 0n);
 
-      await burn(auctionNft, user, id, {
+      await burn(auctionNft, user, 0n, {
         reverted: true,
       });
     });
 
     it('Should fail transfer: burnt', async () => {
       const { auctionNft, owner } = await loadFixture(deployAuctionNft);
-
-      const id = await auctionNft.read.id();
+      await auctionNft.write.initialize(['','',owner.account.address]);
 
       const [, user] = await viem.getWalletClients();
 
-      await mint(auctionNft, owner, user.account.address, id);
+      await mint(auctionNft, owner, user.account.address, 0n);
 
-      await burn(auctionNft, user, id);
+      await burn(auctionNft, user, 0n);
 
       await expect(
         auctionNft.write.transferFrom([
           user.account.address,
           owner.account.address,
-          id,
+          0n,
         ]),
       ).to.rejected;
     });

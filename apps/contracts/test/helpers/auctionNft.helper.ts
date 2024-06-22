@@ -25,7 +25,6 @@ export const mint = async (
     account: caller.account,
   });
 
-  expect(await auctionNft.read.id()).to.eq(id + 1n);
   expect((await auctionNft.read.ownerOf([id])).toLowerCase()).to.eq(
     to.toLowerCase(),
   );
@@ -53,7 +52,6 @@ export const burn = async (
     account: caller.account,
   });
 
-  expect(await auctionNft.read.id()).to.eq(id + 1n);
   expect((await auctionNft.read.ownerOf([id])).toLowerCase()).to.eq(
     caller.account.address.toLowerCase(),
   );

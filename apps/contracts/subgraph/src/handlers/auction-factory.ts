@@ -17,6 +17,8 @@ export function handleAuctionCreation(event: AuctionDeployedEvent): void {
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   );
 
+  entity.uri = event.params.baseUri;
+  entity.owner = event.params.owner;
   entity.blockNumber = event.block.number;
   entity.blockTimestamp = event.block.timestamp;
   entity.transactionHash = event.transaction.hash;
@@ -33,6 +35,8 @@ export function handleNftCreation(event: NFTDeployedEvent): void {
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   );
 
+  entity.auctionAddress = event.params.auctionAddress;
+  entity.uri = event.params.baseUri;
   entity.blockNumber = event.block.number;
   entity.blockTimestamp = event.block.timestamp;
   entity.transactionHash = event.transaction.hash;
@@ -49,6 +53,7 @@ export function handleNft1155Creation(event: NFT1155DeployedEvent): void {
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   );
 
+  entity.auctionAddress = event.params.auctionAddress;
   entity.blockNumber = event.block.number;
   entity.blockTimestamp = event.block.timestamp;
   entity.transactionHash = event.transaction.hash;

@@ -13,6 +13,7 @@ export function handleBurn1155(event: BurnEvent): void {
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   );
 
+  entity.address = event.address;
   entity.from = event.params.from;
   entity.tokenId = event.params.tokenId;
   entity.data = event.params.data;
@@ -25,7 +26,7 @@ export function handleBurn1155(event: BurnEvent): void {
 }
 
 export function handleMint1155Single(event: TransferSingleEvent): void {
-  if (event.params.from.toHexString() != ADDRESS_ZERO) {
+  if (event.params.from.toHexString() !== ADDRESS_ZERO) {
     return;
   }
 
@@ -33,6 +34,7 @@ export function handleMint1155Single(event: TransferSingleEvent): void {
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   );
 
+  entity.address = event.address;
   entity.tokenId = event.params.id;
   entity.user = event.params.to;
   entity.blockNumber = event.block.number;
@@ -44,7 +46,7 @@ export function handleMint1155Single(event: TransferSingleEvent): void {
 }
 
 export function handleMint1155Batch(event: TransferBatchEvent): void {
-  if (event.params.from.toHexString() != ADDRESS_ZERO) {
+  if (event.params.from.toHexString() !== ADDRESS_ZERO) {
     return;
   }
 
@@ -53,6 +55,7 @@ export function handleMint1155Batch(event: TransferBatchEvent): void {
       event.transaction.hash.concatI32(event.logIndex.toI32()),
     );
 
+    entity.address = event.address;
     entity.tokenId = event.params.ids[i];
     entity.user = event.params.to;
     entity.blockNumber = event.block.number;
