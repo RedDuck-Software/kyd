@@ -4,7 +4,7 @@ import { deployAuctionNft } from './helpers/auctionNftDeploy';
 import { parseUnits, zeroAddress } from 'viem';
 import { viem } from 'hardhat';
 
-describe.only('Auction', function () {
+describe('Auction', function () {
   describe('Deployment', () => {
     it('Should deploy Auction', async () => {
       const { auctionNft, auction, auctionFactory, auctionNft1155, owner } =
@@ -46,7 +46,7 @@ describe.only('Auction', function () {
       await auction.write.distributeRewards();
     });
 
-    it.only('donate', async () => {
+    it('donate', async () => {
       const {
         auctionFactory,
         donator,
@@ -80,37 +80,19 @@ describe.only('Auction', function () {
         100n, 0n, 0n, false
       ],{account : donator.account})
 
-      console.log('TEST1', await auction.read.getNodes());
-      
       await auction.write.donate([
         stables[0].address,
         50n, 0n, 0n, true
       ],{account : donator1.account})
 
-      console.log('TEST2', await auction.read.getNodes());
-
       await auction.write.donate([stables[0].address, 151n, 0n, 1n, false], {
         account: donator1.account,
       });
 
-      console.log('TEST3', await auction.read.getNodes());
-
       await auction.write.donate([
         stables[0].address,
-        151n, 0n, 0n, false
+        151n, 0n, 0n, true
       ],{account : donator2.account})
-
-      console.log('TEST4', await auction.read.getNodes());
-
-
-      // await auction.write.donate([
-      //   stables[0].address,
-      //   200n, 0n, 1n, true
-      // ],{account : donator2.account})
-
-      // console.log(await auction.read.getUser([0n]));
-      // console.log(await auction.read.getUser([1n]));
-      // console.log(await auction.read.getUser([3n]));
     });
   });
 });

@@ -118,8 +118,10 @@ library DoubleLinkedList {
     ) internal isValidNode(list, id) returns (uint256 newID) {
         if (list.length == 0) {
             list.nodes.push(Node(data, type(uint256).max, type(uint256).max));
+            list.head = list.nodes.length - 1;
+            list.tail = list.nodes.length - 1;
             list.length++;
-            return 0;
+            return list.nodes.length - 1;
         }
 
         Node storage node = list.nodes[id];
@@ -127,13 +129,6 @@ library DoubleLinkedList {
         if (node.prev != type(uint256).max) {
             require(
                 list.nodes[node.prev].data.amount >= data.amount,
-                "Invalid id"
-            );
-        }
-
-        if (node.next != type(uint256).max) {
-            require(
-                list.nodes[node.next].data.amount <= data.amount,
                 "Invalid id"
             );
         }
@@ -201,7 +196,7 @@ library DoubleLinkedList {
     modifier isValidNode(List storage list, uint256 id) {
         require(
             id == 0 || (id != type(uint).max && id < list.nodes.length),
-            "Invalid id"
+            "Invalid id: n"
         );
         _;
     }
