@@ -5,12 +5,16 @@ export type CreateAuctionMetadataDTO = {
   name: string;
   description: string;
   files: File[];
+  tokenId: string;
+  auctionId?: string;
 };
 
 export type CreateAuctionMetadataResponse = {
   name: string;
   description: string;
   uri: string;
+  tokenId: string;
+  auctionId: string;
 };
 
 export const postCreateAuctionMetadata = async (dto: CreateAuctionMetadataDTO) => {
@@ -24,7 +28,7 @@ export const postCreateAuctionMetadata = async (dto: CreateAuctionMetadataDTO) =
   formData.append('description', dto.description);
 
   try {
-    return httpClient.post<CreateAuctionMetadataResponse>('/auction-metadata', formData);
+    return httpClient.post<CreateAuctionMetadataResponse>('api//auction-metadata', formData);
   } catch (e) {
     if (e instanceof Error) toast({ title: 'Api error', description: e.message, variant: 'destructive' });
   }

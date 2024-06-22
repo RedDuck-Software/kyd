@@ -6,14 +6,14 @@ import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
 import { Switch } from '../ui/switch';
 import { useAccount, useChainId, useWriteContract } from 'wagmi';
-import { Address, parseUnits, zeroAddress } from 'viem';
+import { Address, getAddress, parseUnits, zeroAddress } from 'viem';
 import { useEffect, useState } from 'react';
 import { AUctionFactoryAbi } from '@/abi/AuctionFactory';
-import { addresses } from '@/constants/addresses';
+import { addresses, AllowedChainIds, allowedTokens } from '@/constants/addresses';
 import { Dropzone } from './dropzone';
 import { emptyFile } from '@/constants/empty-file';
 import { postCreateNFTMetadata } from '@/api/create-nft';
-import { generateWinnerImagesArray } from '@/lib/generateWinnersArray';
+import { generateWinnerArray } from '@/lib/generateWinnersArray';
 import {
   MultiSelector,
   MultiSelectorContent,
@@ -22,18 +22,14 @@ import {
   MultiSelectorList,
   MultiSelectorTrigger,
 } from '../ui/multiple-select';
-
-const options: { label: string; value: string }[] = [
-  { label: 'USDT', value: 'USDT' },
-  { label: 'USDC', value: 'USDC' },
-  { label: 'DAI', value: 'DAI' },
-];
+import { env } from '@/env';
 
 const schema = z
   .object({
     title: z.string().min(1, 'Title is required'),
     description: z.string().min(15, 'Description must be at least 15 characters'),
     auctionImage: z.any().refine((file) => file instanceof File, 'Image is required'),
+    goal: z.string().min(1, 'Title is required'),
     topDonateWinners: z
       .array(
         z.object({
@@ -57,15 +53,15 @@ const schema = z
       })
       .optional(),
     stables: z.array(z.string()).nonempty('At least one stable must be selected'),
-    enableTopDonateWinners: z.boolean(),
-    enableRandomWinners: z.boolean(),
+    enableTopDonateWinners: z.boolean().default(false),
+    enableRandomWinners: z.boolean().default(false),
   })
   .refine((data) => data.enableTopDonateWinners || data.enableRandomWinners, {
     message: 'At least one of Set Top-Donate Prizes or Set Random Winners must be selected',
-    path: ['enableTopDonateWinners', 'enableRandomWinners'],
+    path: ['enableTopDonateWinners'],
   });
 
-type FormData = z.infer<typeof schema>;
+type CreateFormData = z.infer<typeof schema>;
 
 export const CreateAuctionForm = () => {
   const chainId = useChainId();
@@ -77,7 +73,7 @@ export const CreateAuctionForm = () => {
     control,
     formState: { errors },
     setValue,
-  } = useForm<FormData>({
+  } = useForm<CreateFormData>({
     resolver: zodResolver(schema),
   });
 
@@ -92,9 +88,15 @@ export const CreateAuctionForm = () => {
 
   const [enableTopDonateWinners, setEnableTopDonateWinners] = useState(false);
   const [enableRandomWinners, setEnableRandomWinners] = useState(false);
-  const [stables, setStables] = useState<string[]>([]);
 
   const { writeContractAsync } = useWriteContract();
+
+  const options: { label: string; value: string }[] = [
+    {
+      label: 'USDT',
+      value: allowedTokens[chainId as AllowedChainIds].find((x) => x.symbol === 'USDT')?.address ?? zeroAddress,
+    },
+  ];
 
   useEffect(() => {
     if (enableTopDonateWinners && topWinnerFields.length === 0) {
@@ -102,58 +104,126 @@ export const CreateAuctionForm = () => {
     }
   }, [appendTopWinner, enableTopDonateWinners, topWinnerFields.length]);
 
-  const handleCreateAuction = async (data: FormData) => {
+  const handleCreateAuction = async (data: CreateFormData) => {
     if (!address) return;
 
-    // const selectedStables: Address[] = [];
-    // const goal = parseUnits('10000', 18);
-    // const randomWinners = parseUnits(data.randomWinner?.amount ?? '0', 18);
-    // const randomWinnerNftId = parseUnits('1', 18);
+    let topWinnerNftId: string | undefined = undefined;
+    let randomWinnerNftId: string | undefined = undefined;
+    let participantNftId: string | undefined = undefined;
 
-    const topWinners = generateWinnerImagesArray(data.topDonateWinners ?? []);
+    // Top winners
 
-    console.log('topWinners ==>', topWinners);
+    const topWinners = data.topDonateWinners;
+    const topWinnersArr = generateWinnerArray(topWinners ?? []);
 
-    // const auctionCreateData = {
-    //   stables: selectedStables,
-    //   topWinners,
-    //   goal,
-    //   owner: address,
-    //   randomWinners,
-    //   randomWinnerNftId,
-    // };
+    if (enableTopDonateWinners && topWinners) {
+      const firstEl = topWinnersArr[0];
+      const { data } = await postCreateNFTMetadata({
+        description: firstEl.name,
+        files: [firstEl.file],
+        tokenId: '0',
+      });
 
-    // const winnerNft = {
-    //   name: 'data.winnerNFT.name',
-    //   symb: 'kyd-nft-winner',
-    //   // uri: data.winnerNFT.imageUrl,
-    //   uri: '',
-    // };
+      topWinnerNftId = data?.nftId;
 
-    // const participantNft = {
-    //   name: data.participantNFT.name,
-    //   symb: 'kyd-nft-participant',
-    //   // uri: data.participantNFT.imageUrl,
-    //   uri: '',
-    // };
+      await Promise.all(
+        topWinnersArr.slice(1).map(({ name, file }, i) => {
+          return postCreateNFTMetadata({
+            description: name,
+            files: [file],
+            tokenId: String(i + 1),
+            nftId: data?.nftId,
+          });
+        })
+      )
+        .then((results) => {
+          console.log('All NFT metadata created:', results);
+        })
+        .catch((error) => {
+          console.error('Error creating NFT metadata:', error);
+        });
+    }
 
-    // await writeContractAsync({
-    //   abi: AUctionFactoryAbi,
-    //   address: addresses[chainId].auctionFactory,
-    //   functionName: 'create',
-    //   args: [auctionCreateData, winnerNft, participantNft],
-    // });
+    // Random winners
+
+    const randomWinner = data.randomWinner;
+    if (enableRandomWinners && randomWinner) {
+      const { data } = await postCreateNFTMetadata({
+        description: randomWinner.name,
+        files: [randomWinner.image],
+        tokenId: String(topWinnersArr.length),
+      });
+
+      randomWinnerNftId = data?.nftId;
+
+      await Promise.all(
+        Array.from({ length: Number(randomWinner.amount) }).map((_, i) => {
+          return postCreateNFTMetadata({
+            description: randomWinner.name,
+            files: [randomWinner.image],
+            tokenId: String(i + 1),
+            nftId: data?.nftId,
+          });
+        })
+      );
+    }
+
+    const { data: participantData } = await postCreateNFTMetadata({
+      description: data.participantNFT.name,
+      files: [data.participantNFT.image],
+      tokenId: '0',
+    });
+
+    participantNftId = participantData?.nftId;
+
+    const auctionCreateData = {
+      stables: data.stables.map(getAddress),
+      ethToStablePath: getAddress(
+        allowedTokens[chainId as AllowedChainIds].find((x) => x.symbol === 'USDT')?.ethToStablePath ?? zeroAddress
+      ), //TODO: change later
+      swapStable: getAddress(
+        allowedTokens[chainId as AllowedChainIds].find((x) => x.symbol === 'USDT')?.address ?? zeroAddress
+      ), //TODO: change later
+      uniswapV3Router: addresses[chainId].uniswapV3Router,
+      topWinners:
+        enableTopDonateWinners && data.topDonateWinners
+          ? data.topDonateWinners.map((_, i) => parseUnits(String(i), 18))
+          : [],
+      goal: parseUnits(data.goal, 18),
+      owner: address,
+      randomWinners: enableRandomWinners ? parseUnits(data.randomWinner?.amount as string, 18) : 0n,
+      randomWinnerNftId: enableRandomWinners ? parseUnits(randomWinnerNftId ?? '0', 18) : 0n,
+    };
+
+    const winnerNft = {
+      name: (data.topDonateWinners?.[0]?.winnerNFT?.name || data.randomWinner?.name) as string,
+      symb: 'kyd-nft-winner',
+      uri: `${env.VITE_BACKEND_URL}/api/nft-metadata/${topWinnerNftId}/`,
+    };
+
+    const participantNft = {
+      name: data.participantNFT.name,
+      symb: 'kyd-nft-participant',
+      uri: `${env.VITE_BACKEND_URL}/api/nft-metadata/${participantNftId}/`,
+    };
+
+    await writeContractAsync({
+      abi: AUctionFactoryAbi,
+      address: addresses[chainId].auctionFactory,
+      functionName: 'create',
+      args: [auctionCreateData, winnerNft, participantNft],
+    });
   };
 
   const handleNumberInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    field: `topDonateWinners.${number}.amount` | 'randomWinner.amount'
+    field: `topDonateWinners.${number}.amount` | 'randomWinner.amount' | 'goal'
   ) => {
     const value = e.target.value.replace(/[^0-9]/g, '');
     setValue(field, value, { shouldValidate: true });
   };
 
-  const onSubmit: SubmitHandler<FormData> = (data) => {
+  const onSubmit: SubmitHandler<CreateFormData> = (data) => {
     console.log(data);
     handleCreateAuction(data);
   };
@@ -186,9 +256,25 @@ export const CreateAuctionForm = () => {
             />
             {errors.auctionImage && <p className="text-danger">{errors.auctionImage.message}</p>}
           </div>
+          <div className="flex flex-col gap-2">
+            <p>Goal</p>
+            <Input
+              placeholder="Target auction gatheting amount"
+              {...register('goal')}
+              onChange={(e) => handleNumberInputChange(e, 'goal')}
+            />
+            {errors.goal && <p className="text-danger">{errors.goal.message}</p>}
+          </div>
         </div>
         <div className="flex gap-3 items-center">
-          <Switch id="topDonateWinners" onCheckedChange={setEnableTopDonateWinners} checked={enableTopDonateWinners} />
+          <Switch
+            id="topDonateWinners"
+            onCheckedChange={(checked) => {
+              setEnableTopDonateWinners(checked);
+              setValue('enableTopDonateWinners', checked);
+            }}
+            checked={enableTopDonateWinners}
+          />
           <label htmlFor="topDonateWinners" className="cursor-pointer">
             Set Top-Donate Prizes
           </label>
@@ -253,7 +339,14 @@ export const CreateAuctionForm = () => {
         )}
 
         <div className="flex gap-3 items-center">
-          <Switch id="randomWinners" onCheckedChange={setEnableRandomWinners} checked={enableRandomWinners} />
+          <Switch
+            id="randomWinners"
+            onCheckedChange={(checked) => {
+              setEnableRandomWinners(checked);
+              setValue('enableRandomWinners', checked);
+            }}
+            checked={enableRandomWinners}
+          />
           <label htmlFor="randomWinners" className="cursor-pointer">
             Set Random Winners
           </label>
@@ -334,6 +427,7 @@ export const CreateAuctionForm = () => {
           {errors.stables && <p className="text-danger">{errors.stables.message}</p>}
         </div>
 
+        {errors.enableTopDonateWinners && <p className="text-danger">{errors.enableTopDonateWinners.message}</p>}
         <Button type="submit">Submit</Button>
       </form>
     </div>

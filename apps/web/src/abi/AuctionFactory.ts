@@ -44,6 +44,32 @@ export const AUctionFactoryAbi = [
     type: 'event',
   },
   {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'nft1155',
+        type: 'address',
+      },
+    ],
+    name: 'NFT1155Deployed',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'nft',
+        type: 'address',
+      },
+    ],
+    name: 'NFTDeployed',
+    type: 'event',
+  },
+  {
     inputs: [
       {
         internalType: 'uint256',
@@ -70,6 +96,21 @@ export const AUctionFactoryAbi = [
             internalType: 'address[]',
             name: 'stables',
             type: 'address[]',
+          },
+          {
+            internalType: 'bytes',
+            name: 'ethToStablePath',
+            type: 'bytes',
+          },
+          {
+            internalType: 'address',
+            name: 'swapStable',
+            type: 'address',
+          },
+          {
+            internalType: 'address',
+            name: 'uniswapV3Router',
+            type: 'address',
           },
           {
             internalType: 'uint256[]',

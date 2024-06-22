@@ -4,11 +4,15 @@ import { httpClient } from './client';
 export type CreateNFTMetadataDTO = {
   description: string;
   files: File[];
+  nftId?: string;
+  tokenId: string;
 };
 
 export type CreateNFTMetadataResponse = {
   description: string;
   imageUrl: string;
+  nftId: string;
+  tokenId: string;
 };
 
 export const postCreateNFTMetadata = async (dto: CreateNFTMetadataDTO) => {
@@ -21,7 +25,7 @@ export const postCreateNFTMetadata = async (dto: CreateNFTMetadataDTO) => {
   formData.append('description', dto.description);
 
   try {
-    return httpClient.post<CreateNFTMetadataResponse>('/nft-metadata', formData);
+    return httpClient.post<CreateNFTMetadataResponse>('api/nft-metadata', formData);
   } catch (e) {
     if (e instanceof Error) {
       toast({ title: 'Api error', description: e.message, variant: 'destructive' });

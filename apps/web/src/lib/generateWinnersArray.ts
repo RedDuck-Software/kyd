@@ -1,9 +1,11 @@
-export const generateWinnerImagesArray = (topDonateWinners: { amount: string; winnerNFT: { image: File } }[]) => {
-  const result: File[] = [];
+export const generateWinnerArray = (
+  topDonateWinners: { amount: string; winnerNFT: { name: string; image: File } }[]
+) => {
+  const result: { name: string; file: File }[] = [];
   topDonateWinners.forEach(({ amount, winnerNFT }) => {
     const length = parseInt(amount);
     for (let i = 0; i < length; i++) {
-      result.push(winnerNFT.image);
+      result.push({ name: winnerNFT.name, file: winnerNFT.image });
     }
   });
   return result;
