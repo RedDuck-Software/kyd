@@ -82,6 +82,10 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
             supportedStables[_params.stables[i]] = true;
         }
 
+        if (!supportedStables[swapStable]) {
+            revert StableNotSupported();
+        }
+
         topWinnersNfts = _params.topWinners;
         gelatoOperator = _params.gelatoOperator;
         nftParticipate = _params.nftParticipate;

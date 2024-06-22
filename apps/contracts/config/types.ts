@@ -7,6 +7,7 @@ const networks = [
   'sepolia',
   'hardhat',
   'localhost',
+  'scroll-sepolia'
 ] as const;
 export const networksEnum = z.enum(networks);
 
