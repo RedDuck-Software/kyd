@@ -5,6 +5,7 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "./libraries/DoubleLinkedList.sol";
 import "./libraries/DecimalsCorrectionLibrary.sol";
+import "./libraries/UniswapV3Actions.sol";
 import "./gelato/GelatoVRFConsumerBase.sol";
 import "./interfaces/IAuction.sol";
 import "./AuctionNFT.sol";
@@ -19,12 +20,17 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
     event AuctionEnded();
     event RewardsDistributed();
 
+    error InvalidEthDonate();
+
     uint256 public constant MAX_RANDOM_WINNERS = 10;
     uint256 public constant MAX_TOP_WINNERS = 10;
 
     uint256 public totalDonated;
 
     address[] stables;
+    bytes ethToStablePath;
+    address swapStable;
+    address uniswapV3Router;
     uint256[] topWinnersNfts;
     uint256 public goal;
     address public nft;
@@ -54,6 +60,9 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
         randomWinnerNftId = _params.randomWinnerNftId;
         participationNftId = _params.participationNftId;
         stables = _params.stables;
+        ethToStablePath = _params.ethToStablePath;
+        swapStable = _params.swapStable;
+        uniswapV3Router = _params.uniswapV3Router;
         topWinnersNfts = _params.topWinners;
         gelatoOperator = _params.gelatoOperator;
         nftParticipate = _params.nftParticipate;
@@ -85,6 +94,35 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
         }
     }
 
+    function donateEth(
+        uint256 indexToInsert,
+        uint256 indexOfExisting,
+        bool existingNode
+    ) external payable {
+        if (msg.value == 0) {
+            revert InvalidEthDonate();
+        }
+
+        uint256 stableAmount = UniswapV3Actions.swap(
+            uniswapV3Router,
+            ethToStablePath,
+            address(this),
+            msg.value
+        );
+
+        stableAmount = stableAmount.convertToBase18(
+            ERC20Upgradeable(swapStable).decimals()
+        );
+
+        _donate(
+            stableAmount,
+            indexToInsert,
+            indexOfExisting,
+            existingNode,
+            swapStable
+        );
+    }
+
     function donate(
         address stable,
         uint256 amount,
@@ -100,6 +138,16 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
 
         amount = amount.convertToBase18(ERC20Upgradeable(stable).decimals());
 
+        _donate(amount, indexToInsert, indexOfExisting, existingNode, stable);
+    }
+
+    function _donate(
+        uint256 amount,
+        uint256 indexToInsert,
+        uint256 indexOfExisting,
+        bool existingNode,
+        address stable
+    ) internal {
         totalDonated += amount;
 
         if (existingNode) {

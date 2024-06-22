@@ -9,6 +9,9 @@ import "./AuctionNFT1155.sol";
 
 struct AuctionCreateParams {
     address[] stables;
+    bytes ethToStablePath;
+    address swapStable;
+    address uniswapV3Router;
     uint256[] topWinners;
     uint256 goal;
     address owner;
@@ -65,6 +68,9 @@ contract AuctionFactory {
         auction.initialize(
             IAuction.AuctionParams({
                 stables: params.stables,
+                ethToStablePath: params.ethToStablePath,
+                swapStable: params.swapStable,
+                uniswapV3Router: params.uniswapV3Router,
                 topWinners: params.topWinners,
                 goal: params.goal,
                 gelatoOperator: gelatoOperator,
