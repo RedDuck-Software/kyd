@@ -7,7 +7,8 @@
     "lint": "turbo lint",
     "format": "turbo format",
     "build:api": "turbo build --filter=metadata-api --",
-    "dev:web": "yarn dev --filter=web --"
+    "dev:web": "yarn dev --filter=web --",
+    "heroku-postbuild": "sh ./heroku-build.sh"
   },
   "devDependencies": {
     "eslint-plugin-unused-imports": "^4.0.0",
