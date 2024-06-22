@@ -120,7 +120,8 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
     function donateEth(
         uint256 indexToInsert,
         uint256 indexOfExisting,
-        bool before
+        bool before,
+        uint256 minAmountOut
     ) external payable {
         if (msg.value == 0) {
             revert InvalidEthDonate();
@@ -130,7 +131,8 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
             uniswapV3Router,
             ethToStablePath,
             address(this),
-            msg.value
+            msg.value,
+            minAmountOut
         );
 
         stableAmount = stableAmount.convertToBase18(
