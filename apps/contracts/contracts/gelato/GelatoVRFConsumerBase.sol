@@ -6,6 +6,11 @@ interface IGelatoVRFConsumer {
         uint256 randomness,
         bytes calldata data
     ) external;
+
+    /// @notice Event emitted when a randomness request is made.
+    /// @param data The round of randomness to request.
+    /// @param data Additional data associated with the request.
+    event RequestedRandomness(uint256 round, bytes data);
 }
 
 /// @title GelatoVRFConsumerBase
@@ -56,6 +61,8 @@ abstract contract GelatoVRFConsumerBase is IGelatoVRFConsumer {
         bytes32 requestHash = keccak256(dataWithRound);
 
         requestedHash[requestId] = requestHash;
+
+        emit RequestedRandomness(round, data);
     }
 
     /// @notice Callback function used by Gelato VRF to return the random number.

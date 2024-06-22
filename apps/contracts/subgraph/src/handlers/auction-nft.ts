@@ -9,6 +9,7 @@ export function handleBurn(event: BurnEvent): void {
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   );
 
+  entity.address = event.address;
   entity.from = event.params.from;
   entity.tokenId = event.params.tokenId;
   entity.data = event.params.data;
@@ -25,6 +26,7 @@ export function handleTransfer(event: TransferEvent): void {
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   );
 
+  entity.address = event.address;
   entity.tokenId = event.params.tokenId;
   entity.owner = event.params.to;
   entity.blockNumber = event.block.number;

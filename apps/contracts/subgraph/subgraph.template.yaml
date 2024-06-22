@@ -22,11 +22,11 @@ dataSources:
         - name: AuctionFactory
           file: ./src/abi/AuctionFactory.json
       eventHandlers:
-        - event: AuctionDeployed(indexed address)
+        - event: AuctionDeployed(indexed address,indexed address,string)
           handler: handleAuctionCreation
-        - event: NFTDeployed(indexed address)
+        - event: NFTDeployed(indexed address,string,address)
           handler: handleNftCreation
-        - event: NFT1155Deployed(indexed address)
+        - event: NFT1155Deployed(indexed address,string,address)
           handler: handleNft1155Creation
       file: ./src/handlers/auction-factory.ts
   - kind: ethereum

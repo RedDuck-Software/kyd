@@ -36,8 +36,16 @@ contract AuctionFactory is GelatoVRFConsumerBase {
         address indexed owner,
         string baseUri
     );
-    event NFTDeployed(address indexed nft, string baseUri);
-    event NFT1155Deployed(address indexed nft1155, string baseUri);
+    event NFTDeployed(
+        address indexed nft,
+        string baseUri,
+        address auctionAddress
+    );
+    event NFT1155Deployed(
+        address indexed nft1155,
+        string baseUri,
+        address auctionAddress
+    );
 
     address immutable gelatoOperator;
     address immutable implementation;
@@ -96,10 +104,11 @@ contract AuctionFactory is GelatoVRFConsumerBase {
         auctions.push(address(auction));
         auctionsMap[address(auction)] = true;
         emit AuctionDeployed(address(auction), params.owner, params.baseUri);
-        emit NFTDeployed(address(auctionNFT), paramsNft.uri);
+        emit NFTDeployed(address(auctionNFT), paramsNft.uri, address(auction));
         emit NFT1155Deployed(
             address(auctionNFTParticipants),
-            paramsNftParticipants.uri
+            paramsNftParticipants.uri,
+            address(auction)
         );
 
         return address(auction);
