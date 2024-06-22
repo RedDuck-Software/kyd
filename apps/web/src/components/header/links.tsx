@@ -24,7 +24,7 @@ export const Links = () => {
     <div className="flex items-center gap-6">
       {config.map((link) => (
         <NavLink to={link.link} key={link.title}>
-          <Button variant={pathname === link.link ? 'default' : 'outline'} className="rounded-[32px] w-[120px] py-3">
+          <Button variant={pathname === link.link ? 'default' : 'outline'} className="rounded-[32px] w-[140px] py-3">
             {link.title}
           </Button>
         </NavLink>

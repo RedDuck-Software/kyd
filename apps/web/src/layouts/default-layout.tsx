@@ -23,7 +23,7 @@ const DefaultLayout = memo(() => {
         />
         <div className="min-h-screen  flex flex-1 max-w-[1375px] mx-auto flex-col px-2 sm:px-4">
           <Header />
-          <main className="flex-1 py-32">
+          <main className="flex-1 py-24">
             <Suspense fallback={<PageLoader screen />}>
               <Outlet />
             </Suspense>
