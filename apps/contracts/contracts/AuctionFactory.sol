@@ -17,6 +17,7 @@ struct AuctionCreateParams {
     address owner;
     uint256 randomWinners;
     uint256 randomWinnerNftId;
+    string baseUri;
 }
 
 struct AuctionNftCreateParams {
@@ -28,9 +29,13 @@ struct AuctionNftCreateParams {
 contract AuctionFactory {
     address[] public auctions;
 
-    event AuctionDeployed(address indexed auction);
-    event NFTDeployed(address indexed nft);
-    event NFT1155Deployed(address indexed nft1155);
+    event AuctionDeployed(
+        address indexed auction,
+        address indexed owner,
+        string baseUri
+    );
+    event NFTDeployed(address indexed nft, string baseUri);
+    event NFT1155Deployed(address indexed nft1155, string baseUri);
 
     address immutable gelatoOperator;
     address immutable implementation;
@@ -89,9 +94,12 @@ contract AuctionFactory {
 
         auctions.push(address(auction));
 
-        emit AuctionDeployed(address(auction));
-        emit NFTDeployed(address(auctionNFT));
-        emit NFT1155Deployed(address(auctionNFTParticipants));
+        emit AuctionDeployed(address(auction), params.owner, params.baseUri);
+        emit NFTDeployed(address(auctionNFT), paramsNft.uri);
+        emit NFT1155Deployed(
+            address(auctionNFTParticipants),
+            paramsNftParticipants.uri
+        );
 
         return address(auction);
     }
