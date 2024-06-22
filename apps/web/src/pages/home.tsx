@@ -1,7 +1,8 @@
 import { AUctionFactoryAbi } from '@/abi/AuctionFactory';
 import { ShadowCard } from '@/components/common/shadow-card';
+import { TrandingAuctions } from '@/components/home/tranding-auctions';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { addresses } from '@/constants/addresses';
 import { getShadowCardBg, getShadowCardVariant } from '@/lib/shadow-card-variant';
 import { cn } from '@/lib/utils';
@@ -17,7 +18,7 @@ export default function Home() {
   });
 
   return (
-    <div className="flex flex-col gap-10">
+    <div className="flex flex-col gap-32">
       <div className="flex flex-col gap-2 lg:gap-4 text-center">
         <h1 className="text-4xl font-medium">Welcome to Know Your Donation!</h1>
         <p className="px-4 lg:px-12 xl:px-16">
@@ -27,7 +28,7 @@ export default function Home() {
         </p>
       </div>
       <div className="flex flex-col gap-4">
-        <h2 className="text-3xl font-medium">Top active auctions</h2>
+        <h2 className="text-[32px] font-semibold">Top active auctions</h2>
         <div className="w-full grid grid-cols-3 gap-8">
           {Array.from({ length: 3 }).map((_, i) => (
             <ShadowCard variant={getShadowCardVariant(i)}>
@@ -50,6 +51,7 @@ export default function Home() {
           ))}
         </div>
       </div>
+      <TrandingAuctions />
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { createWeb3Modal } from '@web3modal/wagmi/react';
 import { defaultWagmiConfig } from '@web3modal/wagmi/react/config';
-import { arbitrum, mainnet, polygonMumbai, scrollSepolia } from 'viem/chains';
+import { polygonMumbai, scrollSepolia } from 'viem/chains';
 import { cookieStorage, createStorage } from 'wagmi';
 import { env } from '@/env';
 
