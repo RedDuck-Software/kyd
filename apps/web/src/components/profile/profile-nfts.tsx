@@ -2,7 +2,7 @@ import { routes } from '@/router';
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShadowCard } from '../common/shadow-card';
-import { getShadowCardFilledVariant, getShadowCardVariant } from '@/lib/shadow-card-variant';
+import { getShadowCardFilledVariant } from '@/lib/shadow-card-variant';
 import { useGetUserNFTs } from '@/hooks/queries/use-user-nfts';
 
 export const ProfileNfts = () => {

@@ -15,7 +15,6 @@ import {
   useChainId,
   usePublicClient,
   useReadContract,
-  useReadContracts,
   useSwitchChain,
   useWriteContract,
 } from 'wagmi';
@@ -53,7 +52,7 @@ export const AuctionDonate = () => {
   }, [amount, selectedToken.symbol, tokenBalances]);
 
   const isNative = useMemo(() => {
-    return !!selectedToken.address;
+    return !selectedToken.address;
   }, [selectedToken.address]);
 
   const { toast } = useToast();
@@ -61,7 +60,7 @@ export const AuctionDonate = () => {
 
   const { data: nodesRes, queryKey: getNodesQueryKey } = useReadContract({
     abi: auctionAbi,
-    address: contractAddresses[selectedChain.id],
+    address: contractAddresses[auctionChainId],
     chainId: auctionChainId,
     functionName: 'getNodes',
   });
@@ -111,8 +110,6 @@ export const AuctionDonate = () => {
 
     return hash;
   }, [address, amount, donateTokenAsync, nodesRes, selectedChain.id, selectedToken.address]);
-
-  console.log(nodesRes);
 
   const publicClient = usePublicClient();
 

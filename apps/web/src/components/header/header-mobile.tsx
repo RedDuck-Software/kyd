@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useAccount } from 'wagmi';
 import { Menu } from '../ui/svg/Menu';
 import { ConnectWallet } from '../wallet/connect-wallet-button';
+import { Logo } from '../ui/svg/logo';
 
 export const HeaderMobile = () => {
   const [active, setActive] = useState(false);
@@ -24,10 +25,10 @@ export const HeaderMobile = () => {
     <>
       <div className="flex justify-between w-full py-2">
         <NavLink to={routes.root} className="flex items-center gap-3">
-          <div className="text-[18px] font-semibold">KYD</div>
+          <Logo className="w-20 h-20" />
         </NavLink>
         <div onClick={() => init(true)} className="flex cursor-pointer items-center lg:hidden">
-          <Menu className="min-h-8 min-w-8" />
+          <Menu className="min-h-8 min-w-8 [&_path]:stroke-dark" />
         </div>
       </div>
 
