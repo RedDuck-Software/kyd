@@ -29,6 +29,8 @@ contract AuctionFactory {
     address[] public auctions;
 
     event AuctionDeployed(address indexed auction);
+    event NFTDeployed(address indexed nft);
+    event NFT1155Deployed(address indexed nft1155);
 
     address immutable gelatoOperator;
     address immutable implementation;
@@ -86,6 +88,8 @@ contract AuctionFactory {
         auctions.push(address(auction));
 
         emit AuctionDeployed(address(auction));
+        emit NFTDeployed(address(auctionNFT));
+        emit NFT1155Deployed(address(auctionNFTParticipants));
 
         return address(auction);
     }
