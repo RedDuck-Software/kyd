@@ -23,6 +23,11 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
     event RewardsDistributed();
 
     error InvalidEthDonate();
+    error RandomnessIsNotSet();
+    error NotDistributed();
+    error MismatchLenghts();
+    error StableNotSupported();
+    error InvalidConfiguration();
 
     uint256 public constant MAX_RANDOM_WINNERS = 10;
     uint256 public constant MAX_TOP_WINNERS = 10;
@@ -57,8 +62,11 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
     ) external initializer {
         __Ownable_init(_params.owner);
 
-        require(_params.randomWinners <= MAX_RANDOM_WINNERS, "");
-        require(_params.topWinners.length <= MAX_TOP_WINNERS, "");
+        if (_params.randomWinners > MAX_RANDOM_WINNERS)
+            revert InvalidConfiguration();
+
+        if (_params.topWinners.length > MAX_TOP_WINNERS)
+            revert InvalidConfiguration();
 
         goal = _params.goal;
         nft = _params.nft;
@@ -86,7 +94,8 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
     }
 
     function distributeRewards() external {
-        require(randomness != 0, "Randomness is not set");
+        if (randomness == 0) revert RandomnessIsNotSet();
+
         _distibute();
 
         emit RewardsDistributed();
@@ -96,8 +105,8 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
         address[] calldata _stables,
         uint256[] calldata amounts
     ) external onlyOwner {
-        require(_stables.length == amounts.length, "Mismatched length");
-        require(nftsDistributed, "Not distributed");
+        if (_stables.length != amounts.length) revert MismatchLenghts();
+        if (!nftsDistributed) revert NotDistributed();
 
         for (uint i = 0; i < _stables.length; i++) {
             ERC20Upgradeable(_stables[i]).transfer(owner(), amounts[i]);
@@ -140,7 +149,7 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
         uint256 indexOfExisting,
         bool before
     ) external {
-        require(supportedStables[stable], "not supported");
+        if (!supportedStables[stable]) revert StableNotSupported();
 
         // FIXME: safe transfer from
         ERC20Upgradeable(stable).transferFrom(
@@ -237,19 +246,14 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
         console.log(topWinnersNfts.length, _randomWinners);
 
         for (uint i; i <= topWinnersNfts.length; i++) {
-            console.log("i");
-
             if (list.tail == type(uint256).max) break;
 
             DoubleLinkedList.Node memory node = list.getNode(list.tail);
 
             _mint(nft, node.data.user, i);
             list.remove(node.data.user, list.tail);
-
-            console.log("nft top distributed");
         }
 
-        console.log("1", list.length);
         for (uint256 i; _randomWinners != 0; i++) {
             if (list.length == 0) break;
 
@@ -264,10 +268,7 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
 
             _mint(nft, data.user, randomWinnerNftId);
 
-            console.log("nft distributed");
-
             list.remove(data.user, randomValue);
-            console.log("removed");
 
             _randomWinners--;
         }
