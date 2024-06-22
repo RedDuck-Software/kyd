@@ -9,6 +9,9 @@ import "./AuctionNFT1155.sol";
 
 struct AuctionCreateParams {
     address[] stables;
+    bytes ethToStablePath;
+    address swapStable;
+    address uniswapV3Router;
     uint256[] topWinners;
     uint256 goal;
     address owner;
@@ -26,6 +29,8 @@ contract AuctionFactory {
     address[] public auctions;
 
     event AuctionDeployed(address indexed auction);
+    event NFTDeployed(address indexed nft);
+    event NFT1155Deployed(address indexed nft1155);
 
     address immutable gelatoOperator;
     address immutable implementation;
@@ -56,15 +61,20 @@ contract AuctionFactory {
         AuctionNFT1155 auctionNFTParticipants = AuctionNFT1155(
             payable(Clones.clone(nftParticipantsImplementation))
         );
-
-        auctionNFT.initialize(paramsNft.name, paramsNft.symb);
-        auctionNFTParticipants.initialize(paramsNftParticipants.uri);
-
         Auction auction = Auction(payable(Clones.clone(implementation)));
+
+        auctionNFT.initialize(paramsNft.name, paramsNft.symb, address(auction));
+        auctionNFTParticipants.initialize(
+            paramsNftParticipants.uri,
+            address(auction)
+        );
 
         auction.initialize(
             IAuction.AuctionParams({
                 stables: params.stables,
+                ethToStablePath: params.ethToStablePath,
+                swapStable: params.swapStable,
+                uniswapV3Router: params.uniswapV3Router,
                 topWinners: params.topWinners,
                 goal: params.goal,
                 gelatoOperator: gelatoOperator,
@@ -80,6 +90,8 @@ contract AuctionFactory {
         auctions.push(address(auction));
 
         emit AuctionDeployed(address(auction));
+        emit NFTDeployed(address(auctionNFT));
+        emit NFT1155Deployed(address(auctionNFTParticipants));
 
         return address(auction);
     }

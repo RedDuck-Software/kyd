@@ -1,7 +1,10 @@
 import { AUctionFactoryAbi } from '@/abi/AuctionFactory';
+import { ShadowCard } from '@/components/common/shadow-card';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { addresses } from '@/constants/addresses';
+import { getShadowCardBg, getShadowCardVariant } from '@/lib/shadow-card-variant';
+import { cn } from '@/lib/utils';
 import { useChainId, useReadContract } from 'wagmi';
 
 export default function Home() {
@@ -26,10 +29,12 @@ export default function Home() {
       <div className="flex flex-col gap-4">
         <h2 className="text-3xl font-medium">Top active auctions</h2>
         <div className="w-full grid grid-cols-3 gap-8">
-          {Array.from({ length: 3 }).map(() => (
-            <Card>
+          {Array.from({ length: 3 }).map((_, i) => (
+            <ShadowCard variant={getShadowCardVariant(i)}>
               <CardHeader>
-                <CardTitle className="text-slate-900">#NAME# Auction</CardTitle>
+                <CardTitle className={cn(getShadowCardBg(i), 'rounded-[16px] py-2 text-center')}>
+                  #NAME# Auction
+                </CardTitle>
                 <CardDescription className="text-slate-800">
                   Lorem ipsum dolor sit amet consectetur adipisicing elit. Aut tempora consectetur distinctio hic totam
                   ex tempore?
@@ -39,9 +44,9 @@ export default function Home() {
                 <img src="https://placehold.co/600x400" alt="" />
               </CardContent>
               <CardFooter className="flex justify-end my-4 py-0">
-                <Button>Participate</Button>
+                <Button className="w-full">Participate</Button>
               </CardFooter>
-            </Card>
+            </ShadowCard>
           ))}
         </div>
       </div>

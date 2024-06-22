@@ -3,10 +3,13 @@ import { shortenAddress } from '@/lib/utils';
 import { formatUnits } from 'viem';
 import { useAccount, useBalance } from 'wagmi';
 import { ShadowCard } from '../common/shadow-card';
+import { useGetUserStats } from '@/hooks/queries/use-user-stats';
 
 export const ProfileInfo = () => {
   const { address } = useAccount();
   const { data: balanceData } = useBalance({ address });
+
+  const { data: userStats } = useGetUserStats();
 
   return (
     <div className="flex gap-8 lg:gap-32 max-lg:flex-col">
@@ -23,15 +26,15 @@ export const ProfileInfo = () => {
       <ShadowCard variant="blue" className=" w-full p-6 gap-2 flex flex-col">
         <div className="flex items-center gap-3">
           <p className="text-[16px] ">Total USD donated:</p>
-          <p className="text-[16px] font-medium">500$</p>
+          <p className="text-[16px] font-medium">{userStats?.usdDonated ?? 0}$</p>
         </div>
         <div className="flex items-center gap-3">
           <p className="text-[16px] ">Total auctions participated:</p>
-          <p className="text-[16px] font-medium">10</p>
+          <p className="text-[16px] font-medium">{userStats?.totalParticipated ?? 0}</p>
         </div>
         <div className="flex items-center gap-3">
           <p className="text-[16px]">Auctions won:</p>
-          <p className="text-[16px] font-medium">5</p>
+          <p className="text-[16px] font-medium">{userStats?.won ?? 0}</p>
         </div>
       </ShadowCard>
     </div>

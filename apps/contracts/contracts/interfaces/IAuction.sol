@@ -4,6 +4,9 @@ pragma solidity ^0.8.23;
 interface IAuction {
     struct AuctionParams {
         address[] stables;
+        bytes ethToStablePath;
+        address swapStable;
+        address uniswapV3Router;
         uint256[] topWinners;
         uint256 goal;
         address owner;

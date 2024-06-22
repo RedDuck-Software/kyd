@@ -1,10 +1,12 @@
 {
   "name": "subgraph",
   "license": "UNLICENSED",
+  "version": "0.0.1",
   "scripts": {
+    "prepare:sepolia-eth": "mustache config/sepoliaEth.json subgraph.template.yaml > subgraph.yaml",
     "codegen": "graph codegen",
     "build": "graph build",
-    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ redduck/",
+    "deploy": "graph deploy --studio kyd-sepolia",
     "create-local": "graph create --node http://localhost:8020/ redduck/",
     "remove-local": "graph remove --node http://localhost:8020/ redduck/",
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 redduck/",
@@ -12,7 +14,8 @@
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.67.4",
-    "@graphprotocol/graph-ts": "0.32.0"
+    "@graphprotocol/graph-ts": "0.32.0",
+    "mustache": "^4.2.0"
   },
   "devDependencies": {
     "ethers": "^6.12.1",
