@@ -3,14 +3,18 @@ import { DataSource } from 'typeorm';
 import { StorageService } from '../storage';
 import { getFileRepository, getNftMetadataRepository } from '../database/metadata';
 import crypto from 'node:crypto';
+import { createId } from '../lib/nanoid';
 
-type GetNftMetadataParams = {
-  id: string;
+export type GetNftMetadataParams = {
+  nftId: string;
+  tokenId: string;
 };
 
 type CreateNftMetadataParams = {
   description: string;
   files?: Express.Multer.File[];
+  nftId?: string;
+  tokenId: string;
 };
 
 const getFileExtensionFromFile = (fileName: string) => {
@@ -27,7 +31,7 @@ export class NftMetadataService {
     private readonly storageService: StorageService
   ) {}
 
-  public async createNftMetadata({ description, files }: CreateNftMetadataParams) {
+  public async createNftMetadata({ description, files, nftId, tokenId }: CreateNftMetadataParams) {
     if (!files || files.length === 0) {
       throw new BadRequestException('No files provided');
     }
@@ -49,30 +53,33 @@ export class NftMetadataService {
       const fileRepository = getFileRepository(manager);
 
       let savedFile = await fileRepository.findOneBy({ contentHash });
-      if (savedFile) throw new BadRequestException('File already exists');
 
-      savedFile = await fileRepository.save(
-        fileRepository.create({
-          contentHash,
-          fileExtension: getFileExtensionFromFile(file.originalname),
-        })
-      );
+      if (!savedFile) {
+        savedFile = await fileRepository.save(
+          fileRepository.create({
+            contentHash,
+            fileExtension: getFileExtensionFromFile(file.originalname),
+          })
+        );
 
-      savedFile = {
-        ...savedFile,
-        ...(await this.storageService.writeFile({
-          content: file.buffer,
-          extension: savedFile.fileExtension,
-          id: savedFile.id,
-        })),
-      };
+        savedFile = {
+          ...savedFile,
+          ...(await this.storageService.writeFile({
+            content: file.buffer,
+            extension: savedFile.fileExtension,
+            id: savedFile.id,
+          })),
+        };
 
-      await fileRepository.save(savedFile);
+        await fileRepository.save(savedFile);
+      }
 
       const nftMetadata = await nftMetadataRepository.save(
         nftMetadataRepository.create({
           description,
-          imageUrl: savedFile.uri,
+          imageUrl: `https://akrd.net/${savedFile.uri}`,
+          nftId: nftId || createId(),
+          tokenId,
         })
       );
 
@@ -80,10 +87,10 @@ export class NftMetadataService {
     });
   }
 
-  public async getNftMetadata({ id }: GetNftMetadataParams) {
+  public async getNftMetadata({ nftId, tokenId }: GetNftMetadataParams) {
     const nftMetadataRepository = getNftMetadataRepository(this.dataSource.manager);
 
-    const nftMetadata = await nftMetadataRepository.findOne({ where: { id } });
+    const nftMetadata = await nftMetadataRepository.findOne({ where: { nftId, tokenId } });
 
     if (!nftMetadata) {
       throw new NotFoundException('NFT metadata not found');

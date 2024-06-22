@@ -3,15 +3,19 @@ import { DataSource } from 'typeorm';
 import { StorageService } from '../storage';
 import { getAuctionMetadataRepository, getFileRepository } from '../database/metadata';
 import crypto from 'node:crypto';
+import { createId } from '../lib/nanoid';
 
-type GetAuctionMetadataParams = {
-  id: string;
+export type GetAuctionMetadataParams = {
+  auctionId: string;
+  tokenId: string;
 };
 
 type CreateAuctionMetadataParams = {
   description: string;
   name: string;
   files?: Express.Multer.File[];
+  auctionId?: string;
+  tokenId: string;
 };
 
 const getFileExtensionFromFile = (fileName: string) => {
@@ -28,7 +32,7 @@ export class AuctionMetadataService {
     private readonly storageService: StorageService
   ) {}
 
-  public async createAuctionMetadata({ description, name, files }: CreateAuctionMetadataParams) {
+  public async createAuctionMetadata({ description, name, files, tokenId, auctionId }: CreateAuctionMetadataParams) {
     if (!files || files.length === 0) {
       throw new BadRequestException('No files provided');
     }
@@ -50,31 +54,34 @@ export class AuctionMetadataService {
       const fileRepository = getFileRepository(manager);
 
       let savedFile = await fileRepository.findOneBy({ contentHash });
-      if (savedFile) throw new BadRequestException('File already exists');
 
-      savedFile = await fileRepository.save(
-        fileRepository.create({
-          contentHash,
-          fileExtension: getFileExtensionFromFile(file.originalname),
-        })
-      );
+      if (!savedFile) {
+        savedFile = await fileRepository.save(
+          fileRepository.create({
+            contentHash,
+            fileExtension: getFileExtensionFromFile(file.originalname),
+          })
+        );
 
-      savedFile = {
-        ...savedFile,
-        ...(await this.storageService.writeFile({
-          content: file.buffer,
-          extension: savedFile.fileExtension,
-          id: savedFile.id,
-        })),
-      };
+        savedFile = {
+          ...savedFile,
+          ...(await this.storageService.writeFile({
+            content: file.buffer,
+            extension: savedFile.fileExtension,
+            id: savedFile.id,
+          })),
+        };
 
-      await fileRepository.save(savedFile);
+        await fileRepository.save(savedFile);
+      }
 
       const auctionMetadata = await auctionMetadataRepository.save(
         auctionMetadataRepository.create({
           name,
           description,
-          uri: savedFile.uri,
+          uri: `https://akrd.net/${savedFile.uri}`,
+          auctionId: auctionId || createId(),
+          tokenId,
         })
       );
 
@@ -82,11 +89,11 @@ export class AuctionMetadataService {
     });
   }
 
-  public async getAuctionMetadata({ id }: GetAuctionMetadataParams) {
+  public async getAuctionMetadata({ auctionId, tokenId }: GetAuctionMetadataParams) {
     const auctionMetadataRepository = getAuctionMetadataRepository(this.dataSource.manager);
 
     const auctionMetadata = await auctionMetadataRepository.findOne({
-      where: { id },
+      where: { auctionId, tokenId },
     });
 
     if (!auctionMetadata) {

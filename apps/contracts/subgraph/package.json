@@ -6,7 +6,7 @@
     "prepare:sepolia-eth": "mustache config/sepoliaEth.json subgraph.template.yaml > subgraph.yaml",
     "codegen": "graph codegen",
     "build": "graph build",
-    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ redduck/",
+    "deploy": "graph deploy --studio kyd-sepolia",
     "create-local": "graph create --node http://localhost:8020/ redduck/",
     "remove-local": "graph remove --node http://localhost:8020/ redduck/",
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 redduck/",

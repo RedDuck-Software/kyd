@@ -1,7 +1,7 @@
 import { buildModule } from '@nomicfoundation/hardhat-ignition/modules';
 import { artifacts } from 'hardhat';
 
-const NAME = 'AuctionFactory';
+const NAME = 'AuctionFactoryTester';
 
 const AuctionFactoryModule = buildModule(NAME, (m) => {
   const gelatoOperator  = m.getParameter('gelatoOperator');

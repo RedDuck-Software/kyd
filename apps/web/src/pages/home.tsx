@@ -1,11 +1,24 @@
+import { AUctionFactoryAbi } from '@/abi/AuctionFactory';
 import { ShadowCard } from '@/components/common/shadow-card';
 import { TrandingAuctions } from '@/components/home/tranding-auctions';
 import { Button } from '@/components/ui/button';
 import { CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { addresses } from '@/constants/addresses';
 import { getShadowCardBg, getShadowCardVariant } from '@/lib/shadow-card-variant';
 import { cn } from '@/lib/utils';
+import { useChainId, useReadContract } from 'wagmi';
 
 export default function Home() {
+  const chainId = useChainId();
+
+  const { data } = useReadContract({
+    abi: AUctionFactoryAbi,
+    functionName: 'auctions',
+    address: addresses[chainId].auctionFactory,
+  });
+
+  console.log('data ==>', data);
+
   return (
     <div className="flex flex-col gap-32">
       <div className="flex flex-col gap-2 lg:gap-4 text-center">

@@ -14,38 +14,34 @@ const { INFURA_KEY, MNEMONIC_DEV, MNEMONIC_PROD } = env;
 
 export const rpcUrls: NetworkConfigParam<RpcUrl> = {
   main: `https://mainnet.infura.io/v3/${INFURA_KEY}`,
-  bsc: 'https://bsc-dataseed1.defibit.io',
-  tbsc: 'https://data-seed-prebsc-1-s1.bnbchain.org:8545',
   sepolia: `https://sepolia.infura.io/v3/${INFURA_KEY}`,
   hardhat: 'http://localhost:8545',
   localhost: 'http://localhost:8545',
+  "scroll-sepolia": 'https://rpc.ankr.com/scroll_sepolia_testnet'
 };
 
 export const chainIds: NetworkConfigParam<number> = {
   main: 1,
+  "scroll-sepolia":  534351,
   sepolia: 11155111,
-  bsc: 56,
-  tbsc: 97,
   hardhat: 31337,
   localhost: 31337,
 };
 
 export const mnemonics: NetworkConfigParam<string | undefined> = {
   main: MNEMONIC_PROD,
+  "scroll-sepolia": MNEMONIC_DEV,
   sepolia: MNEMONIC_DEV,
-  bsc: MNEMONIC_PROD,
-  tbsc: MNEMONIC_DEV,
   hardhat: MNEMONIC_DEV,
   localhost: MNEMONIC_DEV,
 };
 
 export const forkingBlocks: NetworkConfigParam<number | undefined> = {
   main: 19647878,
-  bsc: 38513232,
-  tbsc: undefined,
   sepolia: undefined,
   hardhat: undefined,
   localhost: undefined,
+  "scroll-sepolia": undefined
 };
 
 export const getBaseNetworkConfig = (network: Network): NetworkUserConfig => ({
