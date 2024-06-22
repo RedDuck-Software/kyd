@@ -210,9 +210,11 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
                     DoubleLinkedList.Data({user: msg.sender, amount: amount})
                 );
             }
-        }
 
-        userDonated[msg.sender] = true;
+            _mint(nftParticipate, msg.sender, 0);
+
+            userDonated[msg.sender] = true;
+        }
 
         emit Donate(stable, msg.sender, amount);
 
