@@ -107,7 +107,7 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
     function donateEth(
         uint256 indexToInsert,
         uint256 indexOfExisting,
-        bool existingNode
+        bool before
     ) external payable {
         if (msg.value == 0) {
             revert InvalidEthDonate();
@@ -128,7 +128,7 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
             stableAmount,
             indexToInsert,
             indexOfExisting,
-            existingNode,
+            before,
             swapStable
         );
     }
@@ -151,14 +151,14 @@ contract Auction is IAuction, OwnableUpgradeable, GelatoVRFConsumerBase {
 
         amount = amount.convertToBase18(ERC20Upgradeable(stable).decimals());
 
-        _donate(amount, indexToInsert, indexOfExisting, existingNode, stable);
+        _donate(amount, indexToInsert, indexOfExisting, before, stable);
     }
 
     function _donate(
         uint256 amount,
         uint256 indexToInsert,
         uint256 indexOfExisting,
-        bool existingNode,
+        bool before,
         address stable
     ) internal {
         totalDonated += amount;
