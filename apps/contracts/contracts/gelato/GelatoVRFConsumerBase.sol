@@ -44,7 +44,7 @@ abstract contract GelatoVRFConsumerBase is IGelatoVRFConsumer {
     /// @return requestId The ID for the randomness request.
     function _requestRandomness(
         bytes memory extraData
-    ) internal returns (uint256 requestId) {
+    ) internal virtual returns (uint256 requestId) {
         requestId = uint256(requestPending.length);
         requestPending.push();
         requestPending[requestId] = true;
@@ -65,7 +65,7 @@ abstract contract GelatoVRFConsumerBase is IGelatoVRFConsumer {
     function fulfillRandomness(
         uint256 randomness,
         bytes calldata dataWithRound
-    ) external {
+    ) external virtual {
         require(msg.sender == _operator(), "only operator");
 
         (, bytes memory data) = abi.decode(dataWithRound, (uint256, bytes));
