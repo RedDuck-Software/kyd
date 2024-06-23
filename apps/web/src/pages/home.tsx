@@ -4,12 +4,11 @@ import { ShadowCard } from '@/components/common/shadow-card';
 import { TrandingAuctions } from '@/components/home/tranding-auctions';
 import { Button } from '@/components/ui/button';
 import { CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { GET_ALL_AUCTIONS, GetAllAuctionsResponse } from '@/graph/queries/get-all-auctions';
-import { useDefaultSubgraphQuery } from '@/hooks/useDefaultSubgraphQuery';
 import { getShadowCardBg, getShadowCardVariant } from '@/lib/shadow-card-variant';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { Spinner } from '@/components/ui/spinner';
+import { useAllAuctions } from '@/hooks/queries/use-all-auctions';
 
 type AuctionMetadata = {
   name: string;
@@ -20,7 +19,7 @@ type AuctionMetadata = {
 export default function Home() {
   const navigate = useNavigate();
 
-  const { data, loading } = useDefaultSubgraphQuery<GetAllAuctionsResponse>(GET_ALL_AUCTIONS);
+  const { data: allAuctions, isLoading: loading } = useAllAuctions();
 
   const [auctionData, setAuctionData] = useState<{
     [key: string]: AuctionMetadata;
@@ -28,11 +27,11 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
 
   const activeAuctions = useMemo(() => {
-    const endedAuctionIds = new Set(data?.auctionEndeds.map((auction) => auction.id));
-    const initialActiveAuctions = data?.auctionCreateds.filter((auction) => !endedAuctionIds.has(auction.id));
+    const endedAuctionIds = new Set(allAuctions?.auctionEndeds.map((auction) => auction.id));
+    const initialActiveAuctions = allAuctions?.auctionCreateds.filter((auction) => !endedAuctionIds.has(auction.id));
 
     return initialActiveAuctions ?? [];
-  }, [data]);
+  }, [allAuctions]);
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -67,8 +66,8 @@ export default function Home() {
     fetchImages();
   }, [activeAuctions]);
 
-  const handleParticipate = (address: string) => {
-    navigate(`auctions/${address}`);
+  const handleParticipate = (address: string, chainId: number) => {
+    navigate(`auctions/${address}:${chainId}`);
   };
 
   return (
@@ -89,7 +88,7 @@ export default function Home() {
           </div>
         ) : (
           <div className="w-full grid grid-cols-3 gap-8">
-            {activeAuctions?.map(({ id, address }, i) => (
+            {activeAuctions?.map(({ id, address, chainId }, i) => (
               <ShadowCard key={id} variant={getShadowCardVariant(i)}>
                 <CardHeader>
                   <CardTitle className={cn(getShadowCardBg(i), 'rounded-[16px] py-2 text-center')}>
@@ -98,10 +97,14 @@ export default function Home() {
                   <CardDescription className="text-slate-800">{auctionData[id]?.description}</CardDescription>
                 </CardHeader>
                 <CardContent className="p-0">
-                  <img src={auctionData[id]?.uri} alt={`Can't get ${auctionData[id]?.uri}`} />
+                  <img
+                    src={auctionData[id]?.uri}
+                    className="object-cover aspect-square"
+                    alt={`Can't get ${auctionData[id]?.uri}`}
+                  />
                 </CardContent>
                 <CardFooter className="flex justify-end my-4 py-0">
-                  <Button onClick={() => handleParticipate(address)} className="w-full">
+                  <Button onClick={() => handleParticipate(address, chainId)} className="w-full">
                     Participate
                   </Button>
                 </CardFooter>

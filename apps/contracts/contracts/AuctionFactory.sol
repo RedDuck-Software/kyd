@@ -78,7 +78,12 @@ contract AuctionFactory is GelatoVRFConsumerBase {
         );
         Auction auction = Auction(payable(Clones.clone(implementation)));
 
-        auctionNFT.initialize(paramsNft.name, paramsNft.symb, address(auction));
+        auctionNFT.initialize(
+            paramsNft.name,
+            paramsNft.symb,
+            paramsNft.uri,
+            address(auction)
+        );
         auctionNFTParticipants.initialize(
             paramsNftParticipants.uri,
             address(auction)

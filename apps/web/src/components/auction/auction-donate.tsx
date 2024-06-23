@@ -19,19 +19,22 @@ import {
   useSwitchChain,
   useWriteContract,
 } from 'wagmi';
-import { contractAddresses } from '@/constants/constants';
 import { useWeb3Modal } from '@web3modal/wagmi/react';
 import { auctionAbi } from '@/abi/auctionABI';
 import { useQueryClient } from '@tanstack/react-query';
 import { Nodes, getIndexesForInsert } from './utils';
 import { quoterAbi } from '@/abi/quoterABI';
-import { addresses } from '@/constants/addresses';
+import { AllowedChainIds, addresses } from '@/constants/addresses';
+import { useParams } from 'react-router-dom';
 
 const slippages = [1, 2, 5, 10];
 
 export const AuctionDonate = () => {
-  const auctionChainId = 11155111;
-  const { data: tokenBalances } = useTokenBalance(auctionChainId);
+  const { id } = useParams();
+
+  const [auctionAddress, auctionChainId] = id!.split(':');
+
+  const { data: tokenBalances } = useTokenBalance(+auctionChainId as AllowedChainIds);
 
   const [slippage, setSlippage] = useState(slippages[1]);
   const [isLoading, setLoading] = useState(false);
@@ -40,7 +43,7 @@ export const AuctionDonate = () => {
   const { address } = useAccount();
   const { switchChainAsync } = useSwitchChain({});
 
-  const { data: blockNumber } = useBlockNumber({ watch: true, chainId: auctionChainId });
+  const { data: blockNumber } = useBlockNumber({ watch: true, chainId: +auctionChainId });
 
   const { amount, chain: selectedChain, setAmount, setToken, token: selectedToken } = useDonateStore();
   const queryClient = useQueryClient();
@@ -66,8 +69,8 @@ export const AuctionDonate = () => {
 
   const { data: nodesRes, queryKey: getNodesQueryKey } = useReadContract({
     abi: auctionAbi,
-    address: contractAddresses[auctionChainId],
-    chainId: auctionChainId,
+    address: auctionAddress as `0x${string}`,
+    chainId: +auctionChainId,
     functionName: 'getNodes',
   });
 
@@ -84,7 +87,7 @@ export const AuctionDonate = () => {
   const { data: simulateRes } = useSimulateContract({
     abi: quoterAbi,
     functionName: 'quoteExactInput',
-    chainId: auctionChainId,
+    chainId: +auctionChainId,
     address: addresses[auctionChainId].uniQuoter,
     args: [addresses[auctionChainId].swapPath, parseUnits(amount ? amount.toString() : '0', selectedToken.decimals)],
   });
@@ -98,16 +101,16 @@ export const AuctionDonate = () => {
       abi: erc20Abi,
       address: selectedToken.address as Address,
       functionName: 'approve',
-      args: [contractAddresses[auctionChainId], parseUnits(amount!.toString(), 18)],
+      args: [auctionAddress as `0x${string}`, parseUnits(amount!.toString(), 18)],
     });
 
     return hash;
-  }, [amount, approveAsync, selectedToken.address]);
+  }, [amount, approveAsync, auctionAddress, selectedToken.address]);
 
   const donateNative = useCallback(async () => {
     const hash = await donateNativeAsync({
       abi: auctionAbi,
-      address: contractAddresses[auctionChainId],
+      address: auctionAddress as `0x${string}`,
       functionName: 'donateEth',
       value: parseUnits(amount!.toString(), 18),
       args: [
@@ -117,12 +120,12 @@ export const AuctionDonate = () => {
     });
 
     return hash;
-  }, [address, amount, donateNativeAsync, nodesRes, simulatedAmount]);
+  }, [address, amount, auctionAddress, donateNativeAsync, nodesRes, simulatedAmount]);
 
   const donateToken = useCallback(async () => {
     const hash = await donateTokenAsync({
       abi: auctionAbi,
-      address: contractAddresses[auctionChainId],
+      address: auctionAddress as `0x${string}`,
       functionName: 'donate',
       args: [
         selectedToken.address! as `0x${string}`,
@@ -132,15 +135,15 @@ export const AuctionDonate = () => {
     });
 
     return hash;
-  }, [address, amount, donateTokenAsync, nodesRes, selectedToken.address]);
+  }, [address, amount, auctionAddress, donateTokenAsync, nodesRes, selectedToken.address]);
 
   const publicClient = usePublicClient();
 
   const handleButtonClick = useCallback(async () => {
     setLoading(true);
     try {
-      if (chainId !== auctionChainId) {
-        await switchChainAsync({ chainId: auctionChainId });
+      if (chainId !== +auctionChainId) {
+        await switchChainAsync({ chainId: +auctionChainId });
       } else {
         const hash = await (isNative ? donateNative() : isAllowanceEnough ? donateToken() : approve());
         await publicClient?.waitForTransactionReceipt({
@@ -159,15 +162,26 @@ export const AuctionDonate = () => {
     } finally {
       setLoading(false);
     }
-  }, [approve, chainId, donateNative, donateToken, isAllowanceEnough, isNative, publicClient, switchChainAsync, toast]);
+  }, [
+    approve,
+    auctionChainId,
+    chainId,
+    donateNative,
+    donateToken,
+    isAllowanceEnough,
+    isNative,
+    publicClient,
+    switchChainAsync,
+    toast,
+  ]);
 
   const buttonText = useMemo(() => {
     if (!amount || amount === 0) return 'Enter amount to donate';
-    if (chainId !== auctionChainId) return 'Switch chain';
+    if (chainId !== +auctionChainId) return 'Switch chain';
     if (!isAllowanceEnough) return 'Approve';
     if (!isBalanceEnough) return `Not enough ${selectedToken.symbol}`;
     return 'Make world better';
-  }, [amount, chainId, isAllowanceEnough, isBalanceEnough, selectedToken.symbol]);
+  }, [amount, auctionChainId, chainId, isAllowanceEnough, isBalanceEnough, selectedToken.symbol]);
   const { open } = useWeb3Modal();
 
   return (

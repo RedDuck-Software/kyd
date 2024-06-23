@@ -13,6 +13,8 @@ contract AuctionNFT is OwnableUpgradeable, ERC721URIStorageUpgradeable {
     error AlreadyBurnt(uint256 tokenId);
     error CannotTransfer(uint256 tokenId);
 
+    string public uri;
+
     constructor() {
         _disableInitializers();
     }
@@ -20,11 +22,18 @@ contract AuctionNFT is OwnableUpgradeable, ERC721URIStorageUpgradeable {
     function initialize(
         string memory _name,
         string memory _symbol,
+        string memory _uri,
         address _owner
     ) external initializer {
         __ERC721_init(_name, _symbol);
         __Ownable_init(_owner);
         __ERC721URIStorage_init();
+
+        uri = _uri;
+    }
+
+    function _baseURI() internal view override returns (string memory) {
+        return uri;
     }
 
     function mint(address to, uint256 tokenId) external onlyOwner {

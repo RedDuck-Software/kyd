@@ -6,23 +6,25 @@ import { cn } from '../../lib/utils';
 import { useQueryClient } from '@tanstack/react-query';
 import { useBlockNumber, useReadContract } from 'wagmi';
 import { auctionAbi } from '@/abi/auctionABI';
-import { contractAddresses } from '@/constants/constants';
 import { useEffect } from 'react';
 import { formatUnits } from 'viem';
+import { useParams } from 'react-router-dom';
 
 export const AuctionParticipants = () => {
-  const auctionChainId = 11155111;
+  const { id } = useParams();
+
+  const [address, auctionChainId] = id!.split(':');
 
   const queryClient = useQueryClient();
 
   const { data: nodesRes, queryKey: getNodesQueryKey } = useReadContract({
     abi: auctionAbi,
-    address: contractAddresses[auctionChainId],
-    chainId: auctionChainId,
+    address: address as `0x${string}`,
+    chainId: +auctionChainId,
     functionName: 'getNodes',
   });
 
-  const { data: blockNumber } = useBlockNumber({ watch: true, chainId: auctionChainId });
+  const { data: blockNumber } = useBlockNumber({ watch: true, chainId: +auctionChainId });
 
   useEffect(() => {
     if (blockNumber) {

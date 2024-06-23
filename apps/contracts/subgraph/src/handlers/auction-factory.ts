@@ -53,6 +53,7 @@ export function handleNft1155Creation(event: NFT1155DeployedEvent): void {
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   );
 
+  entity.uri = event.params.baseUri;
   entity.auctionAddress = event.params.auctionAddress;
   entity.blockNumber = event.block.number;
   entity.blockTimestamp = event.block.timestamp;

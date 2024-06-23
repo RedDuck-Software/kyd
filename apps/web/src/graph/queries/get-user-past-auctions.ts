@@ -1,4 +1,4 @@
-import { Address } from 'viem';
+import { Address, formatUnits } from 'viem';
 import { getGraphClients } from '../client';
 import { gql } from '@apollo/client';
 
@@ -11,7 +11,7 @@ export interface UserInfo {
 export interface Donate {
   from: string;
   stable: string;
-  amount: number;
+  amount: string;
   auction: string;
   blockTimestamp: number;
 }
@@ -22,7 +22,7 @@ export const getUserPastAuctions = async (address: Address) => {
     client.query({
       query: gql`
         {
-          Donates(where: { from: "${address}" }){
+          donates(where: { from: "${address}" }){
             from
             stable
             amount
@@ -31,24 +31,31 @@ export const getUserPastAuctions = async (address: Address) => {
           }
         }
       `,
-    })
+      variables: {
+        from: address,
+      },
+    }, )
   );
 
-  const userInfo: Record<string, UserInfo> = {};
+  let userInfo: UserInfo | null= null;
 
   const results = await Promise.all(queries);
 
   results.forEach((result) => {
     (result.data.donates as Donate[]).map((donate) => {
-      if (!userInfo[donate.from]) {
-        userInfo[donate.from] = { totalParticipated: 1, usdDonated: donate.amount, won: 1 };
+      if (!userInfo) {
+        userInfo = { totalParticipated: 1, usdDonated: +formatUnits(BigInt(donate.amount), 18), won: 1 };
       } else {
-        userInfo[donate.from].totalParticipated += 1;
-        userInfo[donate.from].usdDonated += donate.amount;
-        userInfo[donate.from].won += 1;
+        userInfo.totalParticipated += 1;
+        userInfo.usdDonated += +formatUnits(BigInt(donate.amount), 18);
+        userInfo.won += 1;
       }
     });
   });
 
-  return Object.entries(results);
+  return (userInfo as UserInfo | null) ?? {
+    totalParticipated: 0,
+    usdDonated: 0,
+    won: 0,
+  };
 };
