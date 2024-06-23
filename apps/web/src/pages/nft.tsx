@@ -1,12 +1,20 @@
 import { ShadowCard } from '@/components/common/shadow-card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { useUserAdminAuctions } from '@/hooks/queries/use-user-admin-auctions';
 import useModalsStore from '@/store/modals-store';
 import { useState } from 'react';
 
 export default function Nft() {
   const [isAlertOpen, setAlertOpen] = useState(false);
   const { setNftAlertModalOpen } = useModalsStore();
+
+  const { data } = useUserAdminAuctions();
+
+  console.log({ data });
+
+  const isAdmin = true;
+
   return (
     <div className="flex flex-col gap-8">
       <Dialog open={isAlertOpen} onOpenChange={setAlertOpen}>
