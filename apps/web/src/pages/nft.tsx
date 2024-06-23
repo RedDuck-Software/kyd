@@ -3,14 +3,16 @@ import { httpClient } from '@/api/client';
 import { ShadowCard } from '@/components/common/shadow-card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Spinner } from '@/components/ui/spinner';
 import { GET_NFT_URI } from '@/graph/queries/get-user-nfts';
 import { GetNftUriResponse } from '@/graph/queries/get-user-nfts-data';
 import { useDefaultSubgraphQuery } from '@/hooks/useDefaultSubgraphQuery';
 import useModalsStore from '@/store/modals-store';
+import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { Address, zeroAddress } from 'viem';
-import { useWriteContract } from 'wagmi';
+import { redirect, useParams } from 'react-router-dom';
+import { Address, getAddress, zeroAddress } from 'viem';
+import { useBlockNumber, useChainId, useReadContract, useWriteContract } from 'wagmi';
 
 interface NftMetadata {
   description: string;
@@ -20,6 +22,28 @@ interface NftMetadata {
 export default function Nft() {
   const { address: nftAddress, tokenId } = useParams();
 
+  const chainId = useChainId();
+
+  if (!nftAddress || !tokenId) {
+    redirect('/');
+  }
+
+  const { data: isBurnt, queryKey } = useReadContract({
+    abi: erc721ABI,
+    address: getAddress(nftAddress!),
+    functionName: 'isBurnt',
+    args: [BigInt(tokenId!)],
+  });
+
+  const { data: blockNumber } = useBlockNumber({ watch: true, chainId });
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (blockNumber) {
+      queryClient.invalidateQueries({ queryKey });
+    }
+  }, [blockNumber, queryClient, queryKey]);
+
   const [nftData, setNftData] = useState<NftMetadata | null>(null);
   const [isAlertOpen, setAlertOpen] = useState(false);
   const { setNftAlertModalOpen } = useModalsStore();
@@ -27,18 +51,18 @@ export default function Nft() {
   const { writeContractAsync } = useWriteContract();
 
   const { data: nftUriData } = useDefaultSubgraphQuery<GetNftUriResponse>(GET_NFT_URI, {
-    variables: { addresss: nftAddress },
+    variables: { address: nftAddress },
   });
 
   useEffect(() => {
     (async () => {
       const rawNftData = nftUriData?.auctionNFTCreateds.find((created) => created.address === nftAddress);
-      const response = await httpClient.get<NftMetadata>(`${rawNftData?.uri}0`);
+      const response = await httpClient.get<NftMetadata>(`${rawNftData?.uri}${tokenId}`);
       setNftData(response.data);
     })();
-  }, [nftAddress, nftUriData?.auctionNFTCreateds]);
+  }, [nftAddress, nftUriData?.auctionNFTCreateds, tokenId]);
 
-  const handleRedeemNFT = () => {
+  const handleRedeemNFT = async () => {
     await writeContractAsync({
       abi: erc721ABI,
       address: nftAddress as Address,
@@ -47,12 +71,18 @@ export default function Nft() {
     });
   };
 
-  console.log({ nftData });
-
   const handleClick = () => {
     handleRedeemNFT();
-    setNftAlertModalOpen(true);
+    // setNftAlertModalOpen(true);
   };
+
+  // if (isLoading) {
+  //   return (
+  //     <div className="flex w-full justify-center">
+  //       <Spinner />
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="flex flex-col gap-8">
@@ -94,7 +124,7 @@ export default function Nft() {
         ratione sit, impedit quas harum architecto, quidem obcaecati incidunt ad expedita velit. Debitis iste totam
         harum a doloremque, ducimus libero dolore natus!
       </p> */}
-      <Button onClick={handleClick} className="py-3 text-[18px]">
+      <Button onClick={handleClick} className="py-3 text-[18px]" disabled={isBurnt}>
         Redeem
       </Button>
     </div>

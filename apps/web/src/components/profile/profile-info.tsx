@@ -32,10 +32,6 @@ export const ProfileInfo = () => {
           <p className="text-[16px] ">Total auctions participated:</p>
           <p className="text-[16px] font-medium">{userStats?.totalParticipated ?? 0}</p>
         </div>
-        <div className="flex items-center gap-3">
-          <p className="text-[16px]">Auctions won:</p>
-          <p className="text-[16px] font-medium">{userStats?.won ?? 0}</p>
-        </div>
       </ShadowCard>
     </div>
   );

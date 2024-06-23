@@ -31,7 +31,7 @@ export const addresses: Record<string, Addresses> = {
   },
   [sepolia.id]: {
     auctionFactory: '0x60192A9Ab822745564C1C74074002141E2919ae4',
-    uniswapV3Router: '0xE592427A0AEce92De3Edee1F18E0157C05861564',
+    uniswapV3Router: '0x3bFA4769FB09eefC5a80d6E87c3B9C650f7Ae48E',
     swapPath: '0xfff9976782d46cc05630d1f6ebab18b2324d6b140001f43637925ee8b837f85c7309e4b291ca56a40457a4',
     uniQuoter: '0xEd1f6473345F45b75F8179591dd5bA1888cf2FB3',
   },

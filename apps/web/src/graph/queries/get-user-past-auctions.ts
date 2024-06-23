@@ -5,7 +5,6 @@ import { gql } from '@apollo/client';
 export interface UserInfo {
   usdDonated: number;
   totalParticipated: number;
-  won: number;
 }
 
 export interface Donate {
@@ -19,7 +18,7 @@ export interface Donate {
 export const getUserPastAuctions = async (address: Address) => {
   const clients = getGraphClients();
   const queries = clients.map((client) =>
-    client.query({
+    client.client.query({
       query: gql`
         {
           donates(where: { from: "${address}" }){
@@ -34,28 +33,29 @@ export const getUserPastAuctions = async (address: Address) => {
       variables: {
         from: address,
       },
-    }, )
+    })
   );
 
-  let userInfo: UserInfo | null= null;
+  let userInfo: UserInfo | null = null;
 
   const results = await Promise.all(queries);
 
   results.forEach((result) => {
     (result.data.donates as Donate[]).map((donate) => {
       if (!userInfo) {
-        userInfo = { totalParticipated: 1, usdDonated: +formatUnits(BigInt(donate.amount), 18), won: 1 };
+        userInfo = { totalParticipated: 1, usdDonated: +formatUnits(BigInt(donate.amount), 18) };
       } else {
         userInfo.totalParticipated += 1;
         userInfo.usdDonated += +formatUnits(BigInt(donate.amount), 18);
-        userInfo.won += 1;
       }
     });
   });
 
-  return (userInfo as UserInfo | null) ?? {
-    totalParticipated: 0,
-    usdDonated: 0,
-    won: 0,
-  };
+  return (
+    (userInfo as UserInfo | null) ?? {
+      totalParticipated: 0,
+      usdDonated: 0,
+      won: 0,
+    }
+  );
 };

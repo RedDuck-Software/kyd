@@ -32,7 +32,12 @@ export const GET_USER_NFTS = gql`
   query GetUserNfts($owner: String!) {
     auctionNFTs(where: { owner: $owner }) {
       id
+      tokenId
       address
+      owner
+      transactionHash
+      blockNumber
+      blockTimestamp
     }
   }
 `;

@@ -17,25 +17,25 @@ export default function AuctionDetails() {
   const [address, auctionChainId] = id!.split(':');
   const { address: userAddress } = useAccount();
 
-  if (!id || !isAddress(id)) {
+  if (!id || !isAddress(address)) {
     redirect('/');
   }
 
   const { data: isFinished, isLoading: isLoadingFinished } = useReadContract({
     abi: auctionAbi,
-    address: getAddress(id!),
+    address: getAddress(address!),
     functionName: 'randomnessRequested',
   });
 
   const { data: isDistributed, isLoading: isLoadingDistributed } = useReadContract({
     abi: auctionAbi,
-    address: getAddress(id!),
+    address: getAddress(address!),
     functionName: 'nftsDistributed',
   });
 
   const { data: owner, isLoading } = useReadContract({
     abi: auctionAbi,
-    address: getAddress(id!),
+    address: getAddress(address!),
     functionName: 'owner',
   });
 
