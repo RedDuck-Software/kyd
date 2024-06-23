@@ -1,4 +1,4 @@
-import { useReadContract } from 'wagmi';
+import { useBlockNumber, useReadContract } from 'wagmi';
 import { Progress } from '../ui/progress';
 import { useEffect, useMemo } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
@@ -29,6 +29,8 @@ export const AuctionProgress = () => {
     return goalRes ? parseFloat(formatUnits(goalRes, 18)) : 0;
   }, [goalRes]);
 
+  const { data: blockNumber } = useBlockNumber({ watch: true, chainId: auctionChainId });
+
   const totalDonated = useMemo(() => {
     return totalDonatedRes ? parseFloat(formatUnits(totalDonatedRes, 18)) : 0;
   }, [totalDonatedRes]);
@@ -44,7 +46,7 @@ export const AuctionProgress = () => {
   useEffect(() => {
     queryClient.invalidateQueries({ queryKey: getGoalQueryKey });
     queryClient.invalidateQueries({ queryKey: getTotalDonatedQueryKey });
-  }, [queryClient, getGoalQueryKey, getTotalDonatedQueryKey]);
+  }, [queryClient, getGoalQueryKey, getTotalDonatedQueryKey, blockNumber]);
 
   return (
     <div className="flex flex-col gap-4">

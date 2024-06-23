@@ -1,3 +1,4 @@
+import { log, Bytes, Address } from '@graphprotocol/graph-ts';
 import {
   Burn as BurnEvent,
   TransferSingle as TransferSingleEvent,
@@ -26,7 +27,7 @@ export function handleBurn1155(event: BurnEvent): void {
 }
 
 export function handleMint1155Single(event: TransferSingleEvent): void {
-  if (event.params.from.toHexString() !== ADDRESS_ZERO) {
+  if (event.params.from.notEqual(Address.fromHexString(ADDRESS_ZERO))) {
     return;
   }
 
@@ -46,7 +47,7 @@ export function handleMint1155Single(event: TransferSingleEvent): void {
 }
 
 export function handleMint1155Batch(event: TransferBatchEvent): void {
-  if (event.params.from.toHexString() !== ADDRESS_ZERO) {
+  if (event.params.from.notEqual(Address.fromHexString(ADDRESS_ZERO))) {
     return;
   }
 
