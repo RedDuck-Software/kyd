@@ -81,15 +81,26 @@ export const useTokenBalance = (chainId: AllowedChainIds) => {
           return { ...token, balance: BigInt(0), allowance: BigInt(0) } as TokenBalance;
         });
 
-      return tokens.map((token, i) =>
-        token.address
-          ? ({
+      return [
+        ...tokens
+          .filter((token) => !token.address)
+          .map((token) => {
+            return {
               ...token,
-              balance: balances ? balances[i - 1] : BigInt(0),
-              allowance: allowances ? allowances[i - 1] : BigInt(0),
-            } as TokenBalance)
-          : ({ ...token, balance: nativeBalanceData?.value ?? BigInt(0), allowance: maxUint256 } as TokenBalance)
-      );
+              balance: nativeBalanceData?.value as bigint,
+              allowance: maxUint256 as bigint,
+            };
+          }),
+        ...tokens
+          .filter((token) => token.address)
+          .map((token, i) => {
+            return {
+              ...token,
+              balance: balances ? (balances[i] as bigint) : 0n,
+              allowance: allowances ? (allowances[i] as bigint) : 0n,
+            };
+          }),
+      ];
     },
   });
 };
