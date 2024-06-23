@@ -11,11 +11,15 @@ export const HeaderMobile = () => {
 
   const init = (value: boolean) => {
     if (value) {
+      document.body.style.overflow = 'hidden';
       setShow(value);
       setTimeout(() => setActive(value), 20);
     } else {
       setActive(value);
-      setTimeout(() => setShow(value), 500);
+      setTimeout(() => {
+        setShow(value);
+        document.body.style.overflow = 'auto';
+      }, 500);
     }
   };
 
@@ -55,7 +59,7 @@ export const HeaderMobile = () => {
               Create auction
             </Link>
           </li>
-          <li>
+          <li className="flex  justify-center">
             <ConnectWallet />
           </li>
         </ul>

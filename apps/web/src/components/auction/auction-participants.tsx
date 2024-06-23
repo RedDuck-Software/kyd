@@ -25,7 +25,9 @@ export const AuctionParticipants = () => {
   const { data: blockNumber } = useBlockNumber({ watch: true, chainId: auctionChainId });
 
   useEffect(() => {
-    queryClient.invalidateQueries({ queryKey: getNodesQueryKey });
+    if (blockNumber) {
+      queryClient.invalidateQueries({ queryKey: getNodesQueryKey });
+    }
   }, [queryClient, blockNumber, getNodesQueryKey]);
 
   return (

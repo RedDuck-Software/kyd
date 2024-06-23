@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { httpClient } from '@/api/client';
 import { ShadowCard } from '@/components/common/shadow-card';
 import { TrandingAuctions } from '@/components/home/tranding-auctions';
@@ -22,20 +22,16 @@ export default function Home() {
 
   const { data, loading } = useDefaultSubgraphQuery<GetAllAuctionsResponse>(GET_ALL_AUCTIONS);
 
-  const endedAuctionIds = new Set(data?.auctionEndeds.map((auction) => auction.id));
-  const initialActiveAuctions = data?.auctionCreateds.filter((auction) => !endedAuctionIds.has(auction.id));
-
-  const [activeAuctions, setActiveAuctions] = useState(initialActiveAuctions);
   const [auctionData, setAuctionData] = useState<{
     [key: string]: AuctionMetadata;
   }>({});
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    if (initialActiveAuctions) {
-      setActiveAuctions(initialActiveAuctions);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  const activeAuctions = useMemo(() => {
+    const endedAuctionIds = new Set(data?.auctionEndeds.map((auction) => auction.id));
+    const initialActiveAuctions = data?.auctionCreateds.filter((auction) => !endedAuctionIds.has(auction.id));
+
+    return initialActiveAuctions ?? [];
   }, [data]);
 
   useEffect(() => {
