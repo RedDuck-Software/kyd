@@ -32,14 +32,6 @@ export interface GetAuctionCreatedResponse {
   auctionCreateds: AuctionCreated[];
 }
 
-type AuctionMetadata = {
-  name: string;
-  description: string;
-  isAdmin: boolean;
-  inProgress: boolean;
-  uri: string;
-};
-
 export const GET_USER_DONATES = gql`
   query GetUserDonates {
     donates(where: { from: Bytes }) {
@@ -92,7 +84,7 @@ export const getUserAuctions = async (address: Address) => {
 
   const res = await Promise.all(queries);
 
-  for (let i in res) {
+  for (const i in res) {
     const result = res[i];
 
     const auctions = await Promise.all(

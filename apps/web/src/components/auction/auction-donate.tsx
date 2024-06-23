@@ -36,7 +36,7 @@ export const AuctionDonate = () => {
 
   const [auctionAddress, auctionChainId] = id!.split(':');
 
-  const { data: tokenBalances } = useTokenBalance(+auctionChainId as AllowedChainIds);
+  const { data: tokenBalances } = useTokenBalance(+auctionChainId as AllowedChainIds, auctionAddress);
 
   const [slippage, setSlippage] = useState(slippages[1]);
   const [isLoading, setLoading] = useState(false);

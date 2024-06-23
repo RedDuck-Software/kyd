@@ -1,8 +1,5 @@
 import { AllowedChainIds } from '@/constants/addresses';
-import { TokenBalance } from '@/hooks/useTokenBalances';
-import { maxInt256 } from 'viem';
 import { create } from 'zustand';
-import { allowedTokens } from '../constants/addresses';
 import { polygon, scrollSepolia, sepolia } from 'viem/chains';
 
 export interface AllowedDonateChain {

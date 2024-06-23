@@ -19,7 +19,7 @@ export const NftRedeemModal = () => {
     const hash = await redeemAsync({
       abi: erc721ABI,
       functionName: 'burn',
-      // args: [],
+      args: [],
     });
     return hash;
   }, [redeemAsync]);

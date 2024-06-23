@@ -6,8 +6,6 @@ import { useDefaultSubgraphQuery } from '@/hooks/useDefaultSubgraphQuery';
 import { GET_USER_NFTS, GetUserNftsResponse, GET_NFT_URI, GetNftUriResponse } from '@/graph/queries/get-user-nfts';
 import { useAccount, useChainId } from 'wagmi';
 import { httpClient } from '@/api/client';
-import { routes } from '@/router';
-import { useUserNftsData } from '@/hooks/queries/use-user-nfts-data';
 import { getClientByChainId } from '@/graph';
 
 interface NftMetadata {
@@ -19,8 +17,6 @@ export const ProfileNfts: React.FC = () => {
   const navigate = useNavigate();
   const { address } = useAccount();
   const chainId = useChainId();
-
-  const {} = useUserNftsData();
 
   const { data: userNftsData, loading: isLoadingUserNfts } = useDefaultSubgraphQuery<GetUserNftsResponse>(
     GET_USER_NFTS,
@@ -77,7 +73,7 @@ export const ProfileNfts: React.FC = () => {
     };
 
     fetchNftData();
-  }, [userNftsData]);
+  }, [chainId, userNftsData]);
 
   const handleNftClick = useCallback(
     (address: string, tokenId: string) => {

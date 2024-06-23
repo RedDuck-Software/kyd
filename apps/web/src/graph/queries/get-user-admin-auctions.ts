@@ -11,7 +11,7 @@ export const getUserAdminAuctions = async (user: Address) => {
 
   const queries = await Promise.all(
     clients.map(async (client) => ({
-      result: client.query({
+      result: client.client.query({
         query: gql`
         {
             auctionCreateds(where: { owner: "${user}" }) {

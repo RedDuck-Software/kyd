@@ -19,7 +19,7 @@ export interface Donate {
 export const getUserStats = async (address: Address) => {
   const clients = getGraphClients();
   const queries = clients.map((client) =>
-    client.query({
+    client.client.query({
       query: gql`
         {
           donates(where: { from: "${address}" }){
