@@ -147,7 +147,7 @@ templates:
         - event: Burn(indexed address,indexed uint256,bytes)
           handler: handleBurn
         - event: Transfer(indexed address,indexed address,indexed uint256)
-          handler: handleMint
+          handler: handleTransfer
       file: ./src/handlers/auction-nft.ts
   - kind: ethereum
     name: AuctionNFT1155

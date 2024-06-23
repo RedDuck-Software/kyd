@@ -25,6 +25,7 @@ import {
 import { env } from '@/env';
 import { postCreateAuctionMetadata } from '@/api/create-auction';
 import { toast } from '../ui/use-toast';
+import { Spinner } from '../ui/spinner';
 
 const schema = z
   .object({
@@ -88,6 +89,8 @@ export const CreateAuctionForm = () => {
     name: 'topDonateWinners',
   });
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const [enableTopDonateWinners, setEnableTopDonateWinners] = useState(false);
   const [enableRandomWinners, setEnableRandomWinners] = useState(false);
 
@@ -108,6 +111,7 @@ export const CreateAuctionForm = () => {
 
   const handleCreateAuction = async (data: CreateFormData) => {
     if (!address) return;
+    setIsLoading(true);
 
     let topWinnerNftId: string | undefined = undefined;
     // let randomWinnerNftId: string | undefined = undefined;
@@ -241,6 +245,8 @@ export const CreateAuctionForm = () => {
       toast({ title: 'Auction created successfully', description: `Transaction hash: ${hash}` });
     } catch (e) {
       console.log(e);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -457,7 +463,9 @@ export const CreateAuctionForm = () => {
         </div>
 
         {errors.enableTopDonateWinners && <p className="text-danger">{errors.enableTopDonateWinners.message}</p>}
-        <Button type="submit">Submit</Button>
+        <Button className="w-full" type="submit" disabled={isLoading}>
+          {isLoading ? <Spinner className="w-5 h-5" /> : 'Submit'}
+        </Button>
       </form>
     </div>
   );

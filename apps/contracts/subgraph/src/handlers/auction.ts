@@ -44,10 +44,10 @@ export function handleDonate(event: DonateEvent): void {
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   );
 
-  entity.from = event.params.user;
+  entity.from = event.params.stable;
   entity.auction = event.address;
   entity.amount = event.params.amount;
-  entity.stable = event.params.stable;
+  entity.stable = event.params.user;
   entity.blockNumber = event.block.number;
   entity.blockTimestamp = event.block.timestamp;
   entity.transactionHash = event.transaction.hash;

@@ -29,9 +29,9 @@ export interface GetAuctionCreatedResponse {
   auctionCreateds: AuctionCreated[];
 }
 
-export const GET_USER_DONATES = (owner: string) => gql`
+export const GET_USER_DONATES = gql`
   query GetUserDonates {
-    donates(where: { from: "${owner}" }) {
+    donates(where: { from: Bytes }) {
       from
       auction
       amount
@@ -44,9 +44,9 @@ export const GET_USER_DONATES = (owner: string) => gql`
   }
 `;
 
-export const GET_AUCTION_CREATED = (address: string) => gql`
+export const GET_AUCTION_CREATED = gql`
   query GetAuctionCreated {
-    auctionCreateds(where: { address: "${address}" }) {
+    auctionCreateds(where: { address: Bytes }) {
       id
       address
       uri
