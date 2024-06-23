@@ -186,7 +186,7 @@ export const AuctionDonate = () => {
 
   return (
     <div className="flex flex-col gap-4">
-      <h2 className="text-[32px] font-semibold">Make impact</h2>
+      <h2 className="text-3xl font-semibold">Make impact</h2>
       {address ? (
         <div className="flex flex-col gap-6">
           <div className=" flex flex-col gap-4">

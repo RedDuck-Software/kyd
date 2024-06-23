@@ -1,39 +1,41 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { httpClient } from '@/api/client';
 import { ShadowCard } from '@/components/common/shadow-card';
-import { TrandingAuctions } from '@/components/home/tranding-auctions';
 import { Button } from '@/components/ui/button';
 import { CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { GET_ALL_AUCTIONS, GetAllAuctionsResponse } from '@/graph/queries/get-all-auctions';
+import { useDefaultSubgraphQuery } from '@/hooks/useDefaultSubgraphQuery';
 import { getShadowCardBg, getShadowCardVariant } from '@/lib/shadow-card-variant';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { Spinner } from '@/components/ui/spinner';
-import { useAllAuctions } from '@/hooks/queries/use-all-auctions';
 
-export type AuctionMetadata = {
+type AuctionMetadata = {
   name: string;
   description: string;
   uri: string;
 };
 
-export default function Home() {
+export default function Auctions() {
   const navigate = useNavigate();
 
-  const { data: allAuctions, isLoading: loading } = useAllAuctions();
+  const { data, loading } = useDefaultSubgraphQuery<GetAllAuctionsResponse>(GET_ALL_AUCTIONS);
 
+  const endedAuctionIds = new Set(data?.auctionEndeds.map((auction) => auction.id));
+  const initialActiveAuctions = data?.auctionCreateds.filter((auction) => !endedAuctionIds.has(auction.id));
+
+  const [activeAuctions, setActiveAuctions] = useState(initialActiveAuctions);
   const [auctionData, setAuctionData] = useState<{
     [key: string]: AuctionMetadata;
   }>({});
   const [isLoading, setIsLoading] = useState(true);
 
-  const activeAuctions = useMemo(() => {
-    const endedAuctionIds = new Set(allAuctions?.auctionEndeds.map((auction) => auction.id));
-    const initialActiveAuctions = allAuctions?.auctionCreateds.filter((auction) => !endedAuctionIds.has(auction.id));
-
-    return initialActiveAuctions
-      ? initialActiveAuctions.sort((a, b) => +b.blockTimestamp - +a.blockTimestamp).slice(0, 3)
-      : [];
-  }, [allAuctions]);
+  useEffect(() => {
+    if (initialActiveAuctions) {
+      setActiveAuctions(initialActiveAuctions);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -68,14 +70,14 @@ export default function Home() {
     fetchImages();
   }, [activeAuctions]);
 
-  const handleParticipate = (address: string, chainId: number) => {
-    navigate(`auctions/${address}:${chainId}`);
+  const handleParticipate = (address: string) => {
+    navigate(`auctions/${address}`);
   };
 
   return (
     <div className="flex flex-col gap-16">
       <div className="flex flex-col gap-2 lg:gap-4 text-center">
-        <h1 className="text-4xl font-medium">Welcome to Know Your Donation!</h1>
+        <h1 className="text-4xl font-medium">List of available auctions</h1>
         <p className="px-4 lg:px-12 xl:px-16">
           Lorem ipsum dolor sit, amet consectetur adipisicing elit. Tenetur perspiciatis sit saepe ex earum soluta,
           repellat voluptatem doloremque cupiditate veritatis id? Magnam consectetur expedita repellat soluta. Eius
@@ -83,14 +85,13 @@ export default function Home() {
         </p>
       </div>
       <div className="flex flex-col gap-4">
-        <h2 className="text-3xl font-semibold">Top active auctions</h2>
         {isLoading || loading ? (
           <div className="text-center py-4">
             <Spinner />
           </div>
         ) : (
-          <div className="w-full grid grid-cols-3 gap-8">
-            {activeAuctions?.map(({ id, address, chainId }, i) => (
+          <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {activeAuctions?.map(({ id, address }, i) => (
               <ShadowCard key={id} variant={getShadowCardVariant(i)}>
                 <CardHeader>
                   <CardTitle className={cn(getShadowCardBg(i), 'rounded-[16px] py-2 text-center')}>
@@ -99,14 +100,10 @@ export default function Home() {
                   <CardDescription className="text-slate-800">{auctionData[id]?.description}</CardDescription>
                 </CardHeader>
                 <CardContent className="p-0">
-                  <img
-                    src={auctionData[id]?.uri}
-                    className="object-cover aspect-square"
-                    alt={`Can't get ${auctionData[id]?.uri}`}
-                  />
+                  <img src={auctionData[id]?.uri} alt={`Can't get ${auctionData[id]?.uri}`} />
                 </CardContent>
                 <CardFooter className="flex justify-end my-4 py-0">
-                  <Button onClick={() => handleParticipate(address, chainId)} className="w-full">
+                  <Button onClick={() => handleParticipate(address)} className="w-full">
                     Participate
                   </Button>
                 </CardFooter>
@@ -115,7 +112,6 @@ export default function Home() {
           </div>
         )}
       </div>
-      <TrandingAuctions />
     </div>
   );
 }
