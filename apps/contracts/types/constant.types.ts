@@ -6,6 +6,7 @@ export enum NETWORK {
   SEPOLIA = 'sepolia',
   LOCALHOST = 'localhost',
   SCROLL_SEPOLIA = 'scroll-sepolia',
+  POLYGON = 'polygon',
 }
 
 export type DeploymentConstans = {

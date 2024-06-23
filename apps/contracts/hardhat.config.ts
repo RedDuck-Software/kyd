@@ -30,7 +30,8 @@ const config: HardhatUserConfig = {
   networks: {
     main: getNetworkConfig('main'),
     sepolia: getNetworkConfig('sepolia'),
-    "scroll-sepolia": getNetworkConfig('scroll-sepolia'),
+    polygon: getNetworkConfig('polygon'),
+    'scroll-sepolia': getNetworkConfig('scroll-sepolia'),
     ...(env.SOLIDITY_COVERAGE
       ? {}
       : {
@@ -54,14 +55,16 @@ const config: HardhatUserConfig = {
   },
   etherscan: {
     apiKey: env.ETHERSCAN_API_KEY,
-    customChains: [{
+    customChains: [
+      {
         network: 'scroll-sepolia',
-      chainId: 534351,
-      urls: {
-        apiURL: 'https://api-sepolia.scrollscan.com/api',
-        browserURL: 'https://sepolia.scrollscan.com'
-      }}
-    ]
+        chainId: 534351,
+        urls: {
+          apiURL: 'https://api-sepolia.scrollscan.com/api',
+          browserURL: 'https://sepolia.scrollscan.com',
+        },
+      },
+    ],
   },
 };
 
