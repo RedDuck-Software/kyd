@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { Spinner } from '@/components/ui/spinner';
 import { useAllAuctions } from '@/hooks/queries/use-all-auctions';
 
-type AuctionMetadata = {
+export type AuctionMetadata = {
   name: string;
   description: string;
   uri: string;
