@@ -90,13 +90,13 @@ export default function Home() {
         ) : (
           <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {activeAuctions?.map(({ id, address, chainId }, i) => (
-              <ShadowCard key={id} variant={getShadowCardVariant(i)}>
+              <ShadowCard key={id} className="flex flex-col" variant={getShadowCardVariant(i)}>
                 <CardHeader>
                   <CardTitle className={cn(getShadowCardBg(i), 'rounded-[16px] py-2 text-center')}>
                     {auctionData[id]?.name}
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="py-0 px-12 rounded-[16px] ">
+                <CardContent className="py-0 flex-1 px-12 flex justify-center rounded-[16px] ">
                   <img
                     src={auctionData[id]?.uri}
                     className="object-cover aspect-square  rounded-[16px] "

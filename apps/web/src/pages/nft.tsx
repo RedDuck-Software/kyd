@@ -38,7 +38,7 @@ export default function Nft() {
     })();
   }, [nftAddress, nftUriData?.auctionNFTCreateds]);
 
-  const handleRedeemNFT = () => {
+  const handleRedeemNFT = async () => {
     await writeContractAsync({
       abi: erc721ABI,
       address: nftAddress as Address,
