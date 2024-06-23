@@ -1,15 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { httpClient } from '@/api/client';
 import { ShadowCard } from '@/components/common/shadow-card';
 import { Button } from '@/components/ui/button';
 import { CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { GET_ALL_AUCTIONS, GetAllAuctionsResponse } from '@/graph/queries/get-all-auctions';
-import { useDefaultSubgraphQuery } from '@/hooks/useDefaultSubgraphQuery';
 import { getShadowCardBg, getShadowCardVariant } from '@/lib/shadow-card-variant';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { Spinner } from '@/components/ui/spinner';
 import { useChainId } from 'wagmi';
+import { useAllAuctions } from '@/hooks/queries/use-all-auctions';
 
 type AuctionMetadata = {
   name: string;
@@ -21,23 +20,23 @@ export default function Auctions() {
   const chainId = useChainId();
   const navigate = useNavigate();
 
-  const { data, loading } = useDefaultSubgraphQuery<GetAllAuctionsResponse>(GET_ALL_AUCTIONS);
+  const { data: allAuctions, isLoading: loading } = useAllAuctions();
 
-  const endedAuctionIds = new Set(data?.auctionEndeds.map((auction) => auction.id));
-  const initialActiveAuctions = data?.auctionCreateds?.filter((auction) => !endedAuctionIds.has(auction.id));
+  const activeAuctions = useMemo(() => {
+    const endedAuctionIds = new Set(allAuctions?.auctionEndeds.map((auction) => auction.address));
+    const initialActiveAuctions = allAuctions?.auctionCreateds.filter(
+      (auction) => !endedAuctionIds.has(auction.address)
+    );
 
-  const [activeAuctions, setActiveAuctions] = useState(initialActiveAuctions);
+    return initialActiveAuctions
+      ? initialActiveAuctions.sort((a, b) => +b.blockTimestamp - +a.blockTimestamp).slice(0, 3)
+      : [];
+  }, [allAuctions]);
+
   const [auctionData, setAuctionData] = useState<{
     [key: string]: AuctionMetadata;
   }>({});
   const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    if (initialActiveAuctions) {
-      setActiveAuctions(initialActiveAuctions);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -94,18 +93,24 @@ export default function Auctions() {
         ) : (
           <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {activeAuctions?.map(({ id, address }, i) => (
-              <ShadowCard key={id} variant={getShadowCardVariant(i)}>
+              <ShadowCard key={id} className="flex flex-col" variant={getShadowCardVariant(i)}>
                 <CardHeader>
-                  <CardTitle className={cn(getShadowCardBg(i), 'rounded-[16px] py-2 text-center')}>
-                    {auctionData[id]?.name}
-                  </CardTitle>
-                  <CardDescription className="text-slate-800">{auctionData[id]?.description}</CardDescription>
+                  <CardTitle className={cn('rounded-[16px] text-center')}>{auctionData[id]?.name}</CardTitle>
                 </CardHeader>
-                <CardContent className="p-0">
-                  <img src={auctionData[id]?.uri} alt={`Can't get ${auctionData[id]?.uri}`} />
+                <CardContent className="py-0 flex-1 px-12 flex justify-center rounded-[16px] ">
+                  <img
+                    src={auctionData[id]?.uri}
+                    className="object-cover aspect-square  rounded-[16px] "
+                    alt={`Can't get ${auctionData[id]?.uri}`}
+                  />
                 </CardContent>
+                <CardDescription className="font-medium px-6">{auctionData[id]?.description}</CardDescription>
+
                 <CardFooter className="flex justify-end my-4 py-0">
-                  <Button onClick={() => handleParticipate(address, chainId)} className="w-full">
+                  <Button
+                    onClick={() => handleParticipate(address, chainId)}
+                    className={cn(getShadowCardBg(i), 'w-full')}
+                  >
                     Participate
                   </Button>
                 </CardFooter>
