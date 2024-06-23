@@ -1,4 +1,6 @@
 import { gql } from '@apollo/client';
+import { getGraphClients } from '../client';
+import { Address } from 'viem';
 
 export interface AuctionCreated {
   id: string;
@@ -19,6 +21,7 @@ export interface Donate {
   id: string;
   stable: string;
   transactionHash: string;
+  auctionUri: string;
 }
 
 export interface GetUserDonatesResponse {
@@ -28,6 +31,14 @@ export interface GetUserDonatesResponse {
 export interface GetAuctionCreatedResponse {
   auctionCreateds: AuctionCreated[];
 }
+
+type AuctionMetadata = {
+  name: string;
+  description: string;
+  isAdmin: boolean;
+  inProgress: boolean;
+  uri: string;
+};
 
 export const GET_USER_DONATES = gql`
   query GetUserDonates {
@@ -57,3 +68,60 @@ export const GET_AUCTION_CREATED = gql`
     }
   }
 `;
+
+export const getUserAuctions = async (address: Address) => {
+  const clients = getGraphClients();
+  const queries = clients.map((client) =>
+    client.query({
+      query: gql`
+        {
+          donates(where: { from: "${address}" }){
+            from
+            stable
+            amount
+            auction
+            blockTimestamp
+          }
+        }
+      `,
+      variables: {
+        from: address,
+      },
+    })
+  );
+
+  const res = await Promise.all(queries);
+
+  for (let i in res) {
+    const result = res[i];
+
+    const auctions = await Promise.all(
+      result.data.donates.map((v: Donate) =>
+        clients[i].query({
+          query: gql`
+              {
+                auctionCreateds(where: { address: ${v.auction} }) {
+                  address
+                  blockTimestamp
+                }
+              }
+            `,
+        })
+      )
+    );
+
+    console.log({ result, auctions });
+  }
+
+  // return res.data.donates.map((d: Donate) => {
+  //   const auction = auctions.data.auctionCreateds.find((v: AuctionCreated) => v.address === d.auction);
+
+  //   console.log({ auction });
+  //   return {
+  //     ...d,
+  //     auction: {
+  //       uri: auction.uri,
+  //     },
+  //   };
+  // });
+};
