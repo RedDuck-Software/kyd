@@ -7,10 +7,10 @@ import { NETWORK } from '@/types/constant.types';
 import { artifacts } from 'hardhat';
 
 // TODO: change on every deploy
-const auctionImpl = '0x92Ce2D7781db1d1f59eDCf89aD3C91d7058E14dA';
-const auctionNFTImpl = '0xAC2053365d271B9A1D13d7B3feE5b92AB03F16f3';
-const auctionNFT1155Impl = '0x642b70EFF0b0419EBA5A10e026E9297Bc234638e';
-const factory = '0x7F85359FF8149b51d2A7f1CCE682B0CD0A178e55'
+const auctionImpl = '0x0AAa22976a6c7236d7BeBE2c3C44a13237dE43e0';
+const auctionNFTImpl = '0x687bB309b2213973F188F9470647799E686fa3D2';
+const auctionNFT1155Impl = '0x9d0297aECe816c78e91eECB81D079574e9c7F889';
+const factory = '0x60192A9Ab822745564C1C74074002141E2919ae4'
 
 const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
   const factory = await hre.ethers.getContractFactoryFromArtifact(
