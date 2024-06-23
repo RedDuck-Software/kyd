@@ -14,7 +14,7 @@ export default function AuctionDetails() {
     <div className="flex flex-col gap-16">
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-2">
-          <h1 className="text-4xl font-semibold">{id} Auction Details</h1>
+          <h1 className="text-3xl font-semibold">{id} Auction Details</h1>
           <p className="text-base">
             {id} Auction long description lorem ipsum dolor sit amet consectetur adipisicing elit. Tempore ipsa
             doloribus accusantium eius nam cum natus perspiciatis. Alias, ratione numquam! Quod, ducimus id eaque totam

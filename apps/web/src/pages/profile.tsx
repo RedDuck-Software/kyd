@@ -7,9 +7,9 @@ import { useAccount } from 'wagmi';
 export default function Profile() {
   const { address } = useAccount();
   return (
-    <div className="flex flex-col gap-28">
+    <div className="flex flex-col gap-4">
       <h1 className="text-center font-bold text-[32px]">Profile</h1>
-      <div className="flex flex-col gap-28">
+      <div className="flex flex-col gap-16">
         {address ? (
           <>
             <ProfileInfo />

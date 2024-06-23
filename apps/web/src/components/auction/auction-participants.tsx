@@ -32,7 +32,7 @@ export const AuctionParticipants = () => {
 
   return (
     <div className="flex flex-col gap-4">
-      <h2 className="text-[32px] font-semibold">Donaters</h2>
+      <h2 className="text-3xl font-semibold">Donaters</h2>
       <div className="flex flex-col gap-6">
         {nodesRes && nodesRes.length > 0 ? (
           nodesRes.map((node, i) => (

@@ -16,8 +16,8 @@ export interface GetAllAuctionsResponse {
 }
 
 export const GET_ALL_AUCTIONS = gql`
-  query GetAllAuctions {
-    auctionCreateds {
+  query GetAllAuctions($first: Int) {
+    auctionCreateds(first: $first) {
       id
       address
       owner
