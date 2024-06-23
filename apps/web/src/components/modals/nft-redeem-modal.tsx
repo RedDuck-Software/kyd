@@ -5,9 +5,10 @@ import { useCallback, useState } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import { usePublicClient, useWriteContract } from 'wagmi';
 import { erc721ABI } from '@/abi/erc721ABI';
+import { Address, encodePacked } from 'viem';
 
 export const NftRedeemModal = () => {
-  const { setNftRedeemModalOpen, setNftRedeemSuccessModalOpen } = useModalsStore();
+  const { setNftRedeemModalOpen, setNftRedeemSuccessModalOpen, dialogNftData } = useModalsStore();
   const [code, setCode] = useState('');
   const [isLoading, setLoading] = useState(false);
 
@@ -18,11 +19,12 @@ export const NftRedeemModal = () => {
   const redeem = useCallback(async () => {
     const hash = await redeemAsync({
       abi: erc721ABI,
+      address: dialogNftData?.nftAddress as Address,
       functionName: 'burn',
-      args: [],
+      args: [BigInt(dialogNftData?.tokenId ?? 0), encodePacked(['string'], [code])],
     });
     return hash;
-  }, [redeemAsync]);
+  }, [code, dialogNftData?.nftAddress, dialogNftData?.tokenId, redeemAsync]);
 
   const publicClient = usePublicClient();
 

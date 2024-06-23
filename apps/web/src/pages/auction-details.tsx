@@ -86,7 +86,7 @@ export default function AuctionDetails() {
       ) : (
         <AuctionDonate />
       )}
-      <AuctionParticipants />
+      {!isFinished ? <AuctionParticipants /> : null}
     </div>
   );
 }

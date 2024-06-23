@@ -26,6 +26,7 @@ import { env } from '@/env';
 import { postCreateAuctionMetadata } from '@/api/create-auction';
 import { toast } from '../ui/use-toast';
 import { Spinner } from '../ui/spinner';
+import { useNavigate } from 'react-router-dom';
 
 const schema = z
   .object({
@@ -67,6 +68,7 @@ const schema = z
 type CreateFormData = z.infer<typeof schema>;
 
 export const CreateAuctionForm = () => {
+  const navigate = useNavigate();
   const chainId = useChainId();
   const { address } = useAccount();
 
@@ -243,6 +245,7 @@ export const CreateAuctionForm = () => {
       });
 
       toast({ title: 'Auction created successfully', description: `Transaction hash: ${hash}` });
+      navigate('/');
     } catch (e) {
       console.log(e);
     } finally {

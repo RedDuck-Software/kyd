@@ -51,6 +51,12 @@ export default function Nft() {
     variables: { address: nftAddress },
   });
 
+  const { setNftAlertModalOpen, setDialogNftData } = useModalsStore();
+
+  useEffect(() => {
+    setDialogNftData({ nftAddress, tokenId });
+  }, [nftAddress, setDialogNftData, tokenId]);
+
   useEffect(() => {
     (async () => {
       const rawNftData = nftUriData?.auctionNFTCreateds.find((created) => created.address === nftAddress);
@@ -59,18 +65,18 @@ export default function Nft() {
     })();
   }, [nftAddress, nftUriData?.auctionNFTCreateds, tokenId]);
 
-  const handleRedeemNFT = async () => {
-    await writeContractAsync({
-      abi: erc721ABI,
-      address: nftAddress as Address,
-      functionName: 'burn',
-      args: [BigInt(tokenId ?? 0), zeroAddress],
-    });
-  };
+  // const handleRedeemNFT = async () => {
+  //   await writeContractAsync({
+  //     abi: erc721ABI,
+  //     address: nftAddress as Address,
+  //     functionName: 'burn',
+  //     args: [BigInt(tokenId ?? 0), zeroAddress],
+  //   });
+  // };
 
   const handleClick = () => {
-    handleRedeemNFT();
-    // setNftAlertModalOpen(true);
+    // handleRedeemNFT();
+    setNftAlertModalOpen(true);
   };
 
   // if (isLoading) {
@@ -95,32 +101,6 @@ export default function Nft() {
       </div>
       <h1 className="text-4xl text-center font-semibold">{nftData?.description}</h1>
 
-      {/* <p className="text-base font-medium">SOme info about company</p>
-      <p className="text-base">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo nulla maiores accusantium harum quae, vitae,
-        eveniet natus vero nesciunt, corporis iure illum cum consequatur animi. Quod officiis at voluptates blanditiis.
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Aut error tempora maiores ex dicta itaque laborum
-        ducimus cumque eos ab ratione exercitationem, quam id laboriosam? Eveniet repudiandae eum quas, sed, ut est vel
-        reiciendis nihil temporibus quaerat culpa ab! Illo iusto aliquam minus odio suscipit voluptatibus nisi dolorem
-        ullam totam neque alias tempora harum nesciunt corrupti similique eligendi, architecto culpa impedit aut, magnam
-        tenetur, aperiam voluptate. Fugiat doloremque porro architecto placeat officia incidunt debitis aliquam? Animi
-        rerum consequuntur, veritatis fuga, nobis unde voluptatibus accusantium non inventore velit debitis corrupti!
-        Nihil ad soluta optio dicta tenetur iste at itaque perspiciatis provident, exercitationem fuga, nisi natus cum
-        laudantium suscipit quia in sint ex tempora asperiores laboriosam. Optio necessitatibus reiciendis quas dolor
-        labore corporis eligendi illo libero odit inventore fuga perferendis fugit, distinctio porro architecto quae,
-        eaque ipsam totam voluptas cumque ab, dolorum quos cum excepturi. Eveniet optio quos perferendis natus
-        voluptatem ipsam molestiae vero animi sit maxime corrupti dolore ab quam delectus laborum consectetur qui, quo
-        aperiam libero autem enim obcaecati, unde rem in? Quis sapiente ullam, quae blanditiis voluptate quibusdam
-        distinctio eligendi suscipit consequuntur? Aliquam officia quas et sequi ducimus harum. Vel doloremque ullam
-        mollitia vitae atque, assumenda animi inventore maiores fugit aperiam. Deleniti aliquid amet sequi voluptate
-        cum, nulla harum ad eligendi quidem odio voluptates eius illo praesentium sunt architecto delectus corporis rem
-        repellat laborum odit itaque culpa veritatis eos similique? Dolore, voluptas velit sit error quidem
-        reprehenderit doloribus consequuntur optio ipsa nostrum impedit dignissimos possimus delectus repellat sequi
-        inventore maxime! Sapiente pariatur tempora quidem animi veritatis at perspiciatis, dolorem unde consectetur?
-        Dolorum dolores omnis quo ipsa distinctio beatae fugit laborum rerum est! Nisi omnis veniam vero mollitia,
-        ratione sit, impedit quas harum architecto, quidem obcaecati incidunt ad expedita velit. Debitis iste totam
-        harum a doloremque, ducimus libero dolore natus!
-      </p> */}
       <Button onClick={handleClick} className="py-3 text-[18px]" disabled={isBurnt}>
         Redeem
       </Button>

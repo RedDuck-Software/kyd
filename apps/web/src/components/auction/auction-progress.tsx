@@ -13,25 +13,33 @@ export const AuctionProgress = () => {
 
   const queryClient = useQueryClient();
 
-  const { data: goalRes, queryKey: getGoalQueryKey } = useReadContract({
+  const {
+    data: goalRes,
+    queryKey: getGoalQueryKey,
+    isLoading: isGoalLoading,
+  } = useReadContract({
     abi: auctionAbi,
     address: address as `0x${string}`,
     chainId: +auctionChainId,
     functionName: 'goal',
   });
 
-  const { data: totalDonatedRes, queryKey: getTotalDonatedQueryKey } = useReadContract({
+  const {
+    data: totalDonatedRes,
+    queryKey: getTotalDonatedQueryKey,
+    isLoading: isTotalDonatedLoading,
+  } = useReadContract({
     abi: auctionAbi,
     address: address as `0x${string}`,
     chainId: +auctionChainId,
     functionName: 'totalDonated',
   });
 
+  const { data: blockNumber } = useBlockNumber({ watch: true, chainId: +auctionChainId });
+
   const goal = useMemo(() => {
     return goalRes ? parseFloat(formatUnits(goalRes, 18)) : 0;
   }, [goalRes]);
-
-  const { data: blockNumber } = useBlockNumber({ watch: true, chainId: +auctionChainId });
 
   const totalDonated = useMemo(() => {
     return totalDonatedRes ? parseFloat(formatUnits(totalDonatedRes, 18)) : 0;
@@ -41,9 +49,11 @@ export const AuctionProgress = () => {
     if (goal === 0) {
       return 0;
     }
-
-    return (totalDonated / goal) * 100;
+    const val = (totalDonated / goal) * 100;
+    return val >= 100 ? 100 : val;
   }, [goal, totalDonated]);
+
+  console.log('progress ==>', progress);
 
   useEffect(() => {
     if (blockNumber) {
