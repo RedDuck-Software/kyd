@@ -6,7 +6,7 @@ export const routes = {
   auctions: '/auctions',
   profile: '/profile',
   create: '/create',
-  nft: '/nft',
+  nft: '/nft/:address/:tokenId',
   auctionDetails: '/auctions/:id',
 } as const;
 

@@ -1,15 +1,44 @@
+import { AuctionFactoryAbi } from '@/abi/AuctionFactory';
+import { erc721ABI } from '@/abi/erc721ABI';
+import { factoryAbi } from '@/abi/factoryABI';
 import { ShadowCard } from '@/components/common/shadow-card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { addresses } from '@/constants/addresses';
+import { GET_NFT_URI } from '@/graph/queries/get-user-nfts';
+import { GetNftUriResponse } from '@/graph/queries/get-user-nfts-data';
 import { useUserAdminAuctions } from '@/hooks/queries/use-user-admin-auctions';
+import { useDefaultSubgraphQuery } from '@/hooks/useDefaultSubgraphQuery';
 import useModalsStore from '@/store/modals-store';
 import { useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { Address, erc721Abi, zeroAddress } from 'viem';
+import { useChainId, useWriteContract } from 'wagmi';
 
 export default function Nft() {
+  const { address: nftAddress, tokenId } = useParams();
+  const chainId = useChainId();
+  console.log('inftAddress ==>', nftAddress);
+
   const [isAlertOpen, setAlertOpen] = useState(false);
   const { setNftAlertModalOpen } = useModalsStore();
 
   const { data } = useUserAdminAuctions();
+
+  const { writeContractAsync } = useWriteContract();
+
+  const { data: nftUri } = useDefaultSubgraphQuery<GetNftUriResponse>(GET_NFT_URI, {
+    variables: { addresss: nftAddress },
+  });
+
+  const handleRedeemNFT = () => {
+    writeContractAsync({
+      abi: erc721ABI,
+      address: nftAddress as Address,
+      functionName: 'burn',
+      args: [BigInt(tokenId ?? 0), zeroAddress],
+    });
+  };
 
   console.log({ data });
 

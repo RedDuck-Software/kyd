@@ -79,9 +79,12 @@ export const ProfileNfts: React.FC = () => {
     fetchNftData();
   }, [userNftsData]);
 
-  const handleNftClick = useCallback(() => {
-    navigate(routes.nft);
-  }, [navigate]);
+  const handleNftClick = useCallback(
+    (address: string, tokenId: string) => {
+      navigate(`/nft/${address}/${tokenId}`);
+    },
+    [navigate]
+  );
 
   return (
     <div className="flex flex-col gap-4">
@@ -92,7 +95,7 @@ export const ProfileNfts: React.FC = () => {
         <div className="grid lg:grid-cols-4 sm:grid-cols-3 grid-cols-2 gap-6">
           {userNftsData?.auctionNFTs?.length ? (
             userNftsData.auctionNFTs.map((nft, i) => (
-              <button key={nft.id} onClick={handleNftClick} className="">
+              <button key={nft.id} onClick={() => handleNftClick(nft.address, nft.tokenId)} className="">
                 <ShadowCard
                   variant={getShadowCardFilledVariant(i)}
                   className="flex flex-col overflow-hidden items-center gap-2"
