@@ -1,41 +1,57 @@
-import { Address } from 'viem';
-import { getGraphClients } from '../client';
 import { gql } from '@apollo/client';
 
-export interface NFTBurn {
-  from: string;
-  tokenId: number;
+export interface AuctionNft {
   id: string;
+  tokenId: string;
+  address: string;
+  owner: string;
+  transactionHash: string;
+  blockNumber: string;
+  blockTimestamp: string;
 }
 
-export interface NFT {
-  name: string;
-  img: string;
-  description: string;
+export interface AuctionNftCreated {
+  id: string;
+  address: string;
+  uri: string;
+  auctionAddress: string;
+  transactionHash: string;
+  blockTimestamp: string;
+  blockNumber: string;
 }
 
-export const getUserNfts = async (address: Address) => {
-  const clients = getGraphClients();
-  const queries = clients.map((client) =>
-    client.query({
-      query: gql`
-        {
-          AuctionNFTBurn(where: { from: "${address}" }){
-            from
-            tokenId
-            id
-          },
-          AuctionNFT1155Burn(where: { from: "${address}" }){
-            from
-            tokenId
-            id
-          }
-        }
-      `,
-    })
-  );
+export interface GetUserNftsResponse {
+  auctionNFTs: AuctionNft[];
+}
 
-  const results = await Promise.all(queries);
+export interface GetNftUriResponse {
+  auctionNFTCreateds: AuctionNftCreated[];
+}
 
-  console.log(results);
-};
+export const GET_USER_NFTS = gql`
+  query GetUserNfts {
+    auctionNFTs(where: { owner: Bytes }) {
+      id
+      blockNumber
+      address
+      blockTimestamp
+      owner
+      tokenId
+      transactionHash
+    }
+  }
+`;
+
+export const GET_NFT_URI = gql`
+  query GetNftUri {
+    auctionNFTCreateds(where: { address: Bytes }) {
+      id
+      address
+      uri
+      auctionAddress
+      transactionHash
+      blockTimestamp
+      blockNumber
+    }
+  }
+`;

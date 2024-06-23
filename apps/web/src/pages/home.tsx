@@ -9,6 +9,7 @@ import { useDefaultSubgraphQuery } from '@/hooks/useDefaultSubgraphQuery';
 import { getShadowCardBg, getShadowCardVariant } from '@/lib/shadow-card-variant';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
+import { Spinner } from '@/components/ui/spinner';
 
 type AuctionMetadata = {
   name: string;
@@ -19,7 +20,7 @@ type AuctionMetadata = {
 export default function Home() {
   const navigate = useNavigate();
 
-  const { data } = useDefaultSubgraphQuery<GetAllAuctionsResponse>(GET_ALL_AUCTIONS);
+  const { data, loading } = useDefaultSubgraphQuery<GetAllAuctionsResponse>(GET_ALL_AUCTIONS);
 
   const endedAuctionIds = new Set(data?.auctionEndeds.map((auction) => auction.id));
   const initialActiveAuctions = data?.auctionCreateds.filter((auction) => !endedAuctionIds.has(auction.id));
@@ -28,6 +29,7 @@ export default function Home() {
   const [auctionData, setAuctionData] = useState<{
     [key: string]: AuctionMetadata;
   }>({});
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (initialActiveAuctions) {
@@ -38,28 +40,32 @@ export default function Home() {
 
   useEffect(() => {
     const fetchImages = async () => {
-      const auctionData: { [key: string]: AuctionMetadata } = {};
-
       if (!activeAuctions) return;
 
-      console.log(1);
+      setIsLoading(true);
+      const auctionData: { [key: string]: AuctionMetadata } = {};
 
-      await Promise.all(
-        activeAuctions.map(async (auction) => {
-          try {
-            const response = await httpClient.get<AuctionMetadata>(`${auction.uri}0`);
-            if (response.data) {
-              auctionData[auction.id] = response.data;
-            } else {
-              console.error(`Failed to fetch image for auction ${auction.id}: ${response.statusText}`);
+      try {
+        await Promise.all(
+          activeAuctions.map(async (auction) => {
+            try {
+              const response = await httpClient.get<AuctionMetadata>(`${auction.uri}0`);
+              if (response.data) {
+                auctionData[auction.id] = response.data;
+              } else {
+                console.error(`Failed to fetch image for auction ${auction.id}: ${response.statusText}`);
+              }
+            } catch (error) {
+              console.error(`Error fetching image for auction ${auction.id}:`, error);
             }
-          } catch (error) {
-            console.error(`Error fetching image for auction ${auction.id}:`, error);
-          }
-        })
-      );
-
-      setAuctionData(auctionData);
+          })
+        );
+        setAuctionData(auctionData);
+      } catch (error) {
+        console.error('Error fetching auction images:', error);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     fetchImages();
@@ -81,26 +87,32 @@ export default function Home() {
       </div>
       <div className="flex flex-col gap-4">
         <h2 className="text-[32px] font-semibold">Top active auctions</h2>
-        <div className="w-full grid grid-cols-3 gap-8">
-          {activeAuctions?.map(({ id, address }, i) => (
-            <ShadowCard key={id} variant={getShadowCardVariant(i)}>
-              <CardHeader>
-                <CardTitle className={cn(getShadowCardBg(i), 'rounded-[16px] py-2 text-center')}>
-                  {auctionData[id]?.name}
-                </CardTitle>
-                <CardDescription className="text-slate-800">{auctionData[id]?.description}</CardDescription>
-              </CardHeader>
-              <CardContent className="p-0">
-                <img src={auctionData[id]?.uri} alt={`Can't get ${auctionData[id]?.uri}`} />
-              </CardContent>
-              <CardFooter className="flex justify-end my-4 py-0">
-                <Button onClick={() => handleParticipate(address)} className="w-full">
-                  Participate
-                </Button>
-              </CardFooter>
-            </ShadowCard>
-          ))}
-        </div>
+        {isLoading || loading ? (
+          <div className="text-center py-4">
+            <Spinner />
+          </div>
+        ) : (
+          <div className="w-full grid grid-cols-3 gap-8">
+            {activeAuctions?.map(({ id, address }, i) => (
+              <ShadowCard key={id} variant={getShadowCardVariant(i)}>
+                <CardHeader>
+                  <CardTitle className={cn(getShadowCardBg(i), 'rounded-[16px] py-2 text-center')}>
+                    {auctionData[id]?.name}
+                  </CardTitle>
+                  <CardDescription className="text-slate-800">{auctionData[id]?.description}</CardDescription>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <img src={auctionData[id]?.uri} alt={`Can't get ${auctionData[id]?.uri}`} />
+                </CardContent>
+                <CardFooter className="flex justify-end my-4 py-0">
+                  <Button onClick={() => handleParticipate(address)} className="w-full">
+                    Participate
+                  </Button>
+                </CardFooter>
+              </ShadowCard>
+            ))}
+          </div>
+        )}
       </div>
       <TrandingAuctions />
     </div>
