@@ -14,12 +14,10 @@ const mediaOptions: MulterOptions = {
 export class CreateAuctionMetadataRequestDto {
   @ApiProperty({ type: String, nullable: false, maxLength: 255, required: true })
   @IsString()
-  @MaxLength(255)
   description: string;
 
   @ApiProperty({ type: String, nullable: false, maxLength: 255, required: true })
   @IsString()
-  @MaxLength(255)
   name: string;
 
   @ApiProperty({ type: String, nullable: true, maxLength: 255, required: false })
@@ -29,7 +27,6 @@ export class CreateAuctionMetadataRequestDto {
 
   @ApiProperty({ type: String, nullable: false, maxLength: 255, required: true })
   @IsString()
-  @MaxLength(255)
   tokenId: string;
 }
 

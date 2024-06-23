@@ -14,7 +14,6 @@ const mediaOptions: MulterOptions = {
 export class CreateNftMetadataRequestDto {
   @ApiProperty({ type: String, nullable: false, maxLength: 255 })
   @IsString()
-  @MaxLength(255)
   description: string;
 
   @ApiProperty({ type: String, nullable: true, maxLength: 255, required: false })
@@ -24,7 +23,6 @@ export class CreateNftMetadataRequestDto {
 
   @ApiProperty({ type: String, nullable: false, maxLength: 255, required: true })
   @IsString()
-  @MaxLength(255)
   tokenId: string;
 }
 
