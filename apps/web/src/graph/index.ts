@@ -9,7 +9,7 @@ const getClient = (uri: string, params?: Omit<ApolloClientOptions<NormalizedCach
   });
 
 const subgraphs: Record<string, string> = {
-  [sepolia.id]: 'https://api.studio.thegraph.com/query/49166/kyd-sepolia/v1.0.6',
+  [sepolia.id]: 'https://api.studio.thegraph.com/query/49166/kyd-sepolia/v4.0.7',
   [scrollSepolia.id]: 'https://api.studio.thegraph.com/query/49166/kyd-sepolia/v4.0.7',
 };
 
