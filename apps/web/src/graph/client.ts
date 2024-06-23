@@ -1,5 +1,6 @@
 import { ApolloClient, ApolloLink, HttpLink, InMemoryCache, concat } from '@apollo/client';
 import { polygonMumbai, scrollSepolia, sepolia } from 'viem/chains';
+import { subgraphs } from '.';
 
 type Chains = typeof polygonMumbai | typeof scrollSepolia | typeof sepolia;
 
@@ -15,10 +16,10 @@ const getHttpLink = (chain: Chains) => {
       uri = 'https://api.thegraph.com/subgraphs/name/mrjeleika/kyd-polygon';
       break;
     case 'Scroll Sepolia':
-      uri = 'https://api.thegraph.com/subgraphs/name/mrjeleika/kyd-optimism';
+      uri = subgraphs[scrollSepolia.id];
       break;
     case 'Sepolia':
-      uri = 'https://api.studio.thegraph.com/query/49166/kyd-sepolia/v1.0.6';
+      uri = subgraphs[sepolia.id];
       break;
 
     default:
@@ -56,5 +57,8 @@ export const getGraphClients = () => {
   const sepoliaClient = createApolloClient(sepolia);
   const scrollClient = createApolloClient(scrollSepolia);
 
-  return [sepoliaClient];
+  return [
+    { client: sepoliaClient, chainId: sepolia.id },
+    { client: scrollClient, chainId: scrollSepolia.id },
+  ];
 };
