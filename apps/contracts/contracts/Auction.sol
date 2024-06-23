@@ -241,6 +241,14 @@ contract Auction is IAuction, OwnableUpgradeable {
         return list.getNodes();
     }
 
+    function getListWithNodes()
+        external
+        view
+        returns (DoubleLinkedList.Node[] memory, uint256, uint256, uint256)
+    {
+        return (list.getNodes(), list.head, list.tail, list.length);
+    }
+
     function fulfillRandomness(uint256 _randomness) external {
         require(msg.sender == factory, "Not a factory");
         randomness = _randomness;

@@ -83,14 +83,12 @@ library DoubleLinkedList {
                 "Invalid id"
             );
         }
-
         if (node.next != type(uint256).max) {
             require(
                 list.nodes[node.next].data.amount >= data.amount,
                 "Invalid id"
             );
         }
-
         require(node.data.amount <= data.amount, "Invalid id");
 
         list.nodes.push(Node({data: data, prev: id, next: node.next}));
@@ -165,14 +163,16 @@ library DoubleLinkedList {
         if (node.next != type(uint256).max && node.prev != type(uint256).max) {
             list.nodes[node.next].prev = node.prev;
             list.nodes[node.prev].next = node.next;
-        }
-
-        if (node.prev == type(uint256).max && node.next != type(uint256).max) {
+        } else if (
+            node.prev == type(uint256).max && node.next != type(uint256).max
+        ) {
             list.nodes[node.next].prev = type(uint256).max;
-        }
-        if (node.next == type(uint256).max && node.prev != type(uint256).max) {
+        } else if (
+            node.next == type(uint256).max && node.prev != type(uint256).max
+        ) {
             list.nodes[node.prev].next = type(uint256).max;
         }
+
         if (id == list.tail) {
             list.tail = node.prev != type(uint256).max ? node.prev : 0;
         }
@@ -183,7 +183,23 @@ library DoubleLinkedList {
 
         list.length--;
 
-        list.nodes[id].data = list.nodes[list.nodes.length - 1].data;
+        Node storage lastNode = list.nodes[list.nodes.length - 1];
+
+        list.nodes[id] = lastNode;
+
+        if (
+            lastNode.prev != type(uint256).max &&
+            list.nodes[lastNode.prev].next != type(uint256).max
+        ) {
+            list.nodes[lastNode.prev].next = id;
+        }
+
+        if (
+            lastNode.next != type(uint256).max &&
+            list.nodes[lastNode.next].prev != type(uint256).max
+        ) {
+            list.nodes[lastNode.next].prev = id;
+        }
 
         list.nodes.pop();
     }
