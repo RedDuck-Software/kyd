@@ -83,7 +83,7 @@ export const AuctionDonate = () => {
   const { writeContractAsync: approveAsync } = useWriteContract();
   const { writeContractAsync: donateNativeAsync } = useWriteContract();
   const { writeContractAsync: donateTokenAsync } = useWriteContract();
-
+  console.log('auctionChainId ==>', auctionChainId);
   const { data: simulateRes } = useSimulateContract({
     abi: quoterAbi,
     functionName: 'quoteExactInput',

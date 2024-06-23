@@ -22,7 +22,7 @@ export const useTokenBalance = (chainId: AllowedChainIds) => {
 
   const balancesContracts = useMemo(
     () =>
-      address
+      address && tokens
         ? tokens
             .filter((token) => token.address)
             .map(
@@ -84,7 +84,7 @@ export const useTokenBalance = (chainId: AllowedChainIds) => {
         });
 
       return [
-        ...tokens
+        ...(tokens ?? [])
           .filter((token) => !token.address)
           .map((token) => {
             return {
@@ -93,7 +93,7 @@ export const useTokenBalance = (chainId: AllowedChainIds) => {
               allowance: maxUint256 as bigint,
             };
           }),
-        ...tokens
+        ...(tokens ?? [])
           .filter((token) => token.address)
           .map((token, i) => {
             return {

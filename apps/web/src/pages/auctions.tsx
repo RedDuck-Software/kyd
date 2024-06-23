@@ -22,7 +22,7 @@ export default function Auctions() {
   const { data, loading } = useDefaultSubgraphQuery<GetAllAuctionsResponse>(GET_ALL_AUCTIONS);
 
   const endedAuctionIds = new Set(data?.auctionEndeds.map((auction) => auction.id));
-  const initialActiveAuctions = data?.auctionCreateds.filter((auction) => !endedAuctionIds.has(auction.id));
+  const initialActiveAuctions = data?.auctionCreateds?.filter((auction) => !endedAuctionIds.has(auction.id));
 
   const [activeAuctions, setActiveAuctions] = useState(initialActiveAuctions);
   const [auctionData, setAuctionData] = useState<{
