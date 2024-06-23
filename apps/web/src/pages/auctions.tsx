@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { httpClient } from '@/api/client';
 import { ShadowCard } from '@/components/common/shadow-card';
 import { Button } from '@/components/ui/button';
-import { CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { getShadowCardBg, getShadowCardVariant } from '@/lib/shadow-card-variant';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
@@ -80,9 +80,8 @@ export default function Auctions() {
       <div className="flex flex-col gap-2 lg:gap-4 text-center">
         <h1 className="text-4xl font-medium">List of available auctions</h1>
         <p className="px-4 lg:px-12 xl:px-16">
-          Lorem ipsum dolor sit, amet consectetur adipisicing elit. Tenetur perspiciatis sit saepe ex earum soluta,
-          repellat voluptatem doloremque cupiditate veritatis id? Magnam consectetur expedita repellat soluta. Eius
-          praesentium est error.
+          KYD - a service that enables businesses to collect donations & rewarding both the largest & random donors. In
+          addition to NFTs for participation, prizes are awarded as NFTs RWA which are physical goods.
         </p>
       </div>
       <div className="flex flex-col gap-4">
@@ -104,7 +103,7 @@ export default function Auctions() {
                     alt={`Can't get ${auctionData[id]?.uri}`}
                   />
                 </CardContent>
-                <CardDescription className="font-medium px-6">{auctionData[id]?.description}</CardDescription>
+                {/* <CardDescreiption className="font-medium px-6">{auctionData[id]?.description}</CardDescription> */}
 
                 <CardFooter className="flex justify-end my-4 py-0">
                   <Button

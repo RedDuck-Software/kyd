@@ -7,3 +7,11 @@ Auction NFT Implementation: [`0xBeC391dE16A9068Ba08602c5ad5EE7a45BcFF380`](https
 Auction NFT1155 Implementation: [`0xddCFd512Eaa4318d76354873319f4BB7ae1e1E65`](https://sepolia.scrollscan.dev/address/0xddCFd512Eaa4318d76354873319f4BB7ae1e1E65)
 
 Auction Factory: [`0xdbCAccB6F2319f5Dba667f088bB67E71C62A5155`](https://sepolia.scrollscan.dev/address/0xdbCAccB6F2319f5Dba667f088bB67E71C62A5155)
+
+# Deployed Subgraphs
+
+Sepolia - `https://api.studio.thegraph.com/query/9868/kyd-sep/v0.0.5`
+
+Scroll Sepolia - `https://api.studio.thegraph.com/query/49166/kyd-scroll-sepolia/v0.0.1`
+
+Polygon - `https://api.studio.thegraph.com/query/49166/kyd-polygon/v1.0.0`

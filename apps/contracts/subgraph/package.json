@@ -8,7 +8,7 @@
     "prepare:matic": "mustache config/polygon.json subgraph.template.yaml > subgraph.yaml",
     "codegen": "graph codegen",
     "build": "graph build",
-    "deploy": "graph deploy --studio kyd-sepolia",
+    "deploy": "graph deploy --studio kyd-sep",
     "deploy:scroll:sepolia": "graph deploy --studio kyd-scroll-sepolia",
     "deploy:matic": "graph deploy --studio kyd-polygon",
     "create-local": "graph create --node http://localhost:8020/ redduck/",

@@ -5,7 +5,7 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
 import { Switch } from '../ui/switch';
-import { useAccount, useChainId, useWriteContract } from 'wagmi';
+import { useAccount, useChainId, usePublicClient, useWriteContract } from 'wagmi';
 import { getAddress, parseUnits, zeroAddress, zeroHash } from 'viem';
 import { useEffect, useState } from 'react';
 import { AuctionFactoryAbi } from '@/abi/AuctionFactory';
@@ -97,6 +97,7 @@ export const CreateAuctionForm = () => {
   const [enableRandomWinners, setEnableRandomWinners] = useState(false);
 
   const { writeContractAsync } = useWriteContract();
+  const publicClient = usePublicClient();
 
   const options: { label: string; value: string }[] = [
     {
@@ -191,8 +192,14 @@ export const CreateAuctionForm = () => {
       tokenId: '0',
     });
 
+    if (!createAuctionResponse?.data?.auctionId) {
+      toast({ title: 'Api error', description: 'Auction id is undefined, please try again', variant: 'destructive' });
+      setIsLoading(false);
+      return;
+    }
     const auctionId = createAuctionResponse?.data?.auctionId;
 
+    console.log('data.auctionId ==>', auctionId);
     console.log('data.topDonateWinners ==>', data.topDonateWinners);
 
     const auctionCreateData = {
@@ -243,6 +250,8 @@ export const CreateAuctionForm = () => {
         functionName: 'create',
         args: [auctionCreateData, winnerNft, participantNft],
       });
+
+      await publicClient?.waitForTransactionReceipt({ hash });
 
       toast({ title: 'Auction created successfully', description: `Transaction hash: ${hash}` });
       navigate('/');
