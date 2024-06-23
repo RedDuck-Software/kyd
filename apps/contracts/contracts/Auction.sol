@@ -254,6 +254,14 @@ contract Auction is IAuction, OwnableUpgradeable {
         randomness = _randomness;
     }
 
+    function getTopWinnerNFTS() external view returns (uint256[] memory) {
+        return topWinnersNfts;
+    }
+
+    function getRandomWinners() external view returns (uint256) {
+        return randomWinners;
+    }
+
     function _finishAuction() internal virtual {
         AuctionFactory(factory).requestRandomness();
         randomnessRequested = true;
