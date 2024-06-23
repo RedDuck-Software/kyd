@@ -5,10 +5,12 @@
   "scripts": {
     "prepare:sepolia-eth": "mustache config/sepoliaEth.json subgraph.template.yaml > subgraph.yaml",
     "prepare:sepolia-scroll": "mustache config/sepoliaScroll.json subgraph.template.yaml > subgraph.yaml",
+    "prepare:matic": "mustache config/polygon.json subgraph.template.yaml > subgraph.yaml",
     "codegen": "graph codegen",
     "build": "graph build",
     "deploy": "graph deploy --studio kyd-sepolia",
     "deploy:scroll:sepolia": "graph deploy --studio kyd-scroll-sepolia",
+    "deploy:matic": "graph deploy --studio kyd-polygon",
     "create-local": "graph create --node http://localhost:8020/ redduck/",
     "remove-local": "graph remove --node http://localhost:8020/ redduck/",
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 redduck/",

@@ -1,5 +1,5 @@
 import { ApolloClient, ApolloClientOptions, InMemoryCache, NormalizedCacheObject } from '@apollo/client';
-import { scrollSepolia, sepolia } from 'viem/chains';
+import { polygon, scrollSepolia, sepolia } from 'viem/chains';
 
 const getClient = (uri: string, params?: Omit<ApolloClientOptions<NormalizedCacheObject>, 'uri' | 'cache'>) =>
   new ApolloClient({
@@ -11,6 +11,7 @@ const getClient = (uri: string, params?: Omit<ApolloClientOptions<NormalizedCach
 export const subgraphs: Record<string, string> = {
   [sepolia.id]: 'https://api.studio.thegraph.com/query/49166/kyd-sepolia/v4.0.7',
   [scrollSepolia.id]: 'https://api.studio.thegraph.com/query/49166/kyd-scroll-sepolia/v0.0.1',
+  [polygon.id]: 'https://api.studio.thegraph.com/query/49166/kyd-polygon/v1.0.0',
 };
 
 const clientsPerChain = Object.fromEntries(Object.entries(subgraphs).map(([key, val]) => [key, getClient(val)]));
