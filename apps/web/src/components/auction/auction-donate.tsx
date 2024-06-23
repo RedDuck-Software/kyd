@@ -1,7 +1,7 @@
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { useTokenBalance } from '@/hooks/queries/use-token-balance';
-import useDonateStore from '@/store/donate-store';
+import useDonateStore, { allowedChains } from '@/store/donate-store';
 import { ShadowCard } from '../common/shadow-card';
 import { useAutoAnimate } from '@formkit/auto-animate/react';
 import { getShadowCardFilledVariant } from '@/lib/shadow-card-variant';
@@ -26,6 +26,8 @@ import { Nodes, getIndexesForInsert } from './utils';
 import { quoterAbi } from '@/abi/quoterABI';
 import { AllowedChainIds, addresses } from '@/constants/addresses';
 import { useParams } from 'react-router-dom';
+import { TokenBalance } from '@/hooks/useTokenBalances';
+import { allowedTokens } from '../../constants/addresses';
 
 const slippages = [1, 2, 5, 10];
 
@@ -43,9 +45,15 @@ export const AuctionDonate = () => {
   const { address } = useAccount();
   const { switchChainAsync } = useSwitchChain({});
 
+  const [selectedToken, setToken] = useState<TokenBalance>({
+    ...allowedTokens[+auctionChainId as AllowedChainIds][0],
+    balance: 0n,
+    allowance: 0n,
+  });
+
   const { data: blockNumber } = useBlockNumber({ watch: true, chainId: +auctionChainId });
 
-  const { amount, chain: selectedChain, setAmount, setToken, token: selectedToken } = useDonateStore();
+  const { amount, setAmount } = useDonateStore();
   const queryClient = useQueryClient();
 
   const isAllowanceEnough = useMemo(() => {
@@ -196,8 +204,12 @@ export const AuctionDonate = () => {
               variant={'orange'}
               className="flex items-center gap-2  transition-colors w-[200px] rounded-[4px]"
             >
-              <img src={selectedChain.image} alt={selectedChain.name} className="w-10" />
-              <p>{selectedChain.name}</p>
+              <img
+                src={allowedChains[+auctionChainId as AllowedChainIds].image}
+                alt={allowedChains[+auctionChainId as AllowedChainIds].name}
+                className="w-10 h-10"
+              />
+              <p>{allowedChains[+auctionChainId as AllowedChainIds].name}</p>
             </ShadowCard>
           </div>
           <div className=" flex flex-col gap-4">
