@@ -26,8 +26,10 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
 
   const activeAuctions = useMemo(() => {
-    const endedAuctionIds = new Set(allAuctions?.auctionEndeds.map((auction) => auction.id));
-    const initialActiveAuctions = allAuctions?.auctionCreateds.filter((auction) => !endedAuctionIds.has(auction.id));
+    const endedAuctionIds = new Set(allAuctions?.auctionEndeds.map((auction) => auction.address));
+    const initialActiveAuctions = allAuctions?.auctionCreateds.filter(
+      (auction) => !endedAuctionIds.has(auction.address)
+    );
 
     return initialActiveAuctions
       ? initialActiveAuctions.sort((a, b) => +b.blockTimestamp - +a.blockTimestamp).slice(0, 3)
@@ -92,9 +94,7 @@ export default function Home() {
             {activeAuctions?.map(({ id, address, chainId }, i) => (
               <ShadowCard key={id} className="flex flex-col" variant={getShadowCardVariant(i)}>
                 <CardHeader>
-                  <CardTitle className={cn(getShadowCardBg(i), 'rounded-[16px] py-2 text-center')}>
-                    {auctionData[id]?.name}
-                  </CardTitle>
+                  <CardTitle className={cn('rounded-[16px] text-center')}>{auctionData[id]?.name}</CardTitle>
                 </CardHeader>
                 <CardContent className="py-0 flex-1 px-12 flex justify-center rounded-[16px] ">
                   <img
@@ -106,7 +106,10 @@ export default function Home() {
                 <CardDescription className="font-medium px-6">{auctionData[id]?.description}</CardDescription>
 
                 <CardFooter className="flex justify-end my-4 py-0">
-                  <Button onClick={() => handleParticipate(address, chainId)} className="w-full">
+                  <Button
+                    onClick={() => handleParticipate(address, chainId)}
+                    className={cn(getShadowCardBg(i), 'w-full')}
+                  >
                     Participate
                   </Button>
                 </CardFooter>
