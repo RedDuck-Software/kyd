@@ -1,30 +1,57 @@
 import { gql } from '@apollo/client';
-import { Address } from 'viem';
 
-export interface NFT {
+export interface AuctionNft {
   id: string;
-  address: Address;
-  owner: Address;
   tokenId: string;
+  address: string;
+  owner: string;
   transactionHash: string;
   blockNumber: string;
   blockTimestamp: string;
 }
 
+export interface AuctionNftCreated {
+  id: string;
+  address: string;
+  uri: string;
+  auctionAddress: string;
+  transactionHash: string;
+  blockTimestamp: string;
+  blockNumber: string;
+}
+
 export interface GetUserNftsResponse {
-  auctionNFTs: NFT[];
+  auctionNfts: AuctionNft[];
+}
+
+export interface GetNftUriResponse {
+  auctionNFTCreateds: AuctionNftCreated[];
 }
 
 export const GET_USER_NFTS = gql`
-  query GetUserNfts($owner: Bytes) {
-    auctionNFTs(where: { owner: $owner }) {
+  query GetUserNfts {
+    auctionNFTs(where: { owner: Bytes }) {
       id
+      blockNumber
       address
+      blockTimestamp
       owner
       tokenId
-      blockNumber
-      blockTimestamp
       transactionHash
+    }
+  }
+`;
+
+export const GET_NFT_URI = gql`
+  query GetNftUri {
+    auctionNFTCreateds(where: { address: Bytes }) {
+      id
+      address
+      uri
+      auctionAddress
+      transactionHash
+      blockTimestamp
+      blockNumber
     }
   }
 `;
