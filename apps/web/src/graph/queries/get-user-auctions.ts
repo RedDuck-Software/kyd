@@ -72,7 +72,7 @@ export const GET_AUCTION_CREATED = gql`
 export const getUserAuctions = async (address: Address) => {
   const clients = getGraphClients();
   const queries = clients.map((client) =>
-    client.query({
+    client.client.query({
       query: gql`
         {
           donates(where: { from: "${address}" }){
@@ -97,7 +97,7 @@ export const getUserAuctions = async (address: Address) => {
 
     const auctions = await Promise.all(
       result.data.donates.map((v: Donate) =>
-        clients[i].query({
+        clients[i].client.query({
           query: gql`
               {
                 auctionCreateds(where: { address: ${v.auction} }) {

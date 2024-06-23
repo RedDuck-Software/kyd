@@ -8,10 +8,14 @@ import { auctionAbi } from '@/abi/auctionABI';
 import { getAddress, isAddress } from 'viem';
 import { Spinner } from '@/components/ui/spinner';
 import { AdminAuction } from '@/components/auction/admin-auction';
+import { useAuctionMetadata } from '@/hooks/queries/use-auction-metadata';
+import { AuctionMetadata } from './home';
+import { useMemo } from 'react';
 
 export default function AuctionDetails() {
   const { id } = useParams();
-  const { address } = useAccount();
+  const [address, auctionChainId] = id!.split(':');
+  const { address: userAddress } = useAccount();
 
   if (!id || !isAddress(id)) {
     redirect('/');
@@ -35,6 +39,12 @@ export default function AuctionDetails() {
     functionName: 'owner',
   });
 
+  const { data } = useAuctionMetadata(address, +auctionChainId);
+
+  const metadata: AuctionMetadata = useMemo(() => {
+    return data?.data ?? { description: '', name: '', uri: '' };
+  }, [data?.data]);
+
   if (isLoading || isLoadingDistributed || isLoadingFinished) {
     return (
       <div className="flex w-full justify-center">
@@ -47,19 +57,16 @@ export default function AuctionDetails() {
     <div className="flex flex-col gap-16">
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-2">
-          <h1 className="text-3xl font-semibold">{id} Auction Details</h1>
-          <p className="text-base">
-            {id} Auction long description lorem ipsum dolor sit amet consectetur adipisicing elit. Tempore ipsa
-            doloribus accusantium eius nam cum natus perspiciatis. Alias, ratione numquam! Quod, ducimus id eaque totam
-            saepe a ipsam distinctio sunt.lorem ipsum dolor sit amet consectetur adipisicing elit. Tempore ipsa
-            doloribus accusantium eius nam cum natus perspiciatis. Alias, ratione numquam! Quod, ducimus id eaque totam
-            saepe a ipsam distinctio sunt.
-          </p>
+          <h1 className="text-4xl font-semibold">{metadata.name}</h1>
+          <p className="text-base">{metadata.description}</p>
+        </div>
+        <div className="flex justify-center">
+          <img className="max-w-[500px]" src={metadata.uri} />
         </div>
       </div>
       <AuctionProgress />
-      {owner === address && (
-        <AdminAuction isDistributed={isDistributed!} isFinished={isFinished!} address={getAddress(id!)} />
+      {owner === userAddress && (
+        <AdminAuction isDistributed={isDistributed!} isFinished={isFinished!} address={getAddress(address)} />
       )}
       {isFinished ? (
         isDistributed ? (

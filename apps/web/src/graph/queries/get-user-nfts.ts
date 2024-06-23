@@ -29,22 +29,17 @@ export interface GetNftUriResponse {
 }
 
 export const GET_USER_NFTS = gql`
-  query GetUserNfts {
-    auctionNFTs(where: { owner: Bytes }) {
+  query GetUserNfts($owner: String!) {
+    auctionNFTs(where: { owner: $owner }) {
       id
-      blockNumber
       address
-      blockTimestamp
-      owner
-      tokenId
-      transactionHash
     }
   }
 `;
 
 export const GET_NFT_URI = gql`
-  query GetNftUri {
-    auctionNFTCreateds(where: { address: Bytes }) {
+  query GetNftUri($address: Bytes) {
+    auctionNFTCreateds(where: { address: $address }) {
       id
       address
       uri
