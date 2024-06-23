@@ -26,7 +26,7 @@ export const ProfileInfo = () => {
       <ShadowCard variant="blue" className=" w-full p-6 gap-2 flex flex-col">
         <div className="flex items-center gap-3">
           <p className="text-[16px] ">Total USD donated:</p>
-          <p className="text-[16px] font-medium">{userStats?.usdDonated ?? 0}$</p>
+          <p className="text-[16px] font-medium">{userStats?.usdDonated?.toFixed?.(4) ?? 0}$</p>
         </div>
         <div className="flex items-center gap-3">
           <p className="text-[16px] ">Total auctions participated:</p>

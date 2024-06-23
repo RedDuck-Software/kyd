@@ -18,7 +18,7 @@ const getHttpLink = (chain: Chains) => {
       uri = 'https://api.thegraph.com/subgraphs/name/mrjeleika/kyd-optimism';
       break;
     case 'Sepolia':
-      uri = 'https://api.studio.thegraph.com/query/49166/kyd-sepolia/v1.0.6';
+      uri = 'https://api.studio.thegraph.com/query/49166/kyd-sepolia/v4.0.7';
       break;
 
     default:
@@ -53,8 +53,8 @@ export const createApolloClient = (chain: Chains) => {
 };
 
 export const getGraphClients = () => {
-  const polygonClient = createApolloClient(polygonMumbai);
+  const sepoliaClient = createApolloClient(sepolia);
   const scrollClient = createApolloClient(scrollSepolia);
 
-  return [polygonClient, scrollClient];
+  return [sepoliaClient];
 };
