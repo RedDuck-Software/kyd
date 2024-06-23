@@ -13,22 +13,14 @@ export const AuctionProgress = () => {
 
   const queryClient = useQueryClient();
 
-  const {
-    data: goalRes,
-    queryKey: getGoalQueryKey,
-    isLoading: isGoalLoading,
-  } = useReadContract({
+  const { data: goalRes, queryKey: getGoalQueryKey } = useReadContract({
     abi: auctionAbi,
     address: address as `0x${string}`,
     chainId: +auctionChainId,
     functionName: 'goal',
   });
 
-  const {
-    data: totalDonatedRes,
-    queryKey: getTotalDonatedQueryKey,
-    isLoading: isTotalDonatedLoading,
-  } = useReadContract({
+  const { data: totalDonatedRes, queryKey: getTotalDonatedQueryKey } = useReadContract({
     abi: auctionAbi,
     address: address as `0x${string}`,
     chainId: +auctionChainId,

@@ -3,14 +3,16 @@ import { httpClient } from '@/api/client';
 import { ShadowCard } from '@/components/common/shadow-card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Spinner } from '@/components/ui/spinner';
 import { GET_NFT_URI } from '@/graph/queries/get-user-nfts';
 import { GetNftUriResponse } from '@/graph/queries/get-user-nfts-data';
 import { useDefaultSubgraphQuery } from '@/hooks/useDefaultSubgraphQuery';
+import useModalsStore from '@/store/modals-store';
 import { useQueryClient } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { redirect, useParams } from 'react-router-dom';
-import { Address, getAddress, zeroAddress } from 'viem';
-import { useBlockNumber, useChainId, useReadContract, useWriteContract } from 'wagmi';
+import { getAddress } from 'viem';
+import { useBlockNumber, useChainId, useReadContract } from 'wagmi';
 
 interface NftMetadata {
   description: string;
@@ -44,8 +46,6 @@ export default function Nft() {
 
   const [nftData, setNftData] = useState<NftMetadata | null>(null);
   const [isAlertOpen, setAlertOpen] = useState(false);
-
-  const { writeContractAsync } = useWriteContract();
 
   const { data: nftUriData } = useDefaultSubgraphQuery<GetNftUriResponse>(GET_NFT_URI, {
     variables: { address: nftAddress },
