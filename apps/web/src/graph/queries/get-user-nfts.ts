@@ -21,7 +21,7 @@ export interface AuctionNftCreated {
 }
 
 export interface GetUserNftsResponse {
-  auctionNfts: AuctionNft[];
+  auctionNFTs: AuctionNft[];
 }
 
 export interface GetNftUriResponse {
