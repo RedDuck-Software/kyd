@@ -10,6 +10,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { AdminAuction } from '@/components/auction/admin-auction';
 import { useAuctionMetadata } from '@/hooks/queries/use-auction-metadata';
 import { AuctionMetadata } from './home';
+import { PageLoader } from '@/components/page-loader/page-loader';
 import { useMemo } from 'react';
 
 export default function AuctionDetails() {
@@ -23,23 +24,23 @@ export default function AuctionDetails() {
 
   const { data: isFinished, isLoading: isLoadingFinished } = useReadContract({
     abi: auctionAbi,
-    address: getAddress(id!),
+    address: getAddress(address!),
     functionName: 'randomnessRequested',
   });
 
   const { data: isDistributed, isLoading: isLoadingDistributed } = useReadContract({
     abi: auctionAbi,
-    address: getAddress(id!),
+    address: getAddress(address!),
     functionName: 'nftsDistributed',
   });
 
-  const { data: owner, isLoading } = useReadContract({
+  const { data: owner } = useReadContract({
     abi: auctionAbi,
-    address: getAddress(id!),
+    address: getAddress(address!),
     functionName: 'owner',
   });
 
-  const { data } = useAuctionMetadata(address, +auctionChainId);
+  const { data, isLoading } = useAuctionMetadata(address, +auctionChainId);
 
   const metadata: AuctionMetadata = useMemo(() => {
     return data?.data ?? { description: '', name: '', uri: '' };
@@ -56,13 +57,19 @@ export default function AuctionDetails() {
   return (
     <div className="flex flex-col gap-16">
       <div className="flex flex-col gap-4">
-        <div className="flex flex-col gap-2">
-          <h1 className="text-4xl font-semibold">{metadata.name}</h1>
-          <p className="text-base">{metadata.description}</p>
-        </div>
-        <div className="flex justify-center">
-          <img className="max-w-[500px]" src={metadata.uri} />
-        </div>
+        {isLoading || !data ? (
+          <PageLoader />
+        ) : (
+          <>
+            <div className="flex flex-col gap-2">
+              <h1 className="text-4xl font-semibold">{metadata.name}</h1>
+              <p className="text-base">{metadata.description}</p>
+            </div>
+            <div className="flex justify-center">
+              <img className="max-w-[500px] aspect-square object-cover" src={metadata.uri} />
+            </div>
+          </>
+        )}
       </div>
       <AuctionProgress />
       {owner === userAddress && (

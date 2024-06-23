@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { httpClient } from '@/api/client';
 import { ShadowCard } from '@/components/common/shadow-card';
-import { TrandingAuctions } from '@/components/home/tranding-auctions';
 import { Button } from '@/components/ui/button';
 import { CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { getShadowCardBg, getShadowCardVariant } from '@/lib/shadow-card-variant';
@@ -89,22 +88,23 @@ export default function Home() {
             <Spinner />
           </div>
         ) : (
-          <div className="w-full grid grid-cols-3 gap-8">
+          <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {activeAuctions?.map(({ id, address, chainId }, i) => (
-              <ShadowCard key={id} variant={getShadowCardVariant(i)}>
+              <ShadowCard key={id} className="flex flex-col" variant={getShadowCardVariant(i)}>
                 <CardHeader>
                   <CardTitle className={cn(getShadowCardBg(i), 'rounded-[16px] py-2 text-center')}>
                     {auctionData[id]?.name}
                   </CardTitle>
-                  <CardDescription className="text-slate-800">{auctionData[id]?.description}</CardDescription>
                 </CardHeader>
-                <CardContent className="p-0">
+                <CardContent className="py-0 flex-1 px-12 flex justify-center rounded-[16px] ">
                   <img
                     src={auctionData[id]?.uri}
-                    className="object-cover aspect-square"
+                    className="object-cover aspect-square  rounded-[16px] "
                     alt={`Can't get ${auctionData[id]?.uri}`}
                   />
                 </CardContent>
+                <CardDescription className="font-medium px-6">{auctionData[id]?.description}</CardDescription>
+
                 <CardFooter className="flex justify-end my-4 py-0">
                   <Button onClick={() => handleParticipate(address, chainId)} className="w-full">
                     Participate
@@ -115,7 +115,6 @@ export default function Home() {
           </div>
         )}
       </div>
-      <TrandingAuctions />
     </div>
   );
 }
