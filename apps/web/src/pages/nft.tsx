@@ -1,38 +1,45 @@
-import { AuctionFactoryAbi } from '@/abi/AuctionFactory';
 import { erc721ABI } from '@/abi/erc721ABI';
-import { factoryAbi } from '@/abi/factoryABI';
+import { httpClient } from '@/api/client';
 import { ShadowCard } from '@/components/common/shadow-card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { addresses } from '@/constants/addresses';
 import { GET_NFT_URI } from '@/graph/queries/get-user-nfts';
 import { GetNftUriResponse } from '@/graph/queries/get-user-nfts-data';
-import { useUserAdminAuctions } from '@/hooks/queries/use-user-admin-auctions';
 import { useDefaultSubgraphQuery } from '@/hooks/useDefaultSubgraphQuery';
 import useModalsStore from '@/store/modals-store';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Address, erc721Abi, zeroAddress } from 'viem';
-import { useChainId, useWriteContract } from 'wagmi';
+import { Address, zeroAddress } from 'viem';
+import { useWriteContract } from 'wagmi';
+
+interface NftMetadata {
+  description: string;
+  imageUrl: string;
+}
 
 export default function Nft() {
   const { address: nftAddress, tokenId } = useParams();
-  const chainId = useChainId();
-  console.log('inftAddress ==>', nftAddress);
 
+  const [nftData, setNftData] = useState<NftMetadata | null>(null);
   const [isAlertOpen, setAlertOpen] = useState(false);
   const { setNftAlertModalOpen } = useModalsStore();
 
-  const { data } = useUserAdminAuctions();
-
   const { writeContractAsync } = useWriteContract();
 
-  const { data: nftUri } = useDefaultSubgraphQuery<GetNftUriResponse>(GET_NFT_URI, {
+  const { data: nftUriData } = useDefaultSubgraphQuery<GetNftUriResponse>(GET_NFT_URI, {
     variables: { addresss: nftAddress },
   });
 
+  useEffect(() => {
+    (async () => {
+      const rawNftData = nftUriData?.auctionNFTCreateds.find((created) => created.address === nftAddress);
+      const response = await httpClient.get<NftMetadata>(`${rawNftData?.uri}0`);
+      setNftData(response.data);
+    })();
+  }, [nftAddress, nftUriData?.auctionNFTCreateds]);
+
   const handleRedeemNFT = () => {
-    writeContractAsync({
+    await writeContractAsync({
       abi: erc721ABI,
       address: nftAddress as Address,
       functionName: 'burn',
@@ -40,9 +47,12 @@ export default function Nft() {
     });
   };
 
-  console.log({ data });
+  console.log({ nftData });
 
-  const isAdmin = true;
+  const handleClick = () => {
+    handleRedeemNFT();
+    setNftAlertModalOpen(true);
+  };
 
   return (
     <div className="flex flex-col gap-8">
@@ -53,16 +63,12 @@ export default function Nft() {
       </Dialog>
       <div className="flex justify-center">
         <ShadowCard variant={'blue'} className="overflow-hidden">
-          <img
-            src="https://forklog.com.ua/wp-content/uploads/2023/08/Snimok-ekrana-2023-08-23-v-12.14.48.webp"
-            alt=""
-            className="rounded-[16px] w-full max-w-[600px] "
-          />
+          <img src={nftData?.imageUrl} alt="" className="rounded-[16px] w-full max-w-[600px] " />
         </ShadowCard>
       </div>
-      <h1 className="text-4xl text-center font-semibold">BAYC #2255</h1>
+      <h1 className="text-4xl text-center font-semibold">{nftData?.description}</h1>
 
-      <p className="text-base font-medium">SOme info about company</p>
+      {/* <p className="text-base font-medium">SOme info about company</p>
       <p className="text-base">
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo nulla maiores accusantium harum quae, vitae,
         eveniet natus vero nesciunt, corporis iure illum cum consequatur animi. Quod officiis at voluptates blanditiis.
@@ -87,8 +93,8 @@ export default function Nft() {
         Dolorum dolores omnis quo ipsa distinctio beatae fugit laborum rerum est! Nisi omnis veniam vero mollitia,
         ratione sit, impedit quas harum architecto, quidem obcaecati incidunt ad expedita velit. Debitis iste totam
         harum a doloremque, ducimus libero dolore natus!
-      </p>
-      <Button onClick={() => setNftAlertModalOpen(true)} className="py-3 text-[18px]">
+      </p> */}
+      <Button onClick={handleClick} className="py-3 text-[18px]">
         Redeem
       </Button>
     </div>
