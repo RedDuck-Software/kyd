@@ -27,10 +27,13 @@ import { Nodes, getIndexesForInsert } from './utils';
 import { quoterAbi } from '@/abi/quoterABI';
 import { addresses } from '@/constants/addresses';
 
+const slippages = [1, 2, 5, 10];
+
 export const AuctionDonate = () => {
   const auctionChainId = 11155111;
   const { data: tokenBalances } = useTokenBalance(auctionChainId);
 
+  const [slippage, setSlippage] = useState(slippages[1]);
   const [isLoading, setLoading] = useState(false);
 
   const [parent] = useAutoAnimate();
@@ -69,7 +72,9 @@ export const AuctionDonate = () => {
   });
 
   useEffect(() => {
-    queryClient.invalidateQueries({ queryKey: getNodesQueryKey });
+    if (blockNumber) {
+      queryClient.invalidateQueries({ queryKey: getNodesQueryKey });
+    }
   }, [queryClient, blockNumber, getNodesQueryKey]);
 
   const { writeContractAsync: approveAsync } = useWriteContract();
@@ -80,13 +85,13 @@ export const AuctionDonate = () => {
     abi: quoterAbi,
     functionName: 'quoteExactInput',
     chainId: auctionChainId,
-    address: addresses[auctionChainId].uniQuoter, // TODO:CHANGE
+    address: addresses[auctionChainId].uniQuoter,
     args: [addresses[auctionChainId].swapPath, parseUnits(amount ? amount.toString() : '0', selectedToken.decimals)],
   });
 
   const simulatedAmount = useMemo(() => {
-    return simulateRes ? simulateRes.result[0] : null;
-  }, [simulateRes]);
+    return simulateRes ? (simulateRes.result[0] / 100n) * BigInt(100 - slippage) : null;
+  }, [simulateRes, slippage]);
 
   const approve = useCallback(async () => {
     const hash = await approveAsync({
@@ -212,7 +217,30 @@ export const AuctionDonate = () => {
             </div>
           </div>
           <div className=" flex flex-col gap-4">
-            <h6 className="font-medium text-[20px]">Amount:</h6>
+            <div className="flex justify-between items-end">
+              <h6 className="font-medium text-[20px]">Amount:</h6>
+              <div className="flex font-medium gap-2 items-center">
+                <p>Slippage:</p>
+                <div className="flex items-center gap-4">
+                  {slippages.map((configSlippage) =>
+                    configSlippage === slippage ? (
+                      <button>
+                        <ShadowCard className="rounded-[4px] py-1 px-2" variant="violent">
+                          {configSlippage}%
+                        </ShadowCard>
+                      </button>
+                    ) : (
+                      <button
+                        className="border-[3px] py-1 px-2 border-transparent"
+                        onClick={() => setSlippage(configSlippage)}
+                      >
+                        {configSlippage}%
+                      </button>
+                    )
+                  )}
+                </div>
+              </div>
+            </div>
             <div className="">
               <Input
                 value={amount ?? ''}

@@ -70,8 +70,10 @@ export const useTokenBalances = (chainId: AllowedChainIds) => {
   });
 
   useEffect(() => {
-    queryClient.invalidateQueries({ queryKey: queryKeyAllowances });
-    queryClient.invalidateQueries({ queryKey: queryKeyBalances });
+    if (blockNumber) {
+      queryClient.invalidateQueries({ queryKey: queryKeyAllowances });
+      queryClient.invalidateQueries({ queryKey: queryKeyBalances });
+    }
   }, [queryClient, queryKeyAllowances, queryKeyBalances, blockNumber]);
 
   return useMemo(() => {

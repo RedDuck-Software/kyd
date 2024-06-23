@@ -53,8 +53,8 @@ export const createApolloClient = (chain: Chains) => {
 };
 
 export const getGraphClients = () => {
-  const polygonClient = createApolloClient(polygonMumbai);
+  const sepoliaClient = createApolloClient(sepolia);
   const scrollClient = createApolloClient(scrollSepolia);
 
-  return [polygonClient, scrollClient];
+  return [sepoliaClient];
 };

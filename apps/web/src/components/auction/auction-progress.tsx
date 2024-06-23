@@ -44,8 +44,10 @@ export const AuctionProgress = () => {
   }, [goal, totalDonated]);
 
   useEffect(() => {
-    queryClient.invalidateQueries({ queryKey: getGoalQueryKey });
-    queryClient.invalidateQueries({ queryKey: getTotalDonatedQueryKey });
+    if (blockNumber) {
+      queryClient.invalidateQueries({ queryKey: getGoalQueryKey });
+      queryClient.invalidateQueries({ queryKey: getTotalDonatedQueryKey });
+    }
   }, [queryClient, getGoalQueryKey, getTotalDonatedQueryKey, blockNumber]);
 
   return (

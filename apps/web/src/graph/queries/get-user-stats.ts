@@ -38,6 +38,8 @@ export const getUserStats = async (address: Address) => {
 
   const results = await Promise.all(queries);
 
+  console.log(results);
+
   results.forEach((result) => {
     (result.data.donates as Donate[]).map((donate) => {
       if (!userInfo[donate.from]) {
