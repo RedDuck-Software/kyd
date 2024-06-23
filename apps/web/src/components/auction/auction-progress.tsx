@@ -2,26 +2,28 @@ import { useBlockNumber, useReadContract } from 'wagmi';
 import { Progress } from '../ui/progress';
 import { useEffect, useMemo } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { contractAddresses } from '@/constants/constants';
 import { auctionAbi } from '@/abi/auctionABI';
 import { formatUnits } from 'viem';
+import { useParams } from 'react-router-dom';
 
 export const AuctionProgress = () => {
-  const auctionChainId = 11155111;
+  const { id } = useParams();
+
+  const [address, auctionChainId] = id!.split(':');
 
   const queryClient = useQueryClient();
 
   const { data: goalRes, queryKey: getGoalQueryKey } = useReadContract({
     abi: auctionAbi,
-    address: contractAddresses[auctionChainId],
-    chainId: auctionChainId,
+    address: address as `0x${string}`,
+    chainId: +auctionChainId,
     functionName: 'goal',
   });
 
   const { data: totalDonatedRes, queryKey: getTotalDonatedQueryKey } = useReadContract({
     abi: auctionAbi,
-    address: contractAddresses[auctionChainId],
-    chainId: auctionChainId,
+    address: address as `0x${string}`,
+    chainId: +auctionChainId,
     functionName: 'totalDonated',
   });
 
@@ -29,7 +31,7 @@ export const AuctionProgress = () => {
     return goalRes ? parseFloat(formatUnits(goalRes, 18)) : 0;
   }, [goalRes]);
 
-  const { data: blockNumber } = useBlockNumber({ watch: true, chainId: auctionChainId });
+  const { data: blockNumber } = useBlockNumber({ watch: true, chainId: +auctionChainId });
 
   const totalDonated = useMemo(() => {
     return totalDonatedRes ? parseFloat(formatUnits(totalDonatedRes, 18)) : 0;
