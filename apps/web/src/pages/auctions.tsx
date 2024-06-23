@@ -71,7 +71,7 @@ export default function Auctions() {
   }, [activeAuctions]);
 
   const handleParticipate = (address: string) => {
-    navigate(`auctions/${address}`);
+    navigate(`/auctions/${address}`);
   };
 
   return (
