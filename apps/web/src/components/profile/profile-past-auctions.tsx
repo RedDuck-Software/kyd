@@ -38,7 +38,7 @@ export const ProfilePastAuctions = () => {
                 <h6 className="text-[18px] font-medium">{auction.name}</h6>
               </div>
               <div className="flex items-center gap-3">
-                {/* TODO: change to real value */}
+                {/* TODO: change to real value *
                 <Badge variant="danger" className="py-2 text-white text-[14px]">
                   {'Admin'}
                 </Badge>

@@ -9,6 +9,7 @@ import { getShadowCardBg, getShadowCardVariant } from '@/lib/shadow-card-variant
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { Spinner } from '@/components/ui/spinner';
+import { useChainId } from 'wagmi';
 
 type AuctionMetadata = {
   name: string;
@@ -17,12 +18,13 @@ type AuctionMetadata = {
 };
 
 export default function Auctions() {
+  const chainId = useChainId();
   const navigate = useNavigate();
 
   const { data, loading } = useDefaultSubgraphQuery<GetAllAuctionsResponse>(GET_ALL_AUCTIONS);
 
   const endedAuctionIds = new Set(data?.auctionEndeds.map((auction) => auction.id));
-  const initialActiveAuctions = data?.auctionCreateds.filter((auction) => !endedAuctionIds.has(auction.id));
+  const initialActiveAuctions = data?.auctionCreateds?.filter((auction) => !endedAuctionIds.has(auction.id));
 
   const [activeAuctions, setActiveAuctions] = useState(initialActiveAuctions);
   const [auctionData, setAuctionData] = useState<{
@@ -70,8 +72,8 @@ export default function Auctions() {
     fetchImages();
   }, [activeAuctions]);
 
-  const handleParticipate = (address: string) => {
-    navigate(`auctions/${address}`);
+  const handleParticipate = (address: string, chainId: number) => {
+    navigate(`/auctions/${address}:${chainId}`);
   };
 
   return (
@@ -103,7 +105,7 @@ export default function Auctions() {
                   <img src={auctionData[id]?.uri} alt={`Can't get ${auctionData[id]?.uri}`} />
                 </CardContent>
                 <CardFooter className="flex justify-end my-4 py-0">
-                  <Button onClick={() => handleParticipate(address)} className="w-full">
+                  <Button onClick={() => handleParticipate(address, chainId)} className="w-full">
                     Participate
                   </Button>
                 </CardFooter>

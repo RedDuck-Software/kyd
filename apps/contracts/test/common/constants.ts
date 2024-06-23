@@ -35,6 +35,20 @@ export const sepoliaScrollDeployConstants: DeploymentConstans = {
   swapStable: '0x551197e6350936976DfFB66B2c3bb15DDB723250', // USDT
   gelatoOperator: zeroAddress,
 };
+export const polygonDeployConstants: DeploymentConstans = {
+  uniswapV3Router:
+    '0xfc30937f50x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45cDe93Df8d48aCAF7e6f5D8D8A31F636',
+  ethToStablePath: encodePacked(
+    ['address', 'uint24', 'address'],
+    [
+      '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
+      500,
+      '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
+    ],
+  ),
+  swapStable: '0x551197e6350936976DfFB66B2c3bb15DDB723250', // USDT
+  gelatoOperator: zeroAddress,
+};
 
 export function deploymentConstants(
   network: NETWORK,
@@ -47,6 +61,8 @@ export function deploymentConstants(
       return sepoliaDeployConstants;
     case NETWORK.SCROLL_SEPOLIA:
       return sepoliaScrollDeployConstants;
+    case NETWORK.POLYGON:
+      return polygonDeployConstants;
     default:
       return undefined;
   }
