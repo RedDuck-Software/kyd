@@ -76,7 +76,7 @@ export const ProfileNfts: React.FC = () => {
 
   return (
     <div className="flex flex-col gap-4">
-      <h2 className="text-[32px] font-semibold">My NFTs</h2>
+      <h2 className="text-3xl font-semibold">My NFTs</h2>
       {isLoadingUserNfts || loading ? (
         <div className="text-center">Loading...</div>
       ) : (

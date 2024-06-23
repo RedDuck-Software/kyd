@@ -12,7 +12,7 @@ export const ProfileInfo = () => {
   const { data: userStats } = useGetUserStats();
 
   return (
-    <div className="flex gap-8 lg:gap-32 max-lg:flex-col">
+    <div className="flex gap-8 lg:gap-16 max-lg:flex-col">
       <ShadowCard className=" w-full  p-6 gap-4 flex ">
         {generateBlockies(address, 30)}
         <div className="flex flex-col gap-2">

@@ -59,8 +59,13 @@ export const HeaderMobile = () => {
               Create auction
             </Link>
           </li>
+<<<<<<< Updated upstream
           <li className="flex  justify-center">
             <ConnectWallet />
+=======
+          <li className="flex justify-center">
+            <ConnectWallet className="py-2" />
+>>>>>>> Stashed changes
           </li>
         </ul>
       </nav>

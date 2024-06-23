@@ -3,6 +3,7 @@ import { createBrowserRouter } from 'react-router-dom';
 
 export const routes = {
   root: '/',
+  auctions: '/auctions',
   profile: '/profile',
   create: '/create',
   nft: '/nft',
@@ -17,6 +18,10 @@ export const router = createBrowserRouter([
       {
         path: routes.root,
         Component: lazy(() => import('@/pages/home')),
+      },
+      {
+        path: routes.auctions,
+        Component: lazy(() => import('@/pages/auctions')),
       },
       {
         path: routes.create,

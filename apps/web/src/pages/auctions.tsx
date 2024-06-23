@@ -1,7 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { httpClient } from '@/api/client';
 import { ShadowCard } from '@/components/common/shadow-card';
-import { TrandingAuctions } from '@/components/home/tranding-auctions';
 import { Button } from '@/components/ui/button';
 import { CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { GET_ALL_AUCTIONS, GetAllAuctionsResponse } from '@/graph/queries/get-all-auctions';
@@ -17,23 +16,25 @@ type AuctionMetadata = {
   uri: string;
 };
 
-export default function Home() {
+export default function Auctions() {
   const navigate = useNavigate();
 
-  const { data, loading } = useDefaultSubgraphQuery<GetAllAuctionsResponse>(GET_ALL_AUCTIONS, {
-    variables: { first: 3 },
-  });
+  const { data, loading } = useDefaultSubgraphQuery<GetAllAuctionsResponse>(GET_ALL_AUCTIONS);
 
+  const endedAuctionIds = new Set(data?.auctionEndeds.map((auction) => auction.id));
+  const initialActiveAuctions = data?.auctionCreateds.filter((auction) => !endedAuctionIds.has(auction.id));
+
+  const [activeAuctions, setActiveAuctions] = useState(initialActiveAuctions);
   const [auctionData, setAuctionData] = useState<{
     [key: string]: AuctionMetadata;
   }>({});
   const [isLoading, setIsLoading] = useState(true);
 
-  const activeAuctions = useMemo(() => {
-    const endedAuctionIds = new Set(data?.auctionEndeds.map((auction) => auction.id));
-    const initialActiveAuctions = data?.auctionCreateds.filter((auction) => !endedAuctionIds.has(auction.id));
-
-    return initialActiveAuctions ?? [];
+  useEffect(() => {
+    if (initialActiveAuctions) {
+      setActiveAuctions(initialActiveAuctions);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
   useEffect(() => {
@@ -76,7 +77,7 @@ export default function Home() {
   return (
     <div className="flex flex-col gap-16">
       <div className="flex flex-col gap-2 lg:gap-4 text-center">
-        <h1 className="text-4xl font-medium">Welcome to Know Your Donation!</h1>
+        <h1 className="text-4xl font-medium">List of available auctions</h1>
         <p className="px-4 lg:px-12 xl:px-16">
           Lorem ipsum dolor sit, amet consectetur adipisicing elit. Tenetur perspiciatis sit saepe ex earum soluta,
           repellat voluptatem doloremque cupiditate veritatis id? Magnam consectetur expedita repellat soluta. Eius
@@ -84,7 +85,6 @@ export default function Home() {
         </p>
       </div>
       <div className="flex flex-col gap-4">
-        <h2 className="text-3xl font-semibold">Top active auctions</h2>
         {isLoading || loading ? (
           <div className="text-center py-4">
             <Spinner />
@@ -112,7 +112,6 @@ export default function Home() {
           </div>
         )}
       </div>
-      <TrandingAuctions />
     </div>
   );
 }

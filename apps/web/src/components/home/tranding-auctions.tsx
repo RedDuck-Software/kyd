@@ -3,7 +3,7 @@ import { ShadowCard } from '../common/shadow-card';
 export const TrandingAuctions = () => {
   return (
     <div className="flex flex-col gap-4">
-      <h2 className="text-[32px] font-semibold">Trending auctions</h2>
+      <h2 className="text-3xl font-semibold">Trending auctions</h2>
       <div className="grid grid-cols-1 gap-x-20 gap-y-6 lg:grid-cols-2">
         {Array.from({ length: 4 }).map((_, i) => (
           <button>

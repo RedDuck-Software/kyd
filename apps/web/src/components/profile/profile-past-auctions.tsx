@@ -26,7 +26,7 @@ export const ProfilePastAuctions = () => {
 
   return (
     <div className="flex flex-col gap-4">
-      <h2 className="text-[32px] font-semibold">Past auctions</h2>
+      <h2 className="text-3xl font-semibold">Past auctions</h2>
       <div className="flex flex-col gap-4">
         {config.map((auction) => (
           <button onClick={handleNftClick}>

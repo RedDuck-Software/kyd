@@ -53,7 +53,7 @@ export const AuctionProgress = () => {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-end justify-between">
-        <h2 className="text-[32px] font-semibold">Progress</h2>
+        <h2 className="text-3xl font-semibold">Progress</h2>
         <p className="text-[16px] font-medium">{progress.toFixed(2)}%</p>
       </div>
 
